@@ -1,0 +1,208 @@
+import Link from "next/link"
+import Image from "next/image"
+import { Button } from "@/components/ui/button"
+import { Card, CardContent } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Header } from "@/components/header"
+import { Footer } from "@/components/footer"
+import { AnimatedSection } from "@/components/animated-section"
+import { mockProducts } from "@/lib/mock-data"
+import { ArrowRight, Shield, Truck, Heart } from "lucide-react"
+
+export default function HomePage() {
+  const featuredProducts = mockProducts.filter((product) => product.featured)
+  const boysProducts = mockProducts.filter((product) => product.category === "boys").slice(0, 2)
+  const girlsProducts = mockProducts.filter((product) => product.category === "girls").slice(0, 2)
+
+  return (
+    <div className="min-h-screen">
+      <Header />
+
+      {/* Hero Section */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-pink-50">
+        <div className="container mx-auto px-4 py-16 lg:py-24">
+          <AnimatedSection animation="fade-up" className="text-center space-y-8 max-w-4xl mx-auto">
+            <div className="space-y-4">
+              <Badge className="bg-blue-600 text-white animate-float border-0">New Collection</Badge>
+              <h1 className="text-4xl lg:text-6xl font-bold text-balance">
+                Fun Fashion for{" "}
+                <span className="bg-gradient-to-r from-blue-600 to-pink-600 bg-clip-text text-transparent animate-gradient">
+                  Amazing Kids
+                </span>
+              </h1>
+              <p className="text-xl text-muted-foreground text-pretty max-w-2xl mx-auto">
+                Discover our playful, modern collection of kids' clothing. Quality fashion that sparks imagination and
+                brings joy to every adventure.
+              </p>
+            </div>
+            <div className="flex flex-row gap-4 max-w-md mx-auto">
+              <Link href="/boys" className="flex-1">
+                <Button size="lg" className="w-full bg-blue-600 hover:bg-blue-700 hover-glow btn-press">
+                  Shop Boys
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+              <Link href="/girls" className="flex-1">
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="w-full border-pink-600 text-pink-600 hover:bg-pink-50 bg-transparent hover-glow-pink btn-press"
+                >
+                  Shop Girls
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+          </AnimatedSection>
+        </div>
+      </section>
+
+      {/* Featured Products Section */}
+      <AnimatedSection animation="fade-up" className="py-16 bg-white">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-12">
+            <h2 className="text-3xl font-bold mb-4">Featured Products</h2>
+            <p className="text-muted-foreground text-lg">Our most popular items that kids absolutely love</p>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-6xl mx-auto">
+            {featuredProducts.slice(0, 4).map((product, index) => (
+              <AnimatedSection key={product.id} animation="scale-in" delay={(index + 1) * 100}>
+                <Link href={`/products/${product.id}`}>
+                  <Card className="overflow-hidden hover-lift cursor-pointer">
+                    <div className="relative aspect-square">
+                      <Image
+                        src={product.images[0] || "/placeholder.svg"}
+                        alt={product.name}
+                        fill
+                        className="object-cover"
+                      />
+                    </div>
+                    <CardContent className="p-3 md:p-4">
+                      <h3 className="font-semibold text-sm md:text-base mb-1 md:mb-2 truncate">{product.name}</h3>
+                      <p className="text-blue-600 font-bold text-sm md:text-base">${product.price}</p>
+                    </CardContent>
+                  </Card>
+                </Link>
+              </AnimatedSection>
+            ))}
+          </div>
+        </div>
+      </AnimatedSection>
+
+      {/* Category Sections */}
+      <AnimatedSection animation="fade-up" className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+            {/* Boys Section */}
+            <AnimatedSection animation="fade-right" className="space-y-6">
+              <div className="text-center lg:text-left">
+                <h2 className="text-3xl font-bold text-blue-600 mb-4">Boys Collection</h2>
+                <p className="text-muted-foreground mb-6">
+                  Cool and comfortable clothes for adventurous boys. From space explorers to superheroes!
+                </p>
+                <Link href="/boys">
+                  <Button className="bg-blue-600 hover:bg-blue-700 hover-glow btn-press">
+                    Shop Boys Collection
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                {boysProducts.map((product, index) => (
+                  <AnimatedSection key={product.id} animation="scale-in" delay={(index + 1) * 100}>
+                    <Card className="overflow-hidden hover-lift">
+                      <div className="relative aspect-square">
+                        <Image
+                          src={product.images[0] || "/placeholder.svg"}
+                          alt={product.name}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <CardContent className="p-3 md:p-4">
+                        <h3 className="font-semibold text-sm md:text-base mb-1 md:mb-2 truncate">{product.name}</h3>
+                        <p className="text-blue-600 font-bold text-sm md:text-base">${product.price}</p>
+                      </CardContent>
+                    </Card>
+                  </AnimatedSection>
+                ))}
+              </div>
+            </AnimatedSection>
+
+            {/* Girls Section */}
+            <AnimatedSection animation="fade-left" className="space-y-6">
+              <div className="text-center lg:text-left">
+                <h2 className="text-3xl font-bold text-pink-600 mb-4">Girls Collection</h2>
+                <p className="text-muted-foreground mb-6">
+                  Beautiful and stylish clothes for amazing girls. From unicorns to princesses!
+                </p>
+                <Link href="/girls">
+                  <Button className="bg-pink-600 hover:bg-pink-700 hover-glow-pink btn-press">
+                    Shop Girls Collection
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                {girlsProducts.map((product, index) => (
+                  <AnimatedSection key={product.id} animation="scale-in" delay={(index + 1) * 100}>
+                    <Card className="overflow-hidden hover-lift">
+                      <div className="relative aspect-square">
+                        <Image
+                          src={product.images[0] || "/placeholder.svg"}
+                          alt={product.name}
+                          fill
+                          className="object-cover"
+                        />
+                      </div>
+                      <CardContent className="p-3 md:p-4">
+                        <h3 className="font-semibold text-sm md:text-base mb-1 md:mb-2 truncate">{product.name}</h3>
+                        <p className="text-pink-600 font-bold text-sm md:text-base">${product.price}</p>
+                      </CardContent>
+                    </Card>
+                  </AnimatedSection>
+                ))}
+              </div>
+            </AnimatedSection>
+          </div>
+        </div>
+      </AnimatedSection>
+
+      <AnimatedSection animation="fade-up" className="py-16 bg-muted/30">
+        <div className="container mx-auto px-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <AnimatedSection animation="scale-in" delay={100} className="text-center space-y-4">
+              <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto hover-lift">
+                <Shield className="h-6 w-6 text-blue-600" />
+              </div>
+              <h3 className="text-xl font-semibold">Safe & Quality</h3>
+              <p className="text-muted-foreground">
+                All our clothes are made with safe, high-quality materials that are gentle on kids' skin.
+              </p>
+            </AnimatedSection>
+            <AnimatedSection animation="scale-in" delay={200} className="text-center space-y-4">
+              <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto hover-lift">
+                <Truck className="h-6 w-6 text-green-600" />
+              </div>
+              <h3 className="text-xl font-semibold">Fast Delivery</h3>
+              <p className="text-muted-foreground">
+                Quick and reliable delivery to your doorstep. Free shipping on orders over $50.
+              </p>
+            </AnimatedSection>
+            <AnimatedSection animation="scale-in" delay={300} className="text-center space-y-4">
+              <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mx-auto hover-lift">
+                <Heart className="h-6 w-6 text-pink-600" />
+              </div>
+              <h3 className="text-xl font-semibold">Kids Love It</h3>
+              <p className="text-muted-foreground">
+                Designed with kids in mind - comfortable, fun, and perfect for all their adventures.
+              </p>
+            </AnimatedSection>
+          </div>
+        </div>
+      </AnimatedSection>
+
+      <Footer />
+    </div>
+  )
+}
