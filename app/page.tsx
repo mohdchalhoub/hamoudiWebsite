@@ -6,13 +6,21 @@ import { Badge } from "@/components/ui/badge"
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { AnimatedSection } from "@/components/animated-section"
-import { mockProducts } from "@/lib/mock-data"
+import { getProducts } from "@/lib/database"
 import { ArrowRight, Shield, Truck, Heart } from "lucide-react"
 
-export default function HomePage() {
-  const featuredProducts = mockProducts.filter((product) => product.featured)
-  const boysProducts = mockProducts.filter((product) => product.category === "boys").slice(0, 2)
-  const girlsProducts = mockProducts.filter((product) => product.category === "girls").slice(0, 2)
+// Force dynamic rendering and disable caching
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
+
+export default async function HomePage() {
+  // Fetch products from database
+  const [featuredProducts, boysProducts, girlsProducts] = await Promise.all([
+    getProducts({ featured: true, active: true, limit: 4 }),
+    getProducts({ gender: 'boys', active: true, limit: 2 }),
+    getProducts({ gender: 'girls', active: true, limit: 2 })
+  ])
+  
 
   return (
     <div className="min-h-screen">
@@ -67,11 +75,11 @@ export default function HomePage() {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-6xl mx-auto">
             {featuredProducts.slice(0, 4).map((product, index) => (
               <AnimatedSection key={product.id} animation="scale-in" delay={(index + 1) * 100}>
-                <Link href={`/products/${product.id}`}>
+                <Link href={`/products/${product.slug}`}>
                   <Card className="overflow-hidden hover-lift cursor-pointer">
                     <div className="relative aspect-square">
                       <Image
-                        src={product.images[0] || "/placeholder.svg"}
+                        src={product.image_url || "/placeholder.svg"}
                         alt={product.name}
                         fill
                         className="object-cover"
@@ -98,7 +106,7 @@ export default function HomePage() {
               <div className="text-center lg:text-left">
                 <h2 className="text-3xl font-bold text-blue-600 mb-4">Boys Collection</h2>
                 <p className="text-muted-foreground mb-6">
-                  Cool and comfortable clothes for adventurous boys. From space explorers to superheroes!
+                  Cool and comfortable clothes for adventurous boys!
                 </p>
                 <Link href="/boys">
                   <Button className="bg-blue-600 hover:bg-blue-700 hover-glow btn-press">
@@ -110,20 +118,22 @@ export default function HomePage() {
               <div className="grid grid-cols-2 gap-4">
                 {boysProducts.map((product, index) => (
                   <AnimatedSection key={product.id} animation="scale-in" delay={(index + 1) * 100}>
-                    <Card className="overflow-hidden hover-lift">
-                      <div className="relative aspect-square">
-                        <Image
-                          src={product.images[0] || "/placeholder.svg"}
-                          alt={product.name}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      <CardContent className="p-3 md:p-4">
-                        <h3 className="font-semibold text-sm md:text-base mb-1 md:mb-2 truncate">{product.name}</h3>
-                        <p className="text-blue-600 font-bold text-sm md:text-base">${product.price}</p>
-                      </CardContent>
-                    </Card>
+                    <Link href={`/products/${product.slug}`}>
+                      <Card className="overflow-hidden hover-lift cursor-pointer">
+                        <div className="relative aspect-square">
+                          <Image
+                            src={product.image_url || "/placeholder.svg"}
+                            alt={product.name}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <CardContent className="p-3 md:p-4">
+                          <h3 className="font-semibold text-sm md:text-base mb-1 md:mb-2 truncate">{product.name}</h3>
+                          <p className="text-blue-600 font-bold text-sm md:text-base">${product.price}</p>
+                        </CardContent>
+                      </Card>
+                    </Link>
                   </AnimatedSection>
                 ))}
               </div>
@@ -134,7 +144,7 @@ export default function HomePage() {
               <div className="text-center lg:text-left">
                 <h2 className="text-3xl font-bold text-pink-600 mb-4">Girls Collection</h2>
                 <p className="text-muted-foreground mb-6">
-                  Beautiful and stylish clothes for amazing girls. From unicorns to princesses!
+                  Beautiful and stylish clothes for amazing girls!
                 </p>
                 <Link href="/girls">
                   <Button className="bg-pink-600 hover:bg-pink-700 hover-glow-pink btn-press">
@@ -146,20 +156,22 @@ export default function HomePage() {
               <div className="grid grid-cols-2 gap-4">
                 {girlsProducts.map((product, index) => (
                   <AnimatedSection key={product.id} animation="scale-in" delay={(index + 1) * 100}>
-                    <Card className="overflow-hidden hover-lift">
-                      <div className="relative aspect-square">
-                        <Image
-                          src={product.images[0] || "/placeholder.svg"}
-                          alt={product.name}
-                          fill
-                          className="object-cover"
-                        />
-                      </div>
-                      <CardContent className="p-3 md:p-4">
-                        <h3 className="font-semibold text-sm md:text-base mb-1 md:mb-2 truncate">{product.name}</h3>
-                        <p className="text-pink-600 font-bold text-sm md:text-base">${product.price}</p>
-                      </CardContent>
-                    </Card>
+                    <Link href={`/products/${product.slug}`}>
+                      <Card className="overflow-hidden hover-lift cursor-pointer">
+                        <div className="relative aspect-square">
+                          <Image
+                            src={product.image_url || "/placeholder.svg"}
+                            alt={product.name}
+                            fill
+                            className="object-cover"
+                          />
+                        </div>
+                        <CardContent className="p-3 md:p-4">
+                          <h3 className="font-semibold text-sm md:text-base mb-1 md:mb-2 truncate">{product.name}</h3>
+                          <p className="text-pink-600 font-bold text-sm md:text-base">${product.price}</p>
+                        </CardContent>
+                      </Card>
+                    </Link>
                   </AnimatedSection>
                 ))}
               </div>

@@ -2,17 +2,19 @@
 
 import type React from "react"
 import { createContext, useContext, useEffect, useState } from "react"
-import type { Product } from "@/lib/types"
-import { mockProducts } from "@/lib/mock-data"
+import type { ProductWithDetails } from "@/lib/database.types"
+import { getProducts, createProduct, updateProduct, deleteProduct } from "@/lib/database"
 
 interface AdminContextType {
   isAuthenticated: boolean
   login: (username: string, password: string) => boolean
   logout: () => void
-  products: Product[]
-  addProduct: (product: Omit<Product, "id">) => void
-  updateProduct: (id: string, product: Partial<Product>) => void
-  deleteProduct: (id: string) => void
+  products: ProductWithDetails[]
+  loading: boolean
+  addProduct: (product: any) => Promise<void>
+  updateProduct: (id: string, product: any) => Promise<void>
+  deleteProduct: (id: string) => Promise<void>
+  refreshProducts: () => Promise<void>
 }
 
 const AdminContext = createContext<AdminContextType | undefined>(undefined)
@@ -25,7 +27,8 @@ const ADMIN_CREDENTIALS = {
 
 export function AdminProvider({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
-  const [products, setProducts] = useState<Product[]>([])
+  const [products, setProducts] = useState<ProductWithDetails[]>([])
+  const [loading, setLoading] = useState(false)
 
   useEffect(() => {
     // Check if admin is already logged in
@@ -33,15 +36,27 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     if (adminAuth === "true") {
       setIsAuthenticated(true)
     }
-
-    const savedProducts = localStorage.getItem("admin-products")
-    if (savedProducts) {
-      setProducts(JSON.parse(savedProducts))
-    } else {
-      setProducts(mockProducts)
-      localStorage.setItem("admin-products", JSON.stringify(mockProducts))
-    }
   }, [])
+
+  const refreshProducts = async () => {
+    if (!isAuthenticated) return
+    
+    setLoading(true)
+    try {
+      const fetchedProducts = await getProducts({ active: true })
+      setProducts(fetchedProducts)
+    } catch (error) {
+      console.error('Failed to fetch products:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      refreshProducts()
+    }
+  }, [isAuthenticated])
 
   const login = (username: string, password: string): boolean => {
     if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
@@ -55,28 +70,37 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   const logout = () => {
     setIsAuthenticated(false)
     localStorage.removeItem("admin-auth")
+    setProducts([])
   }
 
-  const addProduct = (productData: Omit<Product, "id">) => {
-    const newProduct: Product = {
-      ...productData,
-      id: Date.now().toString(), // Simple ID generation
+  const addProduct = async (productData: any) => {
+    try {
+      await createProduct(productData)
+      await refreshProducts()
+    } catch (error) {
+      console.error('Failed to add product:', error)
+      throw error
     }
-    const updatedProducts = [...products, newProduct]
-    setProducts(updatedProducts)
-    localStorage.setItem("admin-products", JSON.stringify(updatedProducts))
   }
 
-  const updateProduct = (id: string, productData: Partial<Product>) => {
-    const updatedProducts = products.map((product) => (product.id === id ? { ...product, ...productData } : product))
-    setProducts(updatedProducts)
-    localStorage.setItem("admin-products", JSON.stringify(updatedProducts))
+  const updateProductHandler = async (id: string, productData: any) => {
+    try {
+      await updateProduct(id, productData)
+      await refreshProducts()
+    } catch (error) {
+      console.error('Failed to update product:', error)
+      throw error
+    }
   }
 
-  const deleteProduct = (id: string) => {
-    const updatedProducts = products.filter((product) => product.id !== id)
-    setProducts(updatedProducts)
-    localStorage.setItem("admin-products", JSON.stringify(updatedProducts))
+  const deleteProductHandler = async (id: string) => {
+    try {
+      await deleteProduct(id)
+      await refreshProducts()
+    } catch (error) {
+      console.error('Failed to delete product:', error)
+      throw error
+    }
   }
 
   return (
@@ -86,9 +110,11 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         login,
         logout,
         products,
+        loading,
         addProduct,
-        updateProduct,
-        deleteProduct,
+        updateProduct: updateProductHandler,
+        deleteProduct: deleteProductHandler,
+        refreshProducts,
       }}
     >
       {children}

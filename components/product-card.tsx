@@ -4,7 +4,7 @@ import type React from "react"
 
 import Image from "next/image"
 import Link from "next/link"
-import type { Product } from "@/lib/types"
+import type { ProductWithDetails } from "@/lib/database.types"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -13,34 +13,44 @@ import { useCart } from "@/contexts/cart-context"
 import { useState } from "react"
 
 interface ProductCardProps {
-  product: Product
+  product: ProductWithDetails
 }
 
 export function ProductCard({ product }: ProductCardProps) {
   const { addItem } = useCart()
-  const [selectedSize, setSelectedSize] = useState(product.sizes[0])
-  const [selectedColor, setSelectedColor] = useState(product.colors[0])
+  
+  // Get available sizes and colors from variants
+  const availableSizes = [...new Set(product.variants?.map(v => v.size) || [])]
+  const availableColors = [...new Set(product.variants?.map(v => v.color) || [])]
+  
+  const [selectedSize, setSelectedSize] = useState(availableSizes[0] || '')
+  const [selectedColor, setSelectedColor] = useState(availableColors[0] || '')
 
-  const handleAddToCart = (e: React.MouseEvent) => {
+  const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault()
-    addItem(product, selectedSize, selectedColor)
+    if (selectedSize && selectedColor) {
+      await addItem(product, selectedSize, selectedColor)
+    }
   }
 
-  const discountPercentage = product.originalPrice
-    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+  const discountPercentage = product.compare_at_price
+    ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100)
     : 0
+
+  // Check if product is in stock
+  const isInStock = product.variants?.some(v => v.stock_quantity > 0) || false
 
   return (
     <Link href={`/products/${product.id}`}>
       <Card className="group overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 hover-lift">
         <div className="relative aspect-square overflow-hidden">
           <Image
-            src={product.images[0] || "/placeholder.svg"}
+            src={product.image_url || "/placeholder.svg"}
             alt={product.name}
             fill
             className="object-cover transition-transform duration-700 group-hover:scale-110"
           />
-          {product.featured && (
+          {product.is_featured && (
             <Badge className="absolute top-2 left-2 bg-yellow-500 text-yellow-900 animate-float">Featured</Badge>
           )}
           {discountPercentage > 0 && (
@@ -69,47 +79,33 @@ export function ProductCard({ product }: ProductCardProps) {
           <div className="flex items-center justify-between mb-3">
             <div className="flex items-center gap-2">
               <span className="font-bold text-lg text-primary">${product.price}</span>
-              {product.originalPrice && (
-                <span className="text-sm text-muted-foreground line-through">${product.originalPrice}</span>
+              {product.compare_at_price && (
+                <span className="text-sm text-muted-foreground line-through">${product.compare_at_price}</span>
               )}
             </div>
             <div className="flex gap-1">
-              {product.colors.slice(0, 3).map((color, index) => (
-                <div
-                  key={index}
-                  className={`w-4 h-4 rounded-full border-2 border-white shadow-sm transition-transform duration-200 hover:scale-125 ${
-                    color.toLowerCase().includes("blue")
-                      ? "bg-blue-500"
-                      : color.toLowerCase().includes("pink")
-                        ? "bg-pink-500"
-                        : color.toLowerCase().includes("purple")
-                          ? "bg-purple-500"
-                          : color.toLowerCase().includes("red")
-                            ? "bg-red-500"
-                            : color.toLowerCase().includes("green")
-                              ? "bg-green-500"
-                              : color.toLowerCase().includes("yellow")
-                                ? "bg-yellow-500"
-                                : color.toLowerCase().includes("black")
-                                  ? "bg-black"
-                                  : color.toLowerCase().includes("white")
-                                    ? "bg-white border-gray-300"
-                                    : "bg-gray-400"
-                  }`}
-                />
-              ))}
-              {product.colors.length > 3 && (
-                <span className="text-xs text-muted-foreground">+{product.colors.length - 3}</span>
+              {availableColors.slice(0, 3).map((color, index) => {
+                const variant = product.variants?.find(v => v.color === color)
+                return (
+                  <div
+                    key={index}
+                    className="w-4 h-4 rounded-full border-2 border-white shadow-sm transition-transform duration-200 hover:scale-125"
+                    style={{ backgroundColor: variant?.color_hex || '#gray' }}
+                  />
+                )
+              })}
+              {availableColors.length > 3 && (
+                <span className="text-xs text-muted-foreground">+{availableColors.length - 3}</span>
               )}
             </div>
           </div>
           <Button
             className="w-full btn-press transition-all duration-200"
             onClick={handleAddToCart}
-            disabled={!product.inStock}
+            disabled={!isInStock}
           >
             <ShoppingCart className="h-4 w-4 mr-2" />
-            {product.inStock ? "Add to Cart" : "Out of Stock"}
+            {isInStock ? "Add to Cart" : "Out of Stock"}
           </Button>
         </CardContent>
       </Card>

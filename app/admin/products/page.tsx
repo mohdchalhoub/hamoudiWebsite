@@ -1,58 +1,20 @@
-"use client"
-
-import { useState } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { useAdmin } from "@/contexts/admin-context"
-import { ProductForm } from "@/components/product-form"
-import type { Product } from "@/lib/types"
-import { Plus, Search, Edit, Trash2, Eye, Package } from "lucide-react"
+import { getProducts } from "@/lib/database"
+import { Plus, Edit, Eye, Package } from "lucide-react"
+import Link from "next/link"
+import { AdminProductActions } from "@/components/admin-product-actions"
 
-export default function AdminProductsPage() {
-  const { products, addProduct, updateProduct, deleteProduct } = useAdmin()
-  const [searchTerm, setSearchTerm] = useState("")
-  const [showForm, setShowForm] = useState(false)
-  const [editingProduct, setEditingProduct] = useState<Product | null>(null)
+// Force dynamic rendering and disable caching
+export const dynamic = 'force-dynamic'
+export const revalidate = 0
 
-  const filteredProducts = products.filter((product) => product.name.toLowerCase().includes(searchTerm.toLowerCase()))
-
-  const handleAddProduct = () => {
-    setEditingProduct(null)
-    setShowForm(true)
-  }
-
-  const handleEditProduct = (product: Product) => {
-    setEditingProduct(product)
-    setShowForm(true)
-  }
-
-  const handleDeleteProduct = (id: string) => {
-    if (confirm("Are you sure you want to delete this product?")) {
-      deleteProduct(id)
-    }
-  }
-
-  const handleFormSubmit = (productData: Omit<Product, "id">) => {
-    if (editingProduct) {
-      updateProduct(editingProduct.id, productData)
-    } else {
-      addProduct(productData)
-    }
-    setShowForm(false)
-    setEditingProduct(null)
-  }
-
-  const handleFormCancel = () => {
-    setShowForm(false)
-    setEditingProduct(null)
-  }
-
-  if (showForm) {
-    return <ProductForm product={editingProduct || undefined} onSubmit={handleFormSubmit} onCancel={handleFormCancel} />
-  }
+export default async function AdminProductsPage() {
+  // Fetch all products from database
+  const products = await getProducts({ active: true })
+  
 
   return (
     <div className="space-y-6">
@@ -61,38 +23,58 @@ export default function AdminProductsPage() {
           <h1 className="text-3xl font-bold">Products</h1>
           <p className="text-muted-foreground">Manage your product catalog</p>
         </div>
-        <Button onClick={handleAddProduct}>
-          <Plus className="h-4 w-4 mr-2" />
-          Add Product
+        <Button asChild>
+          <Link href="/admin/products/new">
+            <Plus className="h-4 w-4 mr-2" />
+            Add Product
+          </Link>
         </Button>
       </div>
 
-      {/* Search and Filters */}
+      {/* Products Summary */}
       <Card>
         <CardContent className="p-6">
-          <div className="flex items-center space-x-4">
-            <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-              <Input
-                placeholder="Search products..."
-                value={searchTerm}
-                onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
-              />
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-semibold">Product Overview</h2>
+              <p className="text-sm text-muted-foreground">
+                {products.length} product{products.length !== 1 ? 's' : ''} in your catalog
+              </p>
             </div>
-            <Button variant="outline">Filter</Button>
+            <div className="flex items-center space-x-4 text-sm text-muted-foreground">
+              <span>Active: {products.filter(p => p.is_active).length}</span>
+              <span>Featured: {products.filter(p => p.is_featured).length}</span>
+            </div>
           </div>
         </CardContent>
       </Card>
 
       {/* Products Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {filteredProducts.map((product) => (
+        {products.length === 0 ? (
+          <div className="col-span-full text-center py-12">
+            <Package className="h-12 w-12 mx-auto text-muted-foreground mb-4" />
+            <h3 className="text-lg font-semibold mb-2">No products in your catalog</h3>
+            <p className="text-muted-foreground mb-4">Start building your product catalog by adding your first product.</p>
+            <Button asChild>
+              <Link href="/admin/products/new">
+                <Plus className="h-4 w-4 mr-2" />
+                Add Your First Product
+              </Link>
+            </Button>
+          </div>
+        ) : (
+          products.map((product) => (
           <Card key={product.id}>
             <CardHeader className="p-4">
               <div className="relative aspect-square rounded-lg overflow-hidden mb-4">
-                <Image src={product.images[0] || "/placeholder.svg"} alt={product.name} fill className="object-cover" />
-                {product.featured && (
+                <Image 
+                  src={product.image_url || "/placeholder.svg"} 
+                  alt={product.name} 
+                  fill 
+                  className="object-cover" 
+                />
+                {product.is_featured && (
                   <Badge className="absolute top-2 left-2 bg-yellow-500 text-yellow-900">Featured</Badge>
                 )}
               </div>
@@ -104,45 +86,49 @@ export default function AdminProductsPage() {
                 <div className="flex items-center justify-between">
                   <div>
                     <span className="text-lg font-bold text-primary">${product.price}</span>
-                    {product.originalPrice && (
-                      <span className="text-sm text-muted-foreground line-through ml-2">${product.originalPrice}</span>
+                    {product.compare_at_price && (
+                      <span className="text-sm text-muted-foreground line-through ml-2">${product.compare_at_price}</span>
                     )}
                   </div>
-                  <Badge variant={product.inStock ? "default" : "destructive"}>
-                    {product.inStock ? "In Stock" : "Out of Stock"}
+                  <Badge variant={product.is_active ? "default" : "destructive"}>
+                    {product.is_active ? "Active" : "Inactive"}
                   </Badge>
                 </div>
                 <div className="flex items-center justify-between">
                   <div className="text-sm text-muted-foreground">
-                    Category: <span className="capitalize">{product.category}</span>
+                    <span className="capitalize">{product.category?.name || 'Uncategorized'}</span>
+                    {product.gender && (
+                      <span className="ml-2 px-2 py-1 bg-gray-100 rounded text-xs">
+                        {product.gender}
+                      </span>
+                    )}
                   </div>
                   <div className="flex space-x-1">
-                    <Button variant="ghost" size="icon">
-                      <Eye className="h-4 w-4" />
+                    <Button variant="ghost" size="icon" asChild>
+                      <Link href={`/products/${product.slug}`}>
+                        <Eye className="h-4 w-4" />
+                      </Link>
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={() => handleEditProduct(product)}>
-                      <Edit className="h-4 w-4" />
+                    <Button variant="ghost" size="icon" asChild>
+                      <Link href={`/admin/products/${product.id}/edit`}>
+                        <Edit className="h-4 w-4" />
+                      </Link>
                     </Button>
-                    <Button variant="ghost" size="icon" onClick={() => handleDeleteProduct(product.id)}>
-                      <Trash2 className="h-4 w-4" />
-                    </Button>
+                    <AdminProductActions productId={product.id} />
                   </div>
                 </div>
+                {product.variants && product.variants.length > 0 && (
+                  <div className="text-xs text-muted-foreground">
+                    {product.variants.length} variant{product.variants.length !== 1 ? 's' : ''} • 
+                    Stock: {product.variants.reduce((sum, v) => sum + (v.stock_quantity || 0), 0)} units
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
-        ))}
+          ))
+        )}
       </div>
-
-      {filteredProducts.length === 0 && (
-        <Card>
-          <CardContent className="p-12 text-center">
-            <Package className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-            <h3 className="text-lg font-semibold mb-2">No products found</h3>
-            <p className="text-muted-foreground">Try adjusting your search terms or add a new product.</p>
-          </CardContent>
-        </Card>
-      )}
     </div>
   )
 }

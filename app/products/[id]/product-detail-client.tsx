@@ -1,24 +1,35 @@
 "use client"
 
 import { useState } from "react"
-import type { Product } from "@/lib/types"
+import type { ProductWithDetails } from "@/lib/database.types"
 import { Button } from "@/components/ui/button"
 import { useCart } from "@/contexts/cart-context"
 import { ShoppingCart, Heart, Minus, Plus } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 
 interface ProductDetailClientProps {
-  product: Product
+  product: ProductWithDetails
 }
 
 export function ProductDetailClient({ product }: ProductDetailClientProps) {
   const { addItem } = useCart()
-  const [selectedSize, setSelectedSize] = useState(product.sizes[0])
-  const [selectedColor, setSelectedColor] = useState(product.colors[0])
+  
+  // Get unique sizes and colors from variants
+  const sizes = [...new Set(product.variants?.map(v => v.size) || [])]
+  const colors = [...new Set(product.variants?.map(v => v.color) || [])]
+  
+  const [selectedSize, setSelectedSize] = useState(sizes[0] || '')
+  const [selectedColor, setSelectedColor] = useState(colors[0] || '')
   const [quantity, setQuantity] = useState(1)
 
+  // Find the selected variant
+  const selectedVariant = product.variants?.find(v => v.size === selectedSize && v.color === selectedColor)
+  const isInStock = selectedVariant ? selectedVariant.stock_quantity > 0 : false
+
   const handleAddToCart = () => {
-    addItem(product, selectedSize, selectedColor, quantity)
+    if (selectedVariant) {
+      addItem(product, selectedSize, selectedColor, quantity)
+    }
   }
 
   return (
@@ -27,7 +38,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       <div>
         <h3 className="font-semibold mb-3">Select Size</h3>
         <div className="flex flex-wrap gap-2">
-          {product.sizes.map((size) => (
+          {sizes.map((size) => (
             <Button
               key={size}
               variant={selectedSize === size ? "default" : "outline"}
@@ -44,38 +55,24 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       <div>
         <h3 className="font-semibold mb-3">Select Color</h3>
         <div className="flex flex-wrap gap-3">
-          {product.colors.map((color) => (
-            <button
-              key={color}
-              onClick={() => setSelectedColor(color)}
-              className={`flex items-center gap-2 p-2 rounded-lg border-2 transition-colors ${
-                selectedColor === color ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
-              }`}
-            >
-              <div
-                className={`w-6 h-6 rounded-full border-2 border-white shadow-sm ${
-                  color.toLowerCase().includes("blue")
-                    ? "bg-blue-500"
-                    : color.toLowerCase().includes("pink")
-                      ? "bg-pink-500"
-                      : color.toLowerCase().includes("purple")
-                        ? "bg-purple-500"
-                        : color.toLowerCase().includes("red")
-                          ? "bg-red-500"
-                          : color.toLowerCase().includes("green")
-                            ? "bg-green-500"
-                            : color.toLowerCase().includes("yellow")
-                              ? "bg-yellow-500"
-                              : color.toLowerCase().includes("black")
-                                ? "bg-black"
-                                : color.toLowerCase().includes("white")
-                                  ? "bg-white border-gray-300"
-                                  : "bg-gray-400"
+          {colors.map((color) => {
+            const variant = product.variants?.find(v => v.color === color)
+            return (
+              <button
+                key={color}
+                onClick={() => setSelectedColor(color)}
+                className={`flex items-center gap-2 p-2 rounded-lg border-2 transition-colors ${
+                  selectedColor === color ? "border-primary bg-primary/10" : "border-border hover:border-primary/50"
                 }`}
-              />
-              <span className="text-sm">{color}</span>
-            </button>
-          ))}
+              >
+                <div
+                  className="w-6 h-6 rounded-full border-2 border-white shadow-sm"
+                  style={{ backgroundColor: variant?.color_hex || '#6B7280' }}
+                />
+                <span className="text-sm">{color}</span>
+              </button>
+            )
+          })}
         </div>
       </div>
 
@@ -100,9 +97,9 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
 
       {/* Stock Status */}
       <div>
-        {product.inStock ? (
+        {isInStock ? (
           <Badge variant="secondary" className="bg-green-100 text-green-800">
-            In Stock
+            In Stock ({selectedVariant?.stock_quantity} available)
           </Badge>
         ) : (
           <Badge variant="destructive">Out of Stock</Badge>
@@ -111,7 +108,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
 
       {/* Action Buttons */}
       <div className="flex gap-4">
-        <Button className="flex-1" size="lg" onClick={handleAddToCart} disabled={!product.inStock}>
+        <Button className="flex-1" size="lg" onClick={handleAddToCart} disabled={!isInStock}>
           <ShoppingCart className="h-5 w-5 mr-2" />
           Add to Cart
         </Button>

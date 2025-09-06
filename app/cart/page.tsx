@@ -64,7 +64,7 @@ export default function CartPage() {
                   <div className="flex gap-4">
                     <div className="relative w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
                       <Image
-                        src={item.product.images[0] || "/placeholder.svg"}
+                        src={item.product.image_url || "/placeholder.svg"}
                         alt={item.product.name}
                         fill
                         className="object-cover"

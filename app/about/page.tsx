@@ -49,39 +49,31 @@ export default function AboutPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-4">
-                <div className="relative aspect-square rounded-lg overflow-hidden">
-                  <Image
-                    src="/boys-space-explorer-t-shirt.png"
-                    alt="Happy kids wearing our clothes"
-                    fill
-                    className="object-cover"
-                  />
+                <div className="relative aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
+                  <div className="text-center text-blue-600">
+                    <div className="text-4xl mb-2">👕</div>
+                    <div className="text-sm font-medium">Boys Collection</div>
+                  </div>
                 </div>
-                <div className="relative aspect-square rounded-lg overflow-hidden">
-                  <Image
-                    src="/girls-butterfly-skirt-pink-purple.png"
-                    alt="Quality clothing details"
-                    fill
-                    className="object-cover"
-                  />
+                <div className="relative aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-pink-100 to-pink-200 flex items-center justify-center">
+                  <div className="text-center text-pink-600">
+                    <div className="text-4xl mb-2">👗</div>
+                    <div className="text-sm font-medium">Girls Collection</div>
+                  </div>
                 </div>
               </div>
               <div className="space-y-4 mt-8">
-                <div className="relative aspect-square rounded-lg overflow-hidden">
-                  <Image
-                    src="/girls-unicorn-dress-rainbow-colors.png"
-                    alt="Kids playing and having fun"
-                    fill
-                    className="object-cover"
-                  />
+                <div className="relative aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center">
+                  <div className="text-center text-purple-600">
+                    <div className="text-4xl mb-2">✨</div>
+                    <div className="text-sm font-medium">Special Occasions</div>
+                  </div>
                 </div>
-                <div className="relative aspect-square rounded-lg overflow-hidden">
-                  <Image
-                    src="/boys-superhero-hoodie-blue.png"
-                    alt="Sustainable materials"
-                    fill
-                    className="object-cover"
-                  />
+                <div className="relative aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center">
+                  <div className="text-center text-green-600">
+                    <div className="text-4xl mb-2">🌟</div>
+                    <div className="text-sm font-medium">Everyday Comfort</div>
+                  </div>
                 </div>
               </div>
             </div>

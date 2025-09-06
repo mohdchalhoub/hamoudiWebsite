@@ -7,34 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { AdminOrderActions } from "@/components/admin-order-actions"
 import { ArrowLeft, User, MapPin, Phone, Mail } from "lucide-react"
-
-// Mock order data - in a real app, this would fetch from database
-const mockOrder = {
-  id: "order-1234567890",
-  items: [
-    {
-      product: {
-        id: "1",
-        name: "Space Explorer T-Shirt",
-        price: 25.99,
-        images: ["/boys-space-explorer-t-shirt.png"],
-      },
-      quantity: 2,
-      selectedSize: "M",
-      selectedColor: "Navy Blue",
-    },
-  ],
-  total: 59.97,
-  customerInfo: {
-    name: "John Smith",
-    email: "john@example.com",
-    phone: "+1 (555) 123-4567",
-    address: "123 Main St, Anytown, ST 12345",
-    paymentMethod: "email" as const,
-  },
-  status: "pending" as const,
-  createdAt: new Date("2024-01-15T10:30:00Z"),
-}
+import { getOrder } from "@/lib/database"
 
 interface OrderDetailPageProps {
   params: {
@@ -42,9 +15,9 @@ interface OrderDetailPageProps {
   }
 }
 
-export default function OrderDetailPage({ params }: OrderDetailPageProps) {
-  // In a real app, fetch order by ID
-  const order = mockOrder
+export default async function OrderDetailPage({ params }: OrderDetailPageProps) {
+  // Fetch order from database
+  const order = await getOrder(params.id)
 
   if (!order) {
     notFound()
@@ -77,7 +50,7 @@ export default function OrderDetailPage({ params }: OrderDetailPageProps) {
                 <div key={index} className="flex gap-4 p-4 border rounded-lg">
                   <div className="relative w-20 h-20 rounded-md overflow-hidden flex-shrink-0">
                     <Image
-                      src={item.product.images[0] || "/placeholder.svg"}
+                      src={item.product.image_url || "/placeholder.svg"}
                       alt={item.product.name}
                       fill
                       className="object-cover"

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Search, Mail, Phone, MapPin, Package } from "lucide-react"
-import type { Order } from "@/lib/types"
+import { getAllOrders } from "@/lib/database"
 
 interface Customer {
   id: string
@@ -23,42 +23,50 @@ export default function CustomersPage() {
   const [customers, setCustomers] = useState<Customer[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [filteredCustomers, setFilteredCustomers] = useState<Customer[]>([])
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Get orders from localStorage and extract customer data
-    const savedOrders = localStorage.getItem("orders")
-    if (savedOrders) {
-      const orders: Order[] = JSON.parse(savedOrders)
+    const fetchCustomers = async () => {
+      try {
+        const orders = await getAllOrders()
+        
+        // Group orders by customer email to create customer profiles
+        const customerMap = new Map<string, Customer>()
 
-      // Group orders by customer email to create customer profiles
-      const customerMap = new Map<string, Customer>()
-
-      orders.forEach((order) => {
-        const existing = customerMap.get(order.customerInfo.email)
-        if (existing) {
-          existing.totalOrders += 1
-          existing.totalSpent += order.total
-          if (new Date(order.createdAt) > new Date(existing.lastOrderDate)) {
-            existing.lastOrderDate = order.createdAt
+        orders.forEach((order) => {
+          const existing = customerMap.get(order.email)
+          if (existing) {
+            existing.totalOrders += 1
+            existing.totalSpent += order.total_amount
+            if (new Date(order.created_at || '') > new Date(existing.lastOrderDate)) {
+              existing.lastOrderDate = order.created_at || ''
+            }
+          } else {
+            const shippingAddress = order.shipping_address as any
+            customerMap.set(order.email, {
+              id: order.email,
+              name: shippingAddress?.first_name + ' ' + shippingAddress?.last_name || order.email,
+              email: order.email,
+              phone: shippingAddress?.phone || 'N/A',
+              address: `${shippingAddress?.address_line_1 || ''}, ${shippingAddress?.city || ''}, ${shippingAddress?.state || ''}`,
+              totalOrders: 1,
+              totalSpent: order.total_amount,
+              lastOrderDate: order.created_at || '',
+            })
           }
-        } else {
-          customerMap.set(order.customerInfo.email, {
-            id: order.customerInfo.email,
-            name: order.customerInfo.name,
-            email: order.customerInfo.email,
-            phone: order.customerInfo.phone,
-            address: order.customerInfo.address,
-            totalOrders: 1,
-            totalSpent: order.total,
-            lastOrderDate: order.createdAt,
-          })
-        }
-      })
+        })
 
-      const customerList = Array.from(customerMap.values())
-      setCustomers(customerList)
-      setFilteredCustomers(customerList)
+        const customerList = Array.from(customerMap.values())
+        setCustomers(customerList)
+        setFilteredCustomers(customerList)
+      } catch (error) {
+        console.error('Failed to fetch customers:', error)
+      } finally {
+        setLoading(false)
+      }
     }
+
+    fetchCustomers()
   }, [])
 
   useEffect(() => {
@@ -90,8 +98,16 @@ export default function CustomersPage() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {filteredCustomers.map((customer) => (
+      {loading ? (
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading customers...</p>
+          </div>
+        </div>
+      ) : (
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {filteredCustomers.map((customer) => (
           <Card key={customer.id} className="hover:shadow-md transition-shadow">
             <CardHeader>
               <CardTitle className="flex items-center justify-between">
@@ -125,10 +141,11 @@ export default function CustomersPage() {
               </div>
             </CardContent>
           </Card>
-        ))}
-      </div>
+          ))}
+        </div>
+      )}
 
-      {filteredCustomers.length === 0 && (
+      {!loading && filteredCustomers.length === 0 && (
         <Card>
           <CardContent className="flex flex-col items-center justify-center py-12">
             <Package className="h-12 w-12 text-muted-foreground mb-4" />

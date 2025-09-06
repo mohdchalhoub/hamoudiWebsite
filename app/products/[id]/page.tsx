@@ -1,9 +1,9 @@
 import { notFound } from "next/navigation"
 import Image from "next/image"
-import { mockProducts } from "@/lib/mock-data"
+import { getProduct, getProducts } from "@/lib/database"
 import { ProductDetailClient } from "./product-detail-client"
 import { Badge } from "@/components/ui/badge"
-import { ProductGrid } from "@/components/product-grid"
+import { ProductGridClient } from "@/components/product-grid-client"
 
 interface ProductPageProps {
   params: {
@@ -11,18 +11,22 @@ interface ProductPageProps {
   }
 }
 
-export default function ProductPage({ params }: ProductPageProps) {
-  const product = mockProducts.find((p) => p.id === params.id)
+export default async function ProductPage({ params }: ProductPageProps) {
+  const product = await getProduct(params.id)
 
   if (!product) {
     notFound()
   }
 
   // Get related products from the same category
-  const relatedProducts = mockProducts.filter((p) => p.category === product.category && p.id !== product.id).slice(0, 4)
+  const relatedProducts = await getProducts({ 
+    category: product.category_id, 
+    active: true,
+    limit: 4 
+  }).then(products => products.filter(p => p.id !== product.id))
 
-  const discountPercentage = product.originalPrice
-    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+  const discountPercentage = product.compare_at_price
+    ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100)
     : 0
 
   return (
@@ -32,13 +36,13 @@ export default function ProductPage({ params }: ProductPageProps) {
         <div className="space-y-4">
           <div className="relative aspect-square overflow-hidden rounded-lg">
             <Image
-              src={product.images[0] || "/placeholder.svg"}
+              src={product.image_url || "/placeholder.svg"}
               alt={product.name}
               fill
               className="object-cover"
               priority
             />
-            {product.featured && (
+            {product.is_featured && (
               <Badge className="absolute top-4 left-4 bg-yellow-500 text-yellow-900">Featured</Badge>
             )}
             {discountPercentage > 0 && (
@@ -56,8 +60,8 @@ export default function ProductPage({ params }: ProductPageProps) {
 
           <div className="flex items-center gap-4">
             <span className="text-3xl font-bold text-primary">${product.price}</span>
-            {product.originalPrice && (
-              <span className="text-xl text-muted-foreground line-through">${product.originalPrice}</span>
+            {product.compare_at_price && (
+              <span className="text-xl text-muted-foreground line-through">${product.compare_at_price}</span>
             )}
             {discountPercentage > 0 && <Badge variant="destructive">Save {discountPercentage}%</Badge>}
           </div>
@@ -66,9 +70,9 @@ export default function ProductPage({ params }: ProductPageProps) {
             <div>
               <h3 className="font-semibold mb-2">Available Sizes</h3>
               <div className="flex flex-wrap gap-2">
-                {product.sizes.map((size) => (
-                  <Badge key={size} variant="outline" className="px-3 py-1">
-                    {size}
+                {product.variants?.map((variant) => (
+                  <Badge key={variant.id} variant="outline" className="px-3 py-1">
+                    {variant.size}
                   </Badge>
                 ))}
               </div>
@@ -77,30 +81,13 @@ export default function ProductPage({ params }: ProductPageProps) {
             <div>
               <h3 className="font-semibold mb-2">Available Colors</h3>
               <div className="flex flex-wrap gap-2">
-                {product.colors.map((color) => (
-                  <div key={color} className="flex items-center gap-2">
+                {product.variants?.map((variant) => (
+                  <div key={variant.id} className="flex items-center gap-2">
                     <div
-                      className={`w-6 h-6 rounded-full border-2 border-white shadow-sm ${
-                        color.toLowerCase().includes("blue")
-                          ? "bg-blue-500"
-                          : color.toLowerCase().includes("pink")
-                            ? "bg-pink-500"
-                            : color.toLowerCase().includes("purple")
-                              ? "bg-purple-500"
-                              : color.toLowerCase().includes("red")
-                                ? "bg-red-500"
-                                : color.toLowerCase().includes("green")
-                                  ? "bg-green-500"
-                                  : color.toLowerCase().includes("yellow")
-                                    ? "bg-yellow-500"
-                                    : color.toLowerCase().includes("black")
-                                      ? "bg-black"
-                                      : color.toLowerCase().includes("white")
-                                        ? "bg-white border-gray-300"
-                                        : "bg-gray-400"
-                      }`}
+                      className="w-6 h-6 rounded-full border-2 border-white shadow-sm"
+                      style={{ backgroundColor: variant.color_hex || '#6B7280' }}
                     />
-                    <span className="text-sm">{color}</span>
+                    <span className="text-sm">{variant.color}</span>
                   </div>
                 ))}
               </div>
@@ -115,7 +102,7 @@ export default function ProductPage({ params }: ProductPageProps) {
       {relatedProducts.length > 0 && (
         <div className="space-y-6">
           <h2 className="text-2xl font-bold text-center">You Might Also Like</h2>
-          <ProductGrid products={relatedProducts} />
+          <ProductGridClient products={relatedProducts} />
         </div>
       )}
     </div>

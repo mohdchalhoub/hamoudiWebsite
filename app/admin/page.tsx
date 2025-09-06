@@ -1,38 +1,25 @@
-"use client"
-
-import { useEffect, useState } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { orderStorage } from "@/lib/local-storage"
-import { mockProducts } from "@/lib/mock-data"
-import type { Order } from "@/lib/types"
+import { getProducts, getAllOrders } from "@/lib/database"
 import { Package, ShoppingCart, DollarSign, TrendingUp, Users, Eye } from "lucide-react"
 
-export default function AdminDashboard() {
-  const [orders, setOrders] = useState<Order[]>([])
-  const [stats, setStats] = useState({
-    totalProducts: 0,
-    totalOrders: 0,
-    totalRevenue: 0,
-    pendingOrders: 0,
-  })
+export default async function AdminDashboard() {
+  // Fetch data from database
+  const [products, orders] = await Promise.all([
+    getProducts({ active: true }),
+    getAllOrders()
+  ])
 
-  useEffect(() => {
-    const allOrders = orderStorage.get()
-    setOrders(allOrders)
-
-    const totalRevenue = allOrders.reduce((sum, order) => sum + order.total, 0)
-    const pendingOrders = allOrders.filter((order) => order.status === "pending").length
-
-    setStats({
-      totalProducts: mockProducts.length,
-      totalOrders: allOrders.length,
-      totalRevenue,
-      pendingOrders,
-    })
-  }, [])
-
+  const totalRevenue = orders.reduce((sum, order) => sum + order.total_amount, 0)
+  const pendingOrders = orders.filter((order) => order.status === "pending").length
   const recentOrders = orders.slice(0, 5)
+
+  const stats = {
+    totalProducts: products.length,
+    totalOrders: orders.length,
+    totalRevenue,
+    pendingOrders,
+  }
 
   return (
     <div className="space-y-6">
@@ -99,11 +86,11 @@ export default function AdminDashboard() {
                 {recentOrders.map((order) => (
                   <div key={order.id} className="flex items-center justify-between p-3 border rounded-lg">
                     <div>
-                      <p className="font-medium">{order.customerInfo.name}</p>
-                      <p className="text-sm text-muted-foreground">{order.id}</p>
+                      <p className="font-medium">{order.email}</p>
+                      <p className="text-sm text-muted-foreground">{order.order_number}</p>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold">${order.total.toFixed(2)}</p>
+                      <p className="font-semibold">${order.total_amount.toFixed(2)}</p>
                       <Badge
                         variant={
                           order.status === "pending"

@@ -4,7 +4,8 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { TrendingUp, TrendingDown, DollarSign, ShoppingCart, Users, Package } from "lucide-react"
-import type { Order, Product } from "@/lib/types"
+import { getAllOrders, getProducts } from "@/lib/database"
+import type { OrderWithItems, ProductWithDetails } from "@/lib/database.types"
 
 interface AnalyticsData {
   totalRevenue: number
@@ -13,8 +14,8 @@ interface AnalyticsData {
   averageOrderValue: number
   revenueGrowth: number
   ordersGrowth: number
-  topProducts: Array<{ product: Product; sales: number; revenue: number }>
-  recentOrders: Order[]
+  topProducts: Array<{ product: ProductWithDetails; sales: number; revenue: number }>
+  recentOrders: OrderWithItems[]
 }
 
 export default function AnalyticsPage() {
@@ -28,59 +29,66 @@ export default function AnalyticsPage() {
     topProducts: [],
     recentOrders: [],
   })
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    // Get data from localStorage
-    const savedOrders = localStorage.getItem("orders")
-    const savedProducts = localStorage.getItem("admin-products")
+    const fetchAnalytics = async () => {
+      try {
+        const [orders, products] = await Promise.all([
+          getAllOrders(),
+          getProducts({ active: true })
+        ])
 
-    if (savedOrders && savedProducts) {
-      const orders: Order[] = JSON.parse(savedOrders)
-      const products: Product[] = JSON.parse(savedProducts)
+        // Calculate analytics
+        const totalRevenue = orders.reduce((sum, order) => sum + order.total_amount, 0)
+        const totalOrders = orders.length
+        const uniqueCustomers = new Set(orders.map((order) => order.email)).size
+        const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0
 
-      // Calculate analytics
-      const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0)
-      const totalOrders = orders.length
-      const uniqueCustomers = new Set(orders.map((order) => order.customerInfo.email)).size
-      const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0
-
-      // Calculate product sales
-      const productSales = new Map<string, { sales: number; revenue: number }>()
-      orders.forEach((order) => {
-        order.items.forEach((item) => {
-          const existing = productSales.get(item.id) || { sales: 0, revenue: 0 }
-          existing.sales += item.quantity
-          existing.revenue += item.price * item.quantity
-          productSales.set(item.id, existing)
+        // Calculate product sales from order items
+        const productSales = new Map<string, { sales: number; revenue: number }>()
+        orders.forEach((order) => {
+          order.order_items?.forEach((item) => {
+            const existing = productSales.get(item.product_id || '') || { sales: 0, revenue: 0 }
+            existing.sales += item.quantity
+            existing.revenue += item.total_price
+            productSales.set(item.product_id || '', existing)
+          })
         })
-      })
 
-      // Get top products
-      const topProducts = Array.from(productSales.entries())
-        .map(([productId, data]) => ({
-          product: products.find((p) => p.id === productId)!,
-          sales: data.sales,
-          revenue: data.revenue,
-        }))
-        .filter((item) => item.product)
-        .sort((a, b) => b.revenue - a.revenue)
-        .slice(0, 5)
+        // Get top products
+        const topProducts = Array.from(productSales.entries())
+          .map(([productId, data]) => ({
+            product: products.find((p) => p.id === productId)!,
+            sales: data.sales,
+            revenue: data.revenue,
+          }))
+          .filter((item) => item.product)
+          .sort((a, b) => b.revenue - a.revenue)
+          .slice(0, 5)
 
-      // Mock growth calculations (in a real app, you'd compare with previous period)
-      const revenueGrowth = Math.random() * 20 - 5 // Random between -5% and 15%
-      const ordersGrowth = Math.random() * 25 - 10 // Random between -10% and 15%
+        // Calculate growth (simplified - in a real app, you'd compare with previous period)
+        const revenueGrowth = 0 // No growth data available yet
+        const ordersGrowth = 0 // No growth data available yet
 
-      setAnalytics({
-        totalRevenue,
-        totalOrders,
-        totalCustomers: uniqueCustomers,
-        averageOrderValue,
-        revenueGrowth,
-        ordersGrowth,
-        topProducts,
-        recentOrders: orders.slice(-5).reverse(),
-      })
+        setAnalytics({
+          totalRevenue,
+          totalOrders,
+          totalCustomers: uniqueCustomers,
+          averageOrderValue,
+          revenueGrowth,
+          ordersGrowth,
+          topProducts,
+          recentOrders: orders.slice(-5).reverse(),
+        })
+      } catch (error) {
+        console.error('Failed to fetch analytics:', error)
+      } finally {
+        setLoading(false)
+      }
     }
+
+    fetchAnalytics()
   }, [])
 
   const StatCard = ({
@@ -109,7 +117,7 @@ export default function AnalyticsPage() {
           {typeof value === "number" ? value.toLocaleString() : value}
           {suffix}
         </div>
-        {growth !== undefined && (
+        {growth !== undefined && growth !== 0 && (
           <div className="flex items-center text-xs text-muted-foreground">
             {growth >= 0 ? (
               <TrendingUp className="h-3 w-3 mr-1 text-green-500" />
@@ -120,9 +128,31 @@ export default function AnalyticsPage() {
             <span className="ml-1">from last month</span>
           </div>
         )}
+        {growth === 0 && (
+          <div className="text-xs text-muted-foreground">
+            No growth data available
+          </div>
+        )}
       </CardContent>
     </Card>
   )
+
+  if (loading) {
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-3xl font-bold">Analytics</h1>
+          <p className="text-muted-foreground">Track your store's performance and sales metrics</p>
+        </div>
+        <div className="flex items-center justify-center py-12">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+            <p className="text-muted-foreground">Loading analytics...</p>
+          </div>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6">
@@ -193,12 +223,12 @@ export default function AnalyticsPage() {
               {analytics.recentOrders.map((order) => (
                 <div key={order.id} className="flex items-center justify-between">
                   <div>
-                    <p className="font-medium">{order.customerInfo.name}</p>
-                    <p className="text-sm text-muted-foreground">{new Date(order.createdAt).toLocaleDateString()}</p>
+                    <p className="font-medium">{order.email}</p>
+                    <p className="text-sm text-muted-foreground">{new Date(order.created_at || '').toLocaleDateString()}</p>
                   </div>
                   <div className="text-right">
-                    <p className="font-medium">${order.total.toFixed(2)}</p>
-                    <Badge variant={order.status === "completed" ? "default" : "secondary"}>{order.status}</Badge>
+                    <p className="font-medium">${order.total_amount.toFixed(2)}</p>
+                    <Badge variant={order.status === "delivered" ? "default" : "secondary"}>{order.status}</Badge>
                   </div>
                 </div>
               ))}

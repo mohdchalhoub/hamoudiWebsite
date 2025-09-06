@@ -3,12 +3,12 @@
 import type { ProductWithDetails } from "@/lib/database.types"
 import { ProductCard } from "./product-card"
 
-interface ProductGridProps {
+interface ProductGridClientProps {
   products: ProductWithDetails[]
   title?: string
 }
 
-export function ProductGrid({ products, title }: ProductGridProps) {
+export function ProductGridClient({ products, title }: ProductGridClientProps) {
   if (products.length === 0) {
     return (
       <div className="text-center py-12">
