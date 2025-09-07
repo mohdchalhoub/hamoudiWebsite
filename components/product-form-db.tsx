@@ -320,9 +320,8 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
               </div>
 
               <div>
-                <Label htmlFor="quantity" className="text-xs font-medium text-text-primary">Quantity Available</Label>
+                <Label className="text-xs font-medium text-text-primary">Product Quantity</Label>
                 <Input
-                  id="quantity"
                   type="number"
                   min="0"
                   value={formData.quantity}
@@ -330,11 +329,11 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
                     const value = Number.parseInt(e.target.value) || 0
                     setFormData((prev) => ({ ...prev, quantity: value }))
                   }}
-                  placeholder="Enter total quantity available"
+                  placeholder="Base quantity (optional)"
                   className="h-8 text-xs"
                 />
                 <p className="text-xs text-text-muted mt-0.5">
-                  Total number of units available for this product
+                  Base quantity for products without variants (optional)
                 </p>
               </div>
 
@@ -604,7 +603,7 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
               
               <div className="space-y-2">
                 {formData.variants.map((variant, index) => (
-                  <div key={index} className="flex items-center gap-2 p-3 border rounded-lg bg-gray-50">
+                  <div key={index} className="flex items-center gap-2 p-3 border rounded-lg bg-background-subtle">
                     <div className="flex items-center gap-2">
                       <Badge variant="secondary" className="font-semibold">
                         {variant.size || variant.age_range}
@@ -615,11 +614,45 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
                         style={{ backgroundColor: variant.color_hex }}
                       />
                     </div>
-                    <div className="flex items-center gap-3 text-sm text-gray-600">
-                      <span>Stock: {variant.stock_quantity}</span>
-                      <span>Price: +${variant.price_adjustment}</span>
+                    <div className="flex items-center gap-3 text-sm text-text-muted">
+                      <div className="flex items-center gap-1">
+                        <Label className="text-xs">Stock:</Label>
+                        <Input
+                          type="number"
+                          min="0"
+                          value={variant.stock_quantity}
+                          onChange={(e) => {
+                            const value = Number.parseInt(e.target.value) || 0
+                            setFormData((prev) => ({
+                              ...prev,
+                              variants: prev.variants.map((v, i) => 
+                                i === index ? { ...v, stock_quantity: value } : v
+                              )
+                            }))
+                          }}
+                          className="h-6 w-16 text-xs"
+                        />
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Label className="text-xs">Price:</Label>
+                        <Input
+                          type="number"
+                          step="0.01"
+                          value={variant.price_adjustment}
+                          onChange={(e) => {
+                            const value = Number.parseFloat(e.target.value) || 0
+                            setFormData((prev) => ({
+                              ...prev,
+                              variants: prev.variants.map((v, i) => 
+                                i === index ? { ...v, price_adjustment: value } : v
+                              )
+                            }))
+                          }}
+                          className="h-6 w-20 text-xs"
+                        />
+                      </div>
                       {variant.variant_code && (
-                        <Badge variant="default" className="bg-primary-600 text-white font-mono">
+                        <Badge variant="default" className="bg-primary text-white font-mono text-xs">
                           {variant.variant_code}
                         </Badge>
                       )}
