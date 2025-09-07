@@ -106,8 +106,8 @@ export function Product3DCarousel({ products, title }: Product3DCarouselProps) {
         </div>
       )}
       
-      {/* Desktop Grid View - Hidden on Mobile */}
-      <div className="hidden md:block">
+      {/* Desktop Grid View - Hidden on Mobile/Tablet */}
+      <div className="hidden lg:block">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {products.map((product, index) => (
             <div key={product.id} className="h-full">
@@ -117,8 +117,8 @@ export function Product3DCarousel({ products, title }: Product3DCarouselProps) {
         </div>
       </div>
 
-      {/* Mobile 3D Carousel View */}
-      <div className="md:hidden">
+      {/* Mobile/Tablet 3D Carousel View */}
+      <div className="lg:hidden">
         <div className="relative">
           {/* Carousel Container */}
           <div
