@@ -102,6 +102,11 @@ export function Header({ hasSaleProducts = false }: HeaderProps) {
               </div>
             )}
             
+            {/* Mobile Search Bar */}
+            <div className="md:hidden flex-1 max-w-[200px] mx-2">
+              <SearchBar />
+            </div>
+            
             <div className="hover:scale-105 transition-transform duration-500">
               <CartDrawer />
             </div>
@@ -125,11 +130,6 @@ export function Header({ hasSaleProducts = false }: HeaderProps) {
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px] sm:w-[400px]">
                 <div className="flex flex-col space-y-4 mt-8 animate-fade-in-right">
-                  {/* Mobile Search Bar */}
-                  <div className="px-4 pb-4">
-                    <SearchBar />
-                  </div>
-                  
                   {navigation.map((item, index) => (
                     <div
                       key={item.name}
