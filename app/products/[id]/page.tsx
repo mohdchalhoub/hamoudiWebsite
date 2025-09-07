@@ -70,8 +70,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
                       <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
                       <span className="font-medium">In Stock</span>
                     </div>
-                    <div className="flex items-center gap-2 bg-blue-50 px-3 py-1.5 rounded-full border border-blue-200">
-                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                    <div className="flex items-center gap-2 bg-primary-50 px-3 py-1.5 rounded-full border border-primary-200">
+                      <div className="w-2 h-2 bg-primary-500 rounded-full"></div>
                       <span className="font-medium">Free Shipping</span>
                     </div>
                   </div>
@@ -90,8 +90,8 @@ export default async function ProductPage({ params }: ProductPageProps) {
                   {product.product_code && (
                     <div className="bg-gray-100 rounded-xl p-4 border border-gray-200">
                       <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
-                          <span className="text-blue-600 font-bold text-sm">#</span>
+                        <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
+                          <span className="text-primary-600 font-bold text-sm">#</span>
                         </div>
                         <div>
                           <p className="text-sm font-medium text-gray-600">Product Code</p>
@@ -109,7 +109,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                         product.season === 'summer' 
                           ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' 
                           : product.season === 'winter'
-                          ? 'bg-gradient-to-r from-blue-400 to-blue-600 text-white'
+                          ? 'bg-gradient-to-r from-primary-400 to-primary-600 text-white'
                           : 'bg-gradient-to-r from-green-400 to-emerald-500 text-white'
                       }`}>
                         {product.season === 'summer' ? '☀️ Summer' : product.season === 'winter' ? '❄️ Winter' : '🌍 All Season'}
@@ -124,7 +124,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 </div>
 
                 {/* Price Section - Enhanced */}
-                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200 shadow-sm">
+                <div className="bg-gradient-to-r from-primary-50 to-primary-100 rounded-2xl p-6 border border-primary-200 shadow-sm">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
                       <span className="text-3xl lg:text-4xl font-display font-bold text-gray-900">

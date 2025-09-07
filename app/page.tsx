@@ -35,8 +35,8 @@ export default async function HomePage() {
         <section className="relative overflow-hidden bg-gradient-to-br from-gray-50 via-white to-gray-100 min-h-screen flex items-center">
           {/* Background Elements */}
           <div className="absolute inset-0 overflow-hidden">
-            <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-blue-400/20 to-pink-400/20 rounded-full blur-3xl animate-float-gentle" />
-            <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-pink-400/20 to-purple-400/20 rounded-full blur-3xl animate-float-gentle" style={{ animationDelay: '2s' }} />
+            <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-primary-400/20 to-accent-400/20 rounded-full blur-3xl animate-float-gentle" />
+            <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-br from-secondary-400/20 to-primary-400/20 rounded-full blur-3xl animate-float-gentle" style={{ animationDelay: '2s' }} />
           </div>
 
           <div className="container mx-auto px-4 py-16 lg:py-24 relative z-10">
@@ -44,7 +44,7 @@ export default async function HomePage() {
               <div className="space-y-6">
                 <EnhancedAnimatedSection animation="bounce" delay={0.1}>
                   <div className="hover:scale-105 hover:rotate-1 transition-all duration-500">
-                    <Badge className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 text-white px-6 py-2 text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-500 rounded-full">
+                    <Badge className="bg-gradient-to-r from-primary-600 via-secondary-600 to-accent-600 text-white px-6 py-2 text-sm font-semibold shadow-lg hover:shadow-xl transition-all duration-500 rounded-full">
                       <Sparkles className="w-4 h-4 mr-2" />
                       New Collection 2024
                     </Badge>
@@ -55,7 +55,7 @@ export default async function HomePage() {
                   <h1 className="text-display-2xl lg:text-display-2xl font-display text-balance leading-tight text-gray-900 text-shadow-premium">
                     Luxe Fashion for
                     <br />
-                    <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent animate-gradient text-glow" style={{ backgroundSize: "200% 200%" }}>
+                    <span className="bg-gradient-to-r from-primary-600 via-secondary-600 to-accent-600 bg-clip-text text-transparent animate-gradient text-glow" style={{ backgroundSize: "200% 200%" }}>
                       Amazing Kids
                     </span>
                   </h1>
@@ -89,7 +89,7 @@ export default async function HomePage() {
                       <Button
                         size="lg"
                         variant="outline"
-                        className="w-full border-2 border-pink-600 text-pink-600 hover:bg-pink-600 hover:text-white bg-transparent shadow-lg hover:shadow-xl transition-all duration-500 h-14 text-base font-semibold rounded-2xl hover:scale-105"
+                        className="w-full border-2 border-accent-600 text-accent-600 hover:bg-accent-600 hover:text-white bg-transparent shadow-lg hover:shadow-xl transition-all duration-500 h-14 text-base font-semibold rounded-2xl hover:scale-105"
                       >
                         <Star className="mr-2 h-5 w-5" />
                         Shop Girls
@@ -108,7 +108,7 @@ export default async function HomePage() {
           <div className="container mx-auto px-4">
             <EnhancedAnimatedSection animation="fade-up" className="text-center mb-16">
               <div>
-                <Badge className="bg-gradient-to-r from-yellow-400 via-orange-500 to-red-500 text-white px-6 py-2 mb-4 text-sm font-semibold shadow-lg rounded-full">
+                <Badge className="bg-gradient-to-r from-secondary-400 via-secondary-500 to-accent-500 text-white px-6 py-2 mb-4 text-sm font-semibold shadow-lg rounded-full">
                   <Star className="w-4 h-4 mr-2" />
                   Featured Collection
                 </Badge>
@@ -127,21 +127,21 @@ export default async function HomePage() {
 
         {/* On Sale Products Section */}
         {onSaleProducts.length > 0 && (
-          <EnhancedAnimatedSection animation="fade-up" className="py-20 bg-gradient-to-br from-red-50 via-orange-50 to-pink-50 relative overflow-hidden">
+          <EnhancedAnimatedSection animation="fade-up" className="py-20 bg-gradient-to-br from-accent-50 via-secondary-50 to-accent-50 relative overflow-hidden">
             {/* Background Elements */}
             <div className="absolute inset-0 overflow-hidden">
-              <div className="absolute top-20 right-20 w-32 h-32 bg-gradient-to-br from-red-400/20 to-orange-400/20 rounded-full blur-2xl animate-float-gentle" />
+              <div className="absolute top-20 right-20 w-32 h-32 bg-gradient-to-br from-accent-400/20 to-secondary-400/20 rounded-full blur-2xl animate-float-gentle" />
             </div>
             
             <div className="container mx-auto px-4 relative z-10">
               <EnhancedAnimatedSection animation="fade-up" className="text-center mb-16">
                 <div>
                   <div className="hover:scale-105 hover:rotate-1 transition-all duration-300">
-                    <Badge className="bg-gradient-to-r from-red-500 to-orange-500 text-white px-6 py-2 mb-4 text-sm font-medium shadow-lg">
+                    <Badge className="bg-gradient-to-r from-accent-500 to-secondary-500 text-white px-6 py-2 mb-4 text-sm font-medium shadow-lg">
                       🔥 Limited Time Offers
                     </Badge>
                   </div>
-                  <h2 className="text-4xl lg:text-5xl font-bold mb-6 bg-gradient-to-r from-red-600 to-orange-600 bg-clip-text text-transparent">
+                  <h2 className="text-4xl lg:text-5xl font-bold mb-6 bg-gradient-to-r from-accent-600 to-secondary-600 bg-clip-text text-transparent">
                     Amazing Deals
                   </h2>
                   <p className="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">
@@ -162,11 +162,11 @@ export default async function HomePage() {
               {/* Boys Section */}
               <EnhancedAnimatedSection animation="fade-right" className="space-y-8">
                 <div className="text-center lg:text-left">
-                  <Badge className="bg-gradient-to-r from-blue-500 to-blue-600 text-white px-4 py-1 mb-4 text-sm font-medium">
+                  <Badge className="bg-gradient-to-r from-primary-500 to-primary-600 text-white px-4 py-1 mb-4 text-sm font-medium">
                     <Zap className="w-4 h-4 mr-2" />
                     Boys Collection
                   </Badge>
-                  <h2 className="text-4xl lg:text-5xl font-bold text-blue-600 mb-6">
+                  <h2 className="text-4xl lg:text-5xl font-bold text-primary-600 mb-6">
                     Cool & Comfortable
                   </h2>
                   <p className="text-muted-foreground mb-8 text-lg leading-relaxed">
@@ -174,7 +174,7 @@ export default async function HomePage() {
                   </p>
                   <div className="hover:scale-105 transition-transform duration-300">
                     <Link href="/boys">
-                      <Button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white shadow-lg hover:shadow-xl transition-all duration-300 h-12 px-8">
+                      <Button className="bg-gradient-to-r from-primary-600 to-primary-700 hover:from-primary-700 hover:to-primary-800 text-white shadow-lg hover:shadow-xl transition-all duration-300 h-12 px-8">
                         Shop Boys Collection
                         <ArrowRight className="ml-2 h-5 w-5" />
                       </Button>
@@ -187,11 +187,11 @@ export default async function HomePage() {
               {/* Girls Section */}
               <EnhancedAnimatedSection animation="fade-left" className="space-y-8">
                 <div className="text-center lg:text-left">
-                  <Badge className="bg-gradient-to-r from-pink-500 to-pink-600 text-white px-4 py-1 mb-4 text-sm font-medium">
+                  <Badge className="bg-gradient-to-r from-accent-500 to-accent-600 text-white px-4 py-1 mb-4 text-sm font-medium">
                     <Star className="w-4 h-4 mr-2" />
                     Girls Collection
                   </Badge>
-                  <h2 className="text-4xl lg:text-5xl font-bold text-pink-600 mb-6">
+                  <h2 className="text-4xl lg:text-5xl font-bold text-accent-600 mb-6">
                     Beautiful & Stylish
                   </h2>
                   <p className="text-muted-foreground mb-8 text-lg leading-relaxed">
@@ -199,7 +199,7 @@ export default async function HomePage() {
                   </p>
                   <div className="hover:scale-105 transition-transform duration-300">
                     <Link href="/girls">
-                      <Button className="bg-gradient-to-r from-pink-600 to-pink-700 hover:from-pink-700 hover:to-pink-800 text-white shadow-lg hover:shadow-xl transition-all duration-300 h-12 px-8">
+                      <Button className="bg-gradient-to-r from-accent-600 to-accent-700 hover:from-accent-700 hover:to-accent-800 text-white shadow-lg hover:shadow-xl transition-all duration-300 h-12 px-8">
                         Shop Girls Collection
                         <ArrowRight className="ml-2 h-5 w-5" />
                       </Button>
@@ -217,7 +217,7 @@ export default async function HomePage() {
           <div className="container mx-auto px-4">
             <EnhancedAnimatedSection animation="fade-up" className="text-center mb-16">
               <div>
-                <Badge className="bg-gradient-to-r from-green-500 to-blue-500 text-white px-4 py-1 mb-4 text-sm font-medium">
+                <Badge className="bg-gradient-to-r from-accent-500 to-primary-500 text-white px-4 py-1 mb-4 text-sm font-medium">
                   <Shield className="w-4 h-4 mr-2" />
                   Why Choose Us
                 </Badge>
@@ -237,7 +237,7 @@ export default async function HomePage() {
                   title: "Safe & Quality",
                   description: "All our clothes are made with safe, high-quality materials that are gentle on kids' skin.",
                   color: "blue",
-                  gradient: "from-blue-500 to-blue-600"
+                  gradient: "from-primary-500 to-primary-600"
                 },
                 {
                   icon: Truck,
@@ -251,7 +251,7 @@ export default async function HomePage() {
                   title: "Kids Love It",
                   description: "Designed with kids in mind - comfortable, fun, and perfect for all their adventures.",
                   color: "pink",
-                  gradient: "from-pink-500 to-pink-600"
+                  gradient: "from-accent-500 to-accent-600"
                 }
               ].map((feature, index) => (
                 <div
@@ -263,7 +263,7 @@ export default async function HomePage() {
                     <feature.icon className="h-10 w-10 text-white" />
                   </div>
                   <div className="space-y-3">
-                    <h3 className="text-2xl font-bold text-gray-900 group-hover:text-blue-600 transition-colors duration-300">
+                    <h3 className="text-2xl font-bold text-gray-900 group-hover:text-primary-600 transition-colors duration-300">
                       {feature.title}
                     </h3>
                     <p className="text-muted-foreground leading-relaxed max-w-sm mx-auto">

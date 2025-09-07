@@ -89,8 +89,8 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           >
             {availableSizes.length > 0 ? (
               availableSizes.map((size) => (
-                <div key={size} className="flex items-center space-x-3 p-3 bg-white rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all duration-300 hover:scale-105">
-                  <RadioGroupItem value={size || ''} id={size || ''} className="text-blue-600" />
+                <div key={size} className="flex items-center space-x-3 p-3 bg-white rounded-xl border border-gray-200 hover:border-primary-300 hover:shadow-md transition-all duration-300 hover:scale-105">
+                  <RadioGroupItem value={size || ''} id={size || ''} className="text-primary-600" />
                   <Label htmlFor={size || ''} className="text-sm font-semibold cursor-pointer text-gray-700">
                     {size}
                   </Label>
@@ -98,8 +98,8 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               ))
             ) : (
               availableAges.map((age) => (
-                <div key={age} className="flex items-center space-x-3 p-3 bg-white rounded-xl border border-gray-200 hover:border-pink-300 hover:shadow-md transition-all duration-300 hover:scale-105">
-                  <RadioGroupItem value={age || ''} id={age || ''} className="text-pink-600" />
+                <div key={age} className="flex items-center space-x-3 p-3 bg-white rounded-xl border border-gray-200 hover:border-accent-300 hover:shadow-md transition-all duration-300 hover:scale-105">
+                  <RadioGroupItem value={age || ''} id={age || ''} className="text-accent-600" />
                   <Label htmlFor={age || ''} className="text-sm font-semibold cursor-pointer text-gray-700">
                     {age} years
                   </Label>
@@ -153,14 +153,14 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             </div>
           </div>
         ) : (
-          <div className="bg-red-50 rounded-xl p-4 border border-red-200">
+          <div className="bg-accent-50 rounded-xl p-4 border border-accent-200">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+              <div className="w-8 h-8 bg-accent-500 rounded-full flex items-center justify-center">
                 <span className="text-white text-sm font-bold">✗</span>
               </div>
               <div>
-                <p className="font-semibold text-red-800">Out of Stock</p>
-                <p className="text-sm text-red-600">Check back soon</p>
+                <p className="font-semibold text-accent-800">Out of Stock</p>
+                <p className="text-sm text-accent-600">Check back soon</p>
               </div>
             </div>
           </div>
@@ -176,7 +176,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             size="icon"
             onClick={decrementQuantity}
             disabled={quantity <= 1}
-            className="h-10 w-10 hover:bg-red-50 hover:border-red-300 transition-all duration-300 hover:scale-105"
+            className="h-10 w-10 hover:bg-accent-50 hover:border-accent-300 transition-all duration-300 hover:scale-105"
           >
             <Minus className="h-4 w-4" />
           </Button>
@@ -204,7 +204,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
         <Button
           onClick={handleAddToCart}
           disabled={!isInStock || isAddingToCart}
-          className="w-full h-12 text-base font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full h-12 text-base font-semibold bg-primary-600 hover:bg-primary-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <ShoppingCart className="mr-2 h-5 w-5" />
           {isAddingToCart ? "Adding..." : isInStock ? "Add to Cart" : "Out of Stock"}
@@ -212,7 +212,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
         
         <Button
           variant="outline"
-          className="w-full h-12 text-base font-semibold border-2 border-pink-300 hover:border-pink-400 hover:bg-pink-50 text-pink-700 transition-all duration-300 hover:scale-105"
+          className="w-full h-12 text-base font-semibold border-2 border-accent-300 hover:border-accent-400 hover:bg-accent-50 text-accent-700 transition-all duration-300 hover:scale-105"
         >
           <Heart className="mr-2 h-5 w-5" />
           Add to Wishlist
@@ -269,7 +269,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
         )}
 
         {/* Shipping & Returns */}
-        <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
+        <div className="bg-primary-50 rounded-xl p-4 border border-primary-200">
           <h3 className="text-base font-semibold text-gray-800 mb-3">Shipping & Returns</h3>
           <div className="space-y-2 text-sm">
             <div className="flex items-center gap-3 py-2 px-3 bg-white rounded-lg">
@@ -277,11 +277,11 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               <span className="text-gray-700 font-medium">Free shipping on orders over $50</span>
             </div>
             <div className="flex items-center gap-3 py-2 px-3 bg-white rounded-lg">
-              <Package className="h-4 w-4 text-blue-500" />
+              <Package className="h-4 w-4 text-primary-500" />
               <span className="text-gray-700 font-medium">30-day return policy</span>
             </div>
             <div className="flex items-center gap-3 py-2 px-3 bg-white rounded-lg">
-              <RotateCcw className="h-4 w-4 text-purple-500" />
+              <RotateCcw className="h-4 w-4 text-primary-500" />
               <span className="text-gray-700 font-medium">Free exchanges within 14 days</span>
             </div>
           </div>

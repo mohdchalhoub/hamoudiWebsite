@@ -174,12 +174,12 @@
   --font-display: 'Poppins', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   
   /* Premium Color Palette */
-  --color-primary: #3b82f6;
-  --color-primary-dark: #2563eb;
-  --color-secondary: #ec4899;
-  --color-secondary-dark: #db2777;
-  --color-accent: #8b5cf6;
-  --color-accent-dark: #7c3aed;
+  --color-primary: #4F46E5;
+  --color-primary-dark: #4338CA;
+  --color-secondary: #F59E0B;
+  --color-secondary-dark: #D97706;
+  --color-accent: #10B981;
+  --color-accent-dark: #059669;
   
   /* Neutral Colors */
   --color-gray-50: #fafafa;
@@ -1625,33 +1625,33 @@ html {
   --card-foreground: 0 0% 3.9%;
   --popover: 0 0% 100%;
   --popover-foreground: 0 0% 3.9%;
-  --primary: 0 0% 9%;
+  --primary: 238 100% 60%;
   --primary-foreground: 0 0% 98%;
-  --secondary: 0 0% 96.1%;
+  --secondary: 38 92% 50%;
   --secondary-foreground: 0 0% 9%;
   --muted: 0 0% 96.1%;
   --muted-foreground: 0 0% 45.1%;
-  --accent: 0 0% 96.1%;
+  --accent: 158 64% 52%;
   --accent-foreground: 0 0% 9%;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 0 0% 98%;
   --border: 0 0% 89.8%;
   --input: 0 0% 89.8%;
-  --ring: 0 0% 3.9%;
-  --chart-1: 12 76% 61%;
-  --chart-2: 173 58% 39%;
-  --chart-3: 197 37% 24%;
+  --ring: 238 100% 60%;
+  --chart-1: 238 100% 60%;
+  --chart-2: 38 92% 50%;
+  --chart-3: 158 64% 52%;
   --chart-4: 43 74% 66%;
   --chart-5: 27 87% 67%;
   --radius: 0.5rem;
   --sidebar: 0 0% 98%;
   --sidebar-foreground: 0 0% 3.9%;
-  --sidebar-primary: 0 0% 9%;
+  --sidebar-primary: 238 100% 60%;
   --sidebar-primary-foreground: 0 0% 98%;
   --sidebar-accent: 0 0% 96.1%;
   --sidebar-accent-foreground: 0 0% 9%;
   --sidebar-border: 0 0% 89.8%;
-  --sidebar-ring: 0 0% 3.9%;
+  --sidebar-ring: 238 100% 60%;
 }
 
 .dark {
@@ -1661,32 +1661,32 @@ html {
   --card-foreground: 0 0% 98%;
   --popover: 0 0% 3.9%;
   --popover-foreground: 0 0% 98%;
-  --primary: 0 0% 98%;
+  --primary: 238 100% 70%;
   --primary-foreground: 0 0% 9%;
-  --secondary: 0 0% 14.9%;
-  --secondary-foreground: 0 0% 98%;
+  --secondary: 38 92% 60%;
+  --secondary-foreground: 0 0% 9%;
   --muted: 0 0% 14.9%;
   --muted-foreground: 0 0% 63.9%;
-  --accent: 0 0% 14.9%;
-  --accent-foreground: 0 0% 98%;
+  --accent: 158 64% 62%;
+  --accent-foreground: 0 0% 9%;
   --destructive: 0 62.8% 30.6%;
   --destructive-foreground: 0 0% 98%;
   --border: 0 0% 14.9%;
   --input: 0 0% 14.9%;
-  --ring: 0 0% 83.1%;
-  --chart-1: 220 70% 50%;
-  --chart-2: 160 60% 45%;
-  --chart-3: 30 80% 55%;
+  --ring: 238 100% 70%;
+  --chart-1: 238 100% 70%;
+  --chart-2: 38 92% 60%;
+  --chart-3: 158 64% 62%;
   --chart-4: 280 65% 60%;
   --chart-5: 340 75% 55%;
   --sidebar: 0 0% 3.9%;
   --sidebar-foreground: 0 0% 98%;
-  --sidebar-primary: 0 0% 98%;
+  --sidebar-primary: 238 100% 70%;
   --sidebar-primary-foreground: 0 0% 9%;
   --sidebar-accent: 0 0% 14.9%;
   --sidebar-accent-foreground: 0 0% 98%;
   --sidebar-border: 0 0% 14.9%;
-  --sidebar-ring: 0 0% 83.1%;
+  --sidebar-ring: 238 100% 70%;
 }
 
 @layer base {

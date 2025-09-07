@@ -117,7 +117,7 @@ export function ProductImageGallery({
         
         {/* Product badges */}
         {isFeatured && (
-          <Badge className="absolute top-1 left-1 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-xs px-1.5 py-0.5 shadow-md">
+          <Badge className="absolute top-1 left-1 bg-gradient-to-r from-secondary-500 to-secondary-600 text-white text-xs px-1.5 py-0.5 shadow-md">
             ⭐ Featured
           </Badge>
         )}
@@ -149,7 +149,7 @@ export function ProductImageGallery({
               onClick={() => goToImage(index)}
               className={`relative flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden border-2 transition-all ${
                 index === currentImageIndex
-                  ? 'border-blue-500 shadow-md'
+                  ? 'border-primary-500 shadow-md'
                   : 'border-slate-200 hover:border-slate-300'
               }`}
             >

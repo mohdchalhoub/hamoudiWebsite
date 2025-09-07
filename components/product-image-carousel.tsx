@@ -96,7 +96,7 @@ export function ProductImageCarousel({
                 
                 {/* Product badges */}
                 {isFeatured && index === 0 && (
-                  <Badge className="absolute top-4 left-4 bg-gradient-to-r from-amber-500 to-orange-500 text-white text-sm px-3 py-1.5 shadow-lg">
+                  <Badge className="absolute top-4 left-4 bg-gradient-to-r from-secondary-500 to-secondary-600 text-white text-sm px-3 py-1.5 shadow-lg">
                     ⭐ Featured
                   </Badge>
                 )}
@@ -160,7 +160,7 @@ export function ProductImageCarousel({
                 <div 
                   className={`relative w-full h-full rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-300 hover:scale-105 ${
                     index === activeIndex 
-                      ? 'border-blue-500 shadow-lg scale-105' 
+                      ? 'border-primary-500 shadow-lg scale-105' 
                       : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
                   }`}
                 >

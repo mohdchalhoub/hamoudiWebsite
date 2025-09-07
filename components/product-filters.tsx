@@ -109,7 +109,7 @@ export function ProductFilters({ onFiltersChange, availableSizes, availableColor
                 }}
               />
               <Label htmlFor="season-winter" className="text-sm flex items-center gap-2">
-                <Snowflake className="h-4 w-4 text-blue-500" />
+                <Snowflake className="h-4 w-4 text-primary-500" />
                 Winter
               </Label>
             </div>
@@ -181,11 +181,11 @@ export function ProductFilters({ onFiltersChange, availableSizes, availableColor
                   <div
                     className={`w-4 h-4 rounded-full border-2 border-white shadow-sm ${
                       color.toLowerCase().includes("blue")
-                        ? "bg-blue-500"
+                        ? "bg-primary-500"
                         : color.toLowerCase().includes("pink")
-                          ? "bg-pink-500"
+                          ? "bg-accent-500"
                           : color.toLowerCase().includes("purple")
-                            ? "bg-purple-500"
+                            ? "bg-primary-500"
                             : color.toLowerCase().includes("red")
                               ? "bg-red-500"
                               : color.toLowerCase().includes("green")

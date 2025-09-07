@@ -595,7 +595,7 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
                       <span>Stock: {variant.stock_quantity}</span>
                       <span>Price: +${variant.price_adjustment}</span>
                       {variant.variant_code && (
-                        <Badge variant="default" className="bg-blue-600 text-white font-mono">
+                        <Badge variant="default" className="bg-primary-600 text-white font-mono">
                           {variant.variant_code}
                         </Badge>
                       )}

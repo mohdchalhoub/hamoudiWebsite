@@ -46,7 +46,7 @@ export function OrderConfirmationClient({ orderId }: OrderConfirmationClientProp
             <div>
               <span className="text-muted-foreground">Status:</span>
               <div>
-                <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
+                <Badge variant="secondary" className="bg-secondary-100 text-secondary-800">
                   {order.status}
                 </Badge>
               </div>

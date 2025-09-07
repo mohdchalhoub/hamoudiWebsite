@@ -66,12 +66,12 @@ export function ProductCard({ product }: ProductCardProps) {
             
             {/* Badges */}
             {product.is_featured && (
-              <Badge className="absolute top-4 left-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-xs px-3 py-1.5 shadow-lg animate-scale-in rounded-full font-semibold" style={{ animationDelay: '0.2s' }}>
+              <Badge className="absolute top-4 left-4 bg-gradient-to-r from-secondary-400 to-secondary-500 text-white text-xs px-3 py-1.5 shadow-lg animate-scale-in rounded-full font-semibold" style={{ animationDelay: '0.2s' }}>
                 ⭐ Featured
               </Badge>
             )}
             {discountPercentage > 0 && (
-              <Badge className="absolute top-4 right-4 bg-gradient-to-r from-red-500 to-pink-500 text-white text-xs px-3 py-1.5 shadow-lg animate-scale-in rounded-full font-semibold" style={{ animationDelay: '0.3s' }}>
+              <Badge className="absolute top-4 right-4 bg-gradient-to-r from-accent-500 to-accent-600 text-white text-xs px-3 py-1.5 shadow-lg animate-scale-in rounded-full font-semibold" style={{ animationDelay: '0.3s' }}>
                 -{discountPercentage}%
               </Badge>
             )}
@@ -90,7 +90,7 @@ export function ProductCard({ product }: ProductCardProps) {
                     }}
                   >
                     <div className={`transition-transform duration-500 ${isLiked ? 'scale-125' : 'scale-100'}`}>
-                      <Heart className={`h-4 w-4 ${isLiked ? 'fill-red-500 text-red-500' : ''}`} />
+                      <Heart className={`h-4 w-4 ${isLiked ? 'fill-accent-500 text-accent-500' : ''}`} />
                     </div>
                   </Button>
                 </div>
@@ -110,7 +110,7 @@ export function ProductCard({ product }: ProductCardProps) {
           
           <CardContent className="p-6">
             <div className="animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-              <h3 className="font-semibold text-xl mb-4 line-clamp-2 group-hover:text-blue-600 transition-colors duration-300 font-body text-gray-900">
+              <h3 className="font-semibold text-xl mb-4 line-clamp-2 group-hover:text-primary-600 transition-colors duration-300 font-body text-gray-900">
                 {product.name}
               </h3>
             </div>
@@ -120,10 +120,10 @@ export function ProductCard({ product }: ProductCardProps) {
               <div className="mb-4 animate-scale-in" style={{ animationDelay: '0.2s' }}>
                 <Badge className={`px-3 py-1.5 text-xs font-semibold rounded-full ${
                   product.season === 'summer' 
-                    ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' 
+                    ? 'bg-gradient-to-r from-secondary-400 to-secondary-500 text-white' 
                     : product.season === 'winter'
-                    ? 'bg-gradient-to-r from-blue-400 to-blue-600 text-white'
-                    : 'bg-gradient-to-r from-green-400 to-emerald-500 text-white'
+                    ? 'bg-gradient-to-r from-primary-400 to-primary-600 text-white'
+                    : 'bg-gradient-to-r from-accent-400 to-accent-500 text-white'
                 }`}>
                   {product.season === 'summer' ? '☀️ Summer' : product.season === 'winter' ? '❄️ Winter' : '🌍 All Season'}
                 </Badge>
@@ -132,7 +132,7 @@ export function ProductCard({ product }: ProductCardProps) {
             
             <div className="flex items-center justify-between mb-4 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-2xl text-blue-600">${Number(product.price).toFixed(2)}</span>
+                <span className="font-bold text-2xl text-primary-600">${Number(product.price).toFixed(2)}</span>
                 {product.compare_at_price && (
                   <span className="text-sm text-gray-400 line-through">${Number(product.compare_at_price).toFixed(2)}</span>
                 )}
@@ -162,7 +162,7 @@ export function ProductCard({ product }: ProductCardProps) {
                 size="sm"
                 className={`w-full text-base h-14 transition-all duration-500 hover:scale-105 ${
                   isInStock 
-                    ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                    ? 'bg-primary-600 hover:bg-primary-700 text-white' 
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                 }`}
                 onClick={handleAddToCart}

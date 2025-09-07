@@ -45,7 +45,7 @@ export function Header({ hasSaleProducts = false }: HeaderProps) {
           {/* Logo */}
           <div className="hover:scale-105 transition-transform duration-300">
             <Link href="/" className="flex items-center space-x-2 group">
-              <div className="text-2xl font-display font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent animate-gradient group-hover:scale-105 transition-all duration-500">
+              <div className="text-2xl font-display font-bold bg-gradient-to-r from-primary-600 via-secondary-600 to-accent-600 bg-clip-text text-transparent animate-gradient group-hover:scale-105 transition-all duration-500">
                 KidsCorner
               </div>
             </Link>
@@ -61,11 +61,11 @@ export function Header({ hasSaleProducts = false }: HeaderProps) {
               >
                 <Link
                   href={item.href}
-                  className="text-sm font-semibold text-gray-700 transition-all duration-500 hover:text-blue-600 hover:scale-105 relative px-3 py-2 rounded-xl group"
+                  className="text-sm font-semibold text-gray-700 transition-all duration-500 hover:text-primary-600 hover:scale-105 relative px-3 py-2 rounded-xl group"
                 >
                   <span className="relative z-10">{item.name}</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-blue-600/10 via-purple-600/10 to-pink-600/10 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-500 scale-95 group-hover:scale-100" />
-                  <div className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-gradient-to-r from-blue-600 to-pink-600 transition-all duration-500 group-hover:w-full group-hover:left-0" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-primary-600/10 via-secondary-600/10 to-accent-600/10 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-500 scale-95 group-hover:scale-100" />
+                  <div className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-gradient-to-r from-primary-600 to-accent-600 transition-all duration-500 group-hover:w-full group-hover:left-0" />
                 </Link>
               </div>
             ))}
@@ -77,7 +77,7 @@ export function Header({ hasSaleProducts = false }: HeaderProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="hidden sm:flex hover:text-pink-600 transition-all duration-500 hover:bg-pink-50 rounded-xl"
+                className="hidden sm:flex hover:text-accent-600 transition-all duration-500 hover:bg-accent-50 rounded-xl"
               >
                 <Heart className="h-4 w-4" />
               </Button>

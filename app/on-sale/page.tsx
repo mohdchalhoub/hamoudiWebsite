@@ -22,13 +22,13 @@ export default async function OnSalePage() {
       <ServerHeader />
 
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-red-600 to-orange-600 text-white py-16 overflow-hidden">
+      <section className="relative bg-gradient-to-r from-accent-600 to-secondary-600 text-white py-16 overflow-hidden">
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="container mx-auto px-4 text-center relative z-10">
           <AnimatedSection animation="fade-down" className="space-y-6">
             <div className="flex items-center justify-center gap-3 mb-4">
               <span className="text-6xl">🔥</span>
-              <h1 className="text-4xl lg:text-5xl font-bold animate-gradient bg-gradient-to-r from-white to-orange-100 bg-clip-text text-transparent">
+              <h1 className="text-4xl lg:text-5xl font-bold animate-gradient bg-gradient-to-r from-white to-secondary-100 bg-clip-text text-transparent">
                 On Sale
               </h1>
               <span className="text-6xl">🔥</span>
@@ -74,7 +74,7 @@ export default async function OnSalePage() {
               <div className="pt-4">
                 <a 
                   href="/" 
-                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-blue-600 to-pink-600 text-white font-medium rounded-lg hover:shadow-lg transition-all duration-300 hover:scale-105"
+                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary-600 to-accent-600 text-white font-medium rounded-lg hover:shadow-lg transition-all duration-300 hover:scale-105"
                 >
                   Browse All Products
                 </a>

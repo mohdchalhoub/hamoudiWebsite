@@ -10,11 +10,11 @@ export default function AboutPage() {
       <ServerHeader />
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-50 via-white to-pink-50 py-16">
+      <section className="bg-gradient-to-br from-primary-50 via-white to-accent-50 py-16">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl lg:text-5xl font-bold mb-6 text-balance">
             About{" "}
-            <span className="bg-gradient-to-r from-blue-600 to-pink-600 bg-clip-text text-transparent">KidsCorner</span>
+            <span className="bg-gradient-to-r from-primary-600 to-accent-600 bg-clip-text text-transparent">KidsCorner</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto text-pretty">
             We're passionate about creating fun, comfortable, and stylish clothing that lets kids be kids while giving
@@ -49,28 +49,28 @@ export default function AboutPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-4">
-                <div className="relative aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center">
-                  <div className="text-center text-blue-600">
+                <div className="relative aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">
+                  <div className="text-center text-primary-600">
                     <div className="text-4xl mb-2">👕</div>
                     <div className="text-sm font-medium">Boys Collection</div>
                   </div>
                 </div>
-                <div className="relative aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-pink-100 to-pink-200 flex items-center justify-center">
-                  <div className="text-center text-pink-600">
+                <div className="relative aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-accent-100 to-accent-200 flex items-center justify-center">
+                  <div className="text-center text-accent-600">
                     <div className="text-4xl mb-2">👗</div>
                     <div className="text-sm font-medium">Girls Collection</div>
                   </div>
                 </div>
               </div>
               <div className="space-y-4 mt-8">
-                <div className="relative aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-purple-100 to-purple-200 flex items-center justify-center">
-                  <div className="text-center text-purple-600">
+                <div className="relative aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-primary-100 to-primary-200 flex items-center justify-center">
+                  <div className="text-center text-primary-600">
                     <div className="text-4xl mb-2">✨</div>
                     <div className="text-sm font-medium">Special Occasions</div>
                   </div>
                 </div>
-                <div className="relative aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-green-100 to-green-200 flex items-center justify-center">
-                  <div className="text-center text-green-600">
+                <div className="relative aspect-square rounded-lg overflow-hidden bg-gradient-to-br from-accent-100 to-accent-200 flex items-center justify-center">
+                  <div className="text-center text-accent-600">
                     <div className="text-4xl mb-2">🌟</div>
                     <div className="text-sm font-medium">Everyday Comfort</div>
                   </div>
@@ -94,8 +94,8 @@ export default function AboutPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <Card className="text-center">
               <CardContent className="p-6">
-                <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Shield className="h-6 w-6 text-blue-600" />
+                <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Shield className="h-6 w-6 text-primary-600" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Safety First</h3>
                 <p className="text-muted-foreground text-sm">
@@ -105,8 +105,8 @@ export default function AboutPage() {
             </Card>
             <Card className="text-center">
               <CardContent className="p-6">
-                <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Sparkles className="h-6 w-6 text-green-600" />
+                <div className="w-12 h-12 bg-accent-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Sparkles className="h-6 w-6 text-accent-600" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Creative Design</h3>
                 <p className="text-muted-foreground text-sm">
@@ -116,8 +116,8 @@ export default function AboutPage() {
             </Card>
             <Card className="text-center">
               <CardContent className="p-6">
-                <div className="w-12 h-12 bg-pink-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Heart className="h-6 w-6 text-pink-600" />
+                <div className="w-12 h-12 bg-accent-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Heart className="h-6 w-6 text-accent-600" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Made with Love</h3>
                 <p className="text-muted-foreground text-sm">
@@ -127,8 +127,8 @@ export default function AboutPage() {
             </Card>
             <Card className="text-center">
               <CardContent className="p-6">
-                <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Users className="h-6 w-6 text-purple-600" />
+                <div className="w-12 h-12 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <Users className="h-6 w-6 text-primary-600" />
                 </div>
                 <h3 className="text-xl font-semibold mb-2">Family Focused</h3>
                 <p className="text-muted-foreground text-sm">
@@ -150,21 +150,21 @@ export default function AboutPage() {
           </p>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">
             <div className="text-center">
-              <div className="w-24 h-24 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-2xl font-bold">
+              <div className="w-24 h-24 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-2xl font-bold">
                 SM
               </div>
               <h3 className="text-xl font-semibold mb-2">Sarah Miller</h3>
               <p className="text-muted-foreground">Founder & Creative Director</p>
             </div>
             <div className="text-center">
-              <div className="w-24 h-24 bg-gradient-to-br from-pink-400 to-pink-600 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-2xl font-bold">
+              <div className="w-24 h-24 bg-gradient-to-br from-accent-400 to-accent-600 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-2xl font-bold">
                 JD
               </div>
               <h3 className="text-xl font-semibold mb-2">James Davis</h3>
               <p className="text-muted-foreground">Head of Quality & Safety</p>
             </div>
             <div className="text-center">
-              <div className="w-24 h-24 bg-gradient-to-br from-purple-400 to-purple-600 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-2xl font-bold">
+              <div className="w-24 h-24 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full mx-auto mb-4 flex items-center justify-center text-white text-2xl font-bold">
                 EW
               </div>
               <h3 className="text-xl font-semibold mb-2">Emma Wilson</h3>

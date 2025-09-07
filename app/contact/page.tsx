@@ -55,7 +55,7 @@ export default function ContactPage() {
       <ClientHeaderWrapper />
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-br from-blue-50 via-white to-pink-50 py-16">
+      <section className="bg-gradient-to-br from-primary-50 via-white to-accent-50 py-16">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl lg:text-5xl font-bold mb-6 text-balance">Get in Touch</h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto text-pretty">
@@ -143,8 +143,8 @@ export default function ContactPage() {
               <h2 className="text-2xl font-bold mb-6">Contact Information</h2>
               <div className="space-y-6">
                 <div className="flex items-start space-x-4">
-                  <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <Mail className="h-5 w-5 text-blue-600" />
+                  <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <Mail className="h-5 w-5 text-primary-600" />
                   </div>
                   <div>
                     <h3 className="font-semibold mb-1">Email Us</h3>
@@ -163,8 +163,8 @@ export default function ContactPage() {
                   </div>
                 </div>
                 <div className="flex items-start space-x-4">
-                  <div className="w-10 h-10 bg-pink-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <MessageCircle className="h-5 w-5 text-pink-600" />
+                  <div className="w-10 h-10 bg-accent-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <MessageCircle className="h-5 w-5 text-accent-600" />
                   </div>
                   <div>
                     <h3 className="font-semibold mb-1">WhatsApp</h3>
@@ -177,8 +177,8 @@ export default function ContactPage() {
                   </div>
                 </div>
                 <div className="flex items-start space-x-4">
-                  <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
-                    <MapPin className="h-5 w-5 text-purple-600" />
+                  <div className="w-10 h-10 bg-primary-100 rounded-full flex items-center justify-center flex-shrink-0">
+                    <MapPin className="h-5 w-5 text-primary-600" />
                   </div>
                   <div>
                     <h3 className="font-semibold mb-1">Visit Us</h3>

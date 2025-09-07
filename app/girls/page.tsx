@@ -21,11 +21,11 @@ export default async function GirlsPage() {
       <ServerHeader />
 
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-pink-600 to-purple-800 text-white py-16 overflow-hidden">
+      <section className="relative bg-gradient-to-r from-accent-600 to-primary-800 text-white py-16 overflow-hidden">
         <div className="absolute inset-0 bg-black/10"></div>
         <div className="container mx-auto px-4 text-center relative z-10">
           <AnimatedSection animation="fade-down" className="space-y-6">
-            <h1 className="text-4xl lg:text-5xl font-bold mb-4 animate-gradient bg-gradient-to-r from-white to-pink-100 bg-clip-text text-transparent">
+            <h1 className="text-4xl lg:text-5xl font-bold mb-4 animate-gradient bg-gradient-to-r from-white to-accent-100 bg-clip-text text-transparent">
               Girls Collection
             </h1>
             <p className="text-xl opacity-90 max-w-2xl mx-auto leading-relaxed">
@@ -42,7 +42,7 @@ export default async function GirlsPage() {
       <div className="container mx-auto px-4 py-8">
         <AnimatedSection animation="fade-up" className="mb-8">
           <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
-            <span className="w-1 h-8 bg-pink-600 rounded-full"></span>
+            <span className="w-1 h-8 bg-accent-600 rounded-full"></span>
             {girlsProducts.length} Product{girlsProducts.length !== 1 ? "s" : ""} Available
           </h2>
           <p className="text-muted-foreground">Discover beautiful clothes designed for stylish girls</p>

@@ -6,15 +6,15 @@ export function Footer() {
     <footer className="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 border-t border-gray-700/30 shadow-premium relative overflow-hidden animate-fade-in-up">
       {/* Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-10 left-10 w-32 h-32 bg-gradient-to-br from-blue-500/10 to-pink-500/10 rounded-full blur-2xl animate-float-gentle" />
-        <div className="absolute bottom-10 right-10 w-40 h-40 bg-gradient-to-br from-pink-500/10 to-purple-500/10 rounded-full blur-2xl animate-float-gentle" style={{ animationDelay: '2s' }} />
+        <div className="absolute top-10 left-10 w-32 h-32 bg-gradient-to-br from-primary-500/10 to-accent-500/10 rounded-full blur-2xl animate-float-gentle" />
+        <div className="absolute bottom-10 right-10 w-40 h-40 bg-gradient-to-br from-secondary-500/10 to-primary-500/10 rounded-full blur-2xl animate-float-gentle" style={{ animationDelay: '2s' }} />
       </div>
 
       <div className="container mx-auto px-4 py-16 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="space-y-6 animate-fade-in-left">
             <div className="hover:scale-105 transition-transform duration-500">
-              <div className="text-3xl font-display font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
+              <div className="text-3xl font-display font-bold bg-gradient-to-r from-primary-600 via-secondary-600 to-accent-600 bg-clip-text text-transparent">
                 KidsCorner
               </div>
             </div>
@@ -23,9 +23,9 @@ export function Footer() {
             </p>
             <div className="flex space-x-4">
               {[
-                { icon: Facebook, href: "#", color: "hover:text-blue-400" },
-                { icon: Instagram, href: "#", color: "hover:text-pink-400" },
-                { icon: Twitter, href: "#", color: "hover:text-blue-300" }
+                { icon: Facebook, href: "#", color: "hover:text-primary-400" },
+                { icon: Instagram, href: "#", color: "hover:text-accent-400" },
+                { icon: Twitter, href: "#", color: "hover:text-primary-300" }
               ].map((social, index) => (
                 <div key={index} className="hover:scale-125 hover:rotate-5 transition-all duration-500">
                   <Link href={social.href} className={`text-gray-400 ${social.color} transition-all duration-500 p-2 rounded-xl hover:bg-white/10`}>
@@ -40,10 +40,10 @@ export function Footer() {
             <h3 className="font-display font-bold text-white text-lg">Quick Links</h3>
             <div className="space-y-3">
               {[
-                { name: "Boys Collection", href: "/boys", color: "hover:text-blue-400" },
-                { name: "Girls Collection", href: "/girls", color: "hover:text-pink-400" },
-                { name: "About Us", href: "/about", color: "hover:text-blue-400" },
-                { name: "Contact", href: "/contact", color: "hover:text-blue-400" }
+                { name: "Boys Collection", href: "/boys", color: "hover:text-primary-400" },
+                { name: "Girls Collection", href: "/girls", color: "hover:text-accent-400" },
+                { name: "About Us", href: "/about", color: "hover:text-primary-400" },
+                { name: "Contact", href: "/contact", color: "hover:text-primary-400" }
               ].map((link, index) => (
                 <div key={link.name} className="animate-fade-in-left" style={{ animationDelay: `${0.3 + index * 0.1}s` }}>
                   <Link 
@@ -71,7 +71,7 @@ export function Footer() {
                   style={{ animationDelay: `${0.7 + index * 0.1}s` }}
                 >
                   <div className="hover:scale-125 hover:rotate-5 transition-all duration-500">
-                    <contact.icon className="h-5 w-5 text-blue-400 group-hover:text-blue-300 transition-colors duration-500" />
+                    <contact.icon className="h-5 w-5 text-primary-400 group-hover:text-primary-300 transition-colors duration-500" />
                   </div>
                   <span className="group-hover:text-white transition-colors duration-500">{contact.text}</span>
                 </div>
@@ -102,7 +102,7 @@ export function Footer() {
                 <div key={link.name} className="hover:scale-105 transition-transform duration-500">
                   <Link 
                     href={link.href} 
-                    className="text-gray-400 hover:text-blue-400 transition-colors duration-500 font-body"
+                    className="text-gray-400 hover:text-primary-400 transition-colors duration-500 font-body"
                   >
                     {link.name}
                   </Link>

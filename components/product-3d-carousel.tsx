@@ -108,7 +108,7 @@ export function Product3DCarousel({ products, title }: Product3DCarouselProps) {
       
       {/* Desktop Grid View - Hidden on Mobile/Tablet */}
       <div className="hidden lg:block">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8 max-w-4xl mx-auto">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 gap-8 max-w-6xl mx-auto">
           {products.map((product, index) => (
             <div key={product.id} className="h-full">
               <ProductCard product={product} />
@@ -166,7 +166,7 @@ export function Product3DCarousel({ products, title }: Product3DCarouselProps) {
                         <div
                           className={`bg-white rounded-2xl shadow-2xl overflow-hidden transition-all duration-300 ${
                             isActive 
-                              ? 'shadow-blue-500/20 hover:shadow-blue-500/30' 
+                              ? 'shadow-primary-500/20 hover:shadow-primary-500/30' 
                               : 'shadow-gray-500/10'
                           }`}
                           style={{
@@ -178,7 +178,7 @@ export function Product3DCarousel({ products, title }: Product3DCarouselProps) {
                         
                         {/* Active Card Glow Effect */}
                         {isActive && (
-                          <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 pointer-events-none animate-pulse" />
+                          <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-primary-500/10 via-secondary-500/10 to-accent-500/10 pointer-events-none animate-pulse" />
                         )}
                       </div>
                     </div>
@@ -220,7 +220,7 @@ export function Product3DCarousel({ products, title }: Product3DCarouselProps) {
                   onClick={() => setCurrentIndex(index)}
                   className={`w-2 h-2 rounded-full transition-all duration-300 ${
                     index === currentIndex
-                      ? 'bg-blue-600 scale-125'
+                      ? 'bg-primary-600 scale-125'
                       : 'bg-gray-300 hover:bg-gray-400'
                   }`}
                 />

@@ -119,7 +119,7 @@ export default async function AdminDashboard() {
             <div className="grid grid-cols-2 gap-4">
               <Card className="p-4 hover:bg-muted/50 cursor-pointer transition-colors">
                 <div className="flex items-center space-x-3">
-                  <Package className="h-8 w-8 text-blue-600" />
+                  <Package className="h-8 w-8 text-primary-600" />
                   <div>
                     <p className="font-medium">Add Product</p>
                     <p className="text-sm text-muted-foreground">Create new item</p>
@@ -137,7 +137,7 @@ export default async function AdminDashboard() {
               </Card>
               <Card className="p-4 hover:bg-muted/50 cursor-pointer transition-colors">
                 <div className="flex items-center space-x-3">
-                  <Users className="h-8 w-8 text-purple-600" />
+                  <Users className="h-8 w-8 text-primary-600" />
                   <div>
                     <p className="font-medium">Customers</p>
                     <p className="text-sm text-muted-foreground">View customer list</p>
