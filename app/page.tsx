@@ -181,32 +181,7 @@ export default async function HomePage() {
                     </Link>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  {boysProducts.map((product, index) => (
-                    <div key={product.id} className="animate-fade-in-up hover:-translate-y-1 transition-transform duration-300" style={{ animationDelay: `${index * 0.1}s` }}>
-                      <Link href={`/products/${product.id}`}>
-                        <Card className="group overflow-hidden hover:shadow-xl hover:-translate-y-2 transition-all duration-500 cursor-pointer border-0 shadow-lg">
-                          <div className="relative aspect-[3/4] overflow-hidden bg-gradient-to-br from-blue-50 to-blue-100">
-                            <div className="relative w-full h-full group-hover:scale-105 transition-transform duration-500">
-                              <Image
-                                src={product.images?.[0] || "/placeholder.svg"}
-                                alt={product.name}
-                                fill
-                                className="object-cover transition-all duration-500"
-                              />
-                            </div>
-                          </div>
-                          <CardContent className="p-3">
-                            <h3 className="font-semibold text-sm mb-2 line-clamp-2 group-hover:text-primary transition-colors duration-200">
-                              {product.name}
-                            </h3>
-                            <p className="text-blue-600 font-bold text-lg">${product.price}</p>
-                          </CardContent>
-                        </Card>
-                      </Link>
-                    </div>
-                  ))}
-                </div>
+                <Product3DCarousel products={boysProducts} />
               </EnhancedAnimatedSection>
 
               {/* Girls Section */}
@@ -231,32 +206,7 @@ export default async function HomePage() {
                     </Link>
                   </div>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  {girlsProducts.map((product, index) => (
-                    <div key={product.id} className="animate-fade-in-up hover:-translate-y-1 transition-transform duration-300" style={{ animationDelay: `${index * 0.1}s` }}>
-                      <Link href={`/products/${product.id}`}>
-                        <Card className="group overflow-hidden hover:shadow-xl hover:-translate-y-2 transition-all duration-500 cursor-pointer border-0 shadow-lg">
-                          <div className="relative aspect-[3/4] overflow-hidden bg-gradient-to-br from-pink-50 to-pink-100">
-                            <div className="relative w-full h-full group-hover:scale-105 transition-transform duration-500">
-                              <Image
-                                src={product.images?.[0] || "/placeholder.svg"}
-                                alt={product.name}
-                                fill
-                                className="object-cover transition-all duration-500"
-                              />
-                            </div>
-                          </div>
-                          <CardContent className="p-3">
-                            <h3 className="font-semibold text-sm mb-2 line-clamp-2 group-hover:text-primary transition-colors duration-200">
-                              {product.name}
-                            </h3>
-                            <p className="text-pink-600 font-bold text-lg">${product.price}</p>
-                          </CardContent>
-                        </Card>
-                      </Link>
-                    </div>
-                  ))}
-                </div>
+                <Product3DCarousel products={girlsProducts} />
               </EnhancedAnimatedSection>
             </div>
           </div>

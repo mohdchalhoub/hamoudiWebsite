@@ -11,7 +11,7 @@ export function Footer() {
       </div>
 
       <div className="container mx-auto px-4 py-16 relative z-10">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           <div className="space-y-6 animate-fade-in-left">
             <div className="hover:scale-105 transition-transform duration-500">
               <div className="text-3xl font-display font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent">
@@ -58,27 +58,6 @@ export function Footer() {
           </div>
 
           <div className="space-y-6 animate-fade-in-left" style={{ animationDelay: '0.4s' }}>
-            <h3 className="font-display font-bold text-white text-lg">Customer Service</h3>
-            <div className="space-y-3">
-              {[
-                { name: "Size Guide", href: "#" },
-                { name: "Shipping Info", href: "#" },
-                { name: "Returns", href: "#" },
-                { name: "FAQ", href: "#" }
-              ].map((link, index) => (
-                <div key={link.name} className="animate-fade-in-left" style={{ animationDelay: `${0.5 + index * 0.1}s` }}>
-                  <Link 
-                    href={link.href} 
-                    className="block text-sm text-gray-300 hover:text-blue-400 hover:translate-x-2 transition-all duration-500 group py-2 px-3 rounded-lg hover:bg-white/5"
-                  >
-                    <span className="group-hover:pl-2 transition-all duration-500">{link.name}</span>
-                  </Link>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="space-y-6 animate-fade-in-left" style={{ animationDelay: '0.6s' }}>
             <h3 className="font-display font-bold text-white text-lg">Contact Info</h3>
             <div className="space-y-4">
               {[
