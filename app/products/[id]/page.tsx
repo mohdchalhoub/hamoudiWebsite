@@ -7,7 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ProductGridClient } from "@/components/product-grid-client"
 import { ProductImageGallery } from "@/components/product-image-gallery"
-import { Header } from "@/components/header"
+import { ServerHeader } from "@/components/server-header"
 import { Footer } from "@/components/footer"
 import { ArrowLeft } from "lucide-react"
 
@@ -37,7 +37,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-100 via-gray-50 to-slate-100">
-      <Header />
+      <ServerHeader />
       <main className="flex-1">
         <div className="container mx-auto px-3 py-3">
           {/* Back to Home Button */}

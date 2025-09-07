@@ -3,7 +3,7 @@
 import type React from "react"
 
 import { useState } from "react"
-import { Header } from "@/components/header"
+import { ClientHeaderWrapper } from "@/components/client-header-wrapper"
 import { Footer } from "@/components/footer"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -52,7 +52,7 @@ export default function ContactPage() {
 
   return (
     <div className="min-h-screen">
-      <Header />
+      <ClientHeaderWrapper />
 
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-blue-50 via-white to-pink-50 py-16">

@@ -38,12 +38,51 @@ export async function getCategory(slug: string): Promise<Category | null> {
   return data
 }
 
+export async function createCategory(categoryData: {
+  name: string
+  description?: string
+  image_url?: string
+}): Promise<Category> {
+  // Generate slug from name
+  const slug = categoryData.name
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)/g, '')
+
+  // Get the next sort order
+  const { data: lastCategory } = await supabase
+    .from('categories')
+    .select('sort_order')
+    .order('sort_order', { ascending: false })
+    .limit(1)
+    .single()
+
+  const sortOrder = (lastCategory?.sort_order || 0) + 1
+
+  const { data, error } = await supabaseAdmin
+    .from('categories')
+    .insert({
+      name: categoryData.name,
+      slug,
+      description: categoryData.description || null,
+      image_url: categoryData.image_url || null,
+      sort_order: sortOrder,
+      is_active: true
+    })
+    .select()
+    .single()
+
+  if (error) throw error
+  return data
+}
+
 // Products
 export async function getProducts(filters?: {
   gender?: 'boys' | 'girls' | 'unisex'
   category?: string
   featured?: boolean
   active?: boolean
+  on_sale?: boolean
   limit?: number
   offset?: number
   search?: string
@@ -62,7 +101,12 @@ export async function getProducts(filters?: {
     `)
 
   if (filters?.gender) {
-    query = query.eq('gender', filters.gender)
+    if (filters.gender === 'boys' || filters.gender === 'girls') {
+      // Include both specific gender and unisex products
+      query = query.or(`gender.eq.${filters.gender},gender.eq.unisex`)
+    } else {
+      query = query.eq('gender', filters.gender)
+    }
   }
 
   if (filters?.category) {
@@ -75,6 +119,10 @@ export async function getProducts(filters?: {
 
   if (filters?.active !== undefined) {
     query = query.eq('is_active', filters.active)
+  }
+
+  if (filters?.on_sale !== undefined) {
+    query = query.eq('on_sale', filters.on_sale)
   }
 
   if (filters?.search) {

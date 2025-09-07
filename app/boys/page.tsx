@@ -1,4 +1,4 @@
-import { Header } from "@/components/header"
+import { ServerHeader } from "@/components/server-header"
 import { Footer } from "@/components/footer"
 import { ProductGridClient } from "@/components/product-grid-client"
 import { AnimatedSection } from "@/components/animated-section"
@@ -17,7 +17,7 @@ export default async function BoysPage() {
 
   return (
     <div className="min-h-screen">
-      <Header />
+      <ServerHeader />
 
       {/* Hero Section */}
       <section className="relative bg-gradient-to-r from-blue-600 to-blue-800 text-white py-16 overflow-hidden">

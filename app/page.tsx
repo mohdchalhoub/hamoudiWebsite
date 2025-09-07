@@ -3,7 +3,7 @@ import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { Header } from "@/components/header"
+import { ServerHeader } from "@/components/server-header"
 import { Footer } from "@/components/footer"
 import { AnimatedSection } from "@/components/animated-section"
 import { getProducts } from "@/lib/database"
@@ -15,16 +15,17 @@ export const revalidate = 0
 
 export default async function HomePage() {
   // Fetch products from database
-  const [featuredProducts, boysProducts, girlsProducts] = await Promise.all([
+  const [featuredProducts, boysProducts, girlsProducts, onSaleProducts] = await Promise.all([
     getProducts({ featured: true, active: true, limit: 4 }),
     getProducts({ gender: 'boys', active: true, limit: 2 }),
-    getProducts({ gender: 'girls', active: true, limit: 2 })
+    getProducts({ gender: 'girls', active: true, limit: 2 }),
+    getProducts({ on_sale: true, active: true, limit: 4 })
   ])
   
 
   return (
     <div className="min-h-screen">
-      <Header />
+      <ServerHeader />
 
       {/* Hero Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-blue-50 via-white to-pink-50">
@@ -107,6 +108,57 @@ export default async function HomePage() {
           </div>
         </div>
       </AnimatedSection>
+
+      {/* On Sale Products Section */}
+      {onSaleProducts.length > 0 && (
+        <AnimatedSection animation="fade-up" className="py-16 bg-gradient-to-r from-red-50 to-orange-50">
+          <div className="container mx-auto px-4">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold mb-4 text-red-600">🔥 On Sale</h2>
+              <p className="text-muted-foreground text-lg">Limited time offers - Don't miss out on these amazing deals!</p>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 max-w-6xl mx-auto">
+              {onSaleProducts.slice(0, 4).map((product, index) => {
+                const discountPercentage = product.compare_at_price 
+                  ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100)
+                  : 0
+                
+                return (
+                  <AnimatedSection key={product.id} animation="scale-in" delay={(index + 1) * 100}>
+                    <Link href={`/products/${product.id}`}>
+                      <Card className="group overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer border-red-200">
+                        <div className="relative aspect-[3/4] overflow-hidden">
+                          <Image
+                            src={product.images?.[0] || "/placeholder.svg"}
+                            alt={product.name}
+                            fill
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
+                          />
+                          <Badge className="absolute top-1 left-1 bg-red-500 text-white text-xs px-1.5 py-0.5">
+                            -{discountPercentage}%
+                          </Badge>
+                          <Badge className="absolute top-1 right-1 bg-orange-500 text-white text-xs px-1.5 py-0.5">
+                            Sale
+                          </Badge>
+                        </div>
+                        <CardContent className="p-2">
+                          <h3 className="font-semibold text-xs mb-1 line-clamp-2 group-hover:text-primary transition-colors duration-200">{product.name}</h3>
+                          <div className="flex items-center gap-2">
+                            <p className="text-red-600 font-bold text-sm">${product.price}</p>
+                            {product.compare_at_price && (
+                              <p className="text-gray-400 text-xs line-through">${product.compare_at_price}</p>
+                            )}
+                          </div>
+                        </CardContent>
+                      </Card>
+                    </Link>
+                  </AnimatedSection>
+                )
+              })}
+            </div>
+          </div>
+        </AnimatedSection>
+      )}
 
       {/* Category Sections */}
       <AnimatedSection animation="fade-up" className="py-16 bg-muted/30">

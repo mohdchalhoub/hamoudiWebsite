@@ -55,6 +55,7 @@ export function EditProductClient({ product }: EditProductClientProps) {
     videos: product.videos || [],
     is_active: product.is_active,
     is_featured: product.is_featured,
+    on_sale: product.on_sale || false,
     tags: product.tags || [],
     variants: product.variants || []
   }

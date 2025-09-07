@@ -7,13 +7,18 @@ import { CartDrawer } from "./cart-drawer"
 import { Menu, Heart } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
-export function Header() {
+interface HeaderProps {
+  hasSaleProducts?: boolean
+}
+
+export function Header({ hasSaleProducts = false }: HeaderProps) {
   const [isOpen, setIsOpen] = useState(false)
 
   const navigation = [
     { name: "Home", href: "/" },
     { name: "Boys", href: "/boys" },
     { name: "Girls", href: "/girls" },
+    ...(hasSaleProducts ? [{ name: "🔥 On Sale", href: "/on-sale" }] : []),
     { name: "About", href: "/about" },
     { name: "Contact", href: "/contact" },
   ]

@@ -11,7 +11,7 @@ import { Switch } from "@/components/ui/switch"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { X, Plus } from "lucide-react"
-import { getAllCategories } from "@/lib/database"
+import { getAllCategories, createCategory } from "@/lib/database"
 import { MultipleMediaUpload } from "@/components/multiple-media-upload"
 import { generateProductCode } from "@/lib/code-generator"
 
@@ -34,6 +34,7 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
     videos: initialData?.videos || [],
     is_active: initialData?.is_active ?? true,
     is_featured: initialData?.is_featured ?? false,
+    on_sale: initialData?.on_sale ?? false,
     tags: initialData?.tags || [] as string[],
     variants: initialData?.variants || [] as Array<{
       size: string | null
@@ -52,6 +53,10 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
   const [variantType, setVariantType] = useState<'size' | 'age'>('size')
   const [generatedProductCode, setGeneratedProductCode] = useState<string | null>(null)
   const [isGeneratingCode, setIsGeneratingCode] = useState(false)
+  const [showNewCategoryForm, setShowNewCategoryForm] = useState(false)
+  const [newCategoryName, setNewCategoryName] = useState("")
+  const [newCategoryDescription, setNewCategoryDescription] = useState("")
+  const [isCreatingCategory, setIsCreatingCategory] = useState(false)
   const [newVariant, setNewVariant] = useState({
     size: "",
     age_range: "",
@@ -71,6 +76,40 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
       console.error('Failed to generate product code:', error)
     } finally {
       setIsGeneratingCode(false)
+    }
+  }
+
+  // Create new category function
+  const createNewCategory = async () => {
+    if (!newCategoryName.trim()) {
+      alert('Category name is required')
+      return
+    }
+
+    try {
+      setIsCreatingCategory(true)
+      const newCategory = await createCategory({
+        name: newCategoryName.trim(),
+        description: newCategoryDescription.trim() || undefined
+      })
+      
+      // Add the new category to the list
+      setCategories(prev => [...prev, newCategory])
+      
+      // Select the new category
+      setFormData(prev => ({ ...prev, category_id: newCategory.id }))
+      
+      // Reset form
+      setNewCategoryName("")
+      setNewCategoryDescription("")
+      setShowNewCategoryForm(false)
+      
+      alert('Category created successfully!')
+    } catch (error: any) {
+      console.error('Failed to create category:', error)
+      alert(`Failed to create category: ${error.message}`)
+    } finally {
+      setIsCreatingCategory(false)
     }
   }
 
@@ -304,7 +343,61 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
             {/* Categories and Settings */}
             <div className="space-y-4">
               <div>
-                <Label htmlFor="category">Category</Label>
+                <div className="flex items-center justify-between mb-2">
+                  <Label htmlFor="category">Category</Label>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowNewCategoryForm(!showNewCategoryForm)}
+                    className="text-xs"
+                  >
+                    <Plus className="h-3 w-3 mr-1" />
+                    Add New
+                  </Button>
+                </div>
+                
+                {showNewCategoryForm && (
+                  <Card className="mb-3 p-3 bg-slate-50">
+                    <div className="space-y-2">
+                      <Input
+                        placeholder="Category name"
+                        value={newCategoryName}
+                        onChange={(e) => setNewCategoryName(e.target.value)}
+                        disabled={isCreatingCategory}
+                      />
+                      <Input
+                        placeholder="Description (optional)"
+                        value={newCategoryDescription}
+                        onChange={(e) => setNewCategoryDescription(e.target.value)}
+                        disabled={isCreatingCategory}
+                      />
+                      <div className="flex gap-2">
+                        <Button
+                          type="button"
+                          size="sm"
+                          onClick={createNewCategory}
+                          disabled={isCreatingCategory || !newCategoryName.trim()}
+                        >
+                          {isCreatingCategory ? "Creating..." : "Create Category"}
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setShowNewCategoryForm(false)
+                            setNewCategoryName("")
+                            setNewCategoryDescription("")
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  </Card>
+                )}
+                
                 <Select
                   value={formData.category_id}
                   onValueChange={(value) => setFormData((prev) => ({ ...prev, category_id: value }))}
@@ -327,7 +420,7 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
                 <Label htmlFor="gender">Gender</Label>
                 <Select
                   value={formData.gender}
-                  onValueChange={(value) => setFormData((prev) => ({ ...prev, gender: value as "boys" | "girls" }))}
+                  onValueChange={(value) => setFormData((prev) => ({ ...prev, gender: value as "boys" | "girls" | "unisex" }))}
                 >
                   <SelectTrigger>
                     <SelectValue />
@@ -335,26 +428,39 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
                   <SelectContent>
                     <SelectItem value="boys">Boys</SelectItem>
                     <SelectItem value="girls">Girls</SelectItem>
+                    <SelectItem value="unisex">Unisex</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
 
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="is_active"
-                    checked={formData.is_active}
-                    onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, is_active: checked }))}
-                  />
-                  <Label htmlFor="is_active">Active</Label>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="is_active"
+                      checked={formData.is_active}
+                      onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, is_active: checked }))}
+                    />
+                    <Label htmlFor="is_active">Active</Label>
+                  </div>
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="is_featured"
+                      checked={formData.is_featured}
+                      onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, is_featured: checked }))}
+                    />
+                    <Label htmlFor="is_featured">Featured</Label>
+                  </div>
                 </div>
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="is_featured"
-                    checked={formData.is_featured}
-                    onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, is_featured: checked }))}
-                  />
-                  <Label htmlFor="is_featured">Featured</Label>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Switch
+                      id="on_sale"
+                      checked={formData.on_sale}
+                      onCheckedChange={(checked) => setFormData((prev) => ({ ...prev, on_sale: checked }))}
+                    />
+                    <Label htmlFor="on_sale">On Sale</Label>
+                  </div>
                 </div>
               </div>
             </div>

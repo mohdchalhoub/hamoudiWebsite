@@ -1,4 +1,4 @@
-import { Header } from "@/components/header"
+import { ServerHeader } from "@/components/server-header"
 import { Footer } from "@/components/footer"
 import { Card, CardContent } from "@/components/ui/card"
 import { Heart, Shield, Sparkles, Users } from "lucide-react"
@@ -7,7 +7,7 @@ import Image from "next/image"
 export default function AboutPage() {
   return (
     <div className="min-h-screen">
-      <Header />
+      <ServerHeader />
 
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-blue-50 via-white to-pink-50 py-16">
