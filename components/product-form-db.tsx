@@ -239,28 +239,29 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
             {/* Basic Information */}
             <div className="space-y-4">
               <div>
-                <Label htmlFor="name">Product Name</Label>
+                <Label htmlFor="name" className="text-xs font-medium text-text-primary">Product Name</Label>
                 <Input
                   id="name"
                   value={formData.name}
                   onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
                   required
+                  className="h-8 text-xs"
                 />
               </div>
 
               {/* Generated Product Code Display */}
               <div>
-                <Label>Generated Product Code</Label>
-                <div className="flex items-center gap-2">
-                  <div className="flex-1 p-3 bg-muted rounded-md border">
+                <Label className="text-xs font-medium text-text-primary">Generated Product Code</Label>
+                <div className="flex items-center gap-1">
+                  <div className="flex-1 p-1 bg-background border border-border rounded-md">
                     {isGeneratingCode ? (
-                      <span className="text-muted-foreground">Generating...</span>
+                      <span className="text-text-muted text-xs">Generating...</span>
                     ) : generatedProductCode ? (
-                      <span className="font-mono font-bold text-lg text-primary">
+                      <span className="font-mono font-medium text-sm text-text-primary">
                         {generatedProductCode}
                       </span>
                     ) : (
-                      <span className="text-muted-foreground">No code generated</span>
+                      <span className="text-text-muted text-xs">No code generated</span>
                     )}
                   </div>
                   <Button
@@ -269,11 +270,12 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
                     size="sm"
                     onClick={generateCode}
                     disabled={isGeneratingCode}
+                    className="h-7 text-xs px-2"
                   >
                     {isGeneratingCode ? "Generating..." : "Regenerate"}
                   </Button>
                 </div>
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-xs text-text-muted mt-0.5">
                   This unique 6-digit code will be assigned to your product
                 </p>
               </div>
@@ -289,9 +291,9 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <Label htmlFor="price">Price ($)</Label>
+                  <Label htmlFor="price" className="text-xs font-medium text-text-primary">Price ($)</Label>
                   <Input
                     id="price"
                     type="number"
@@ -299,10 +301,11 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
                     value={formData.price}
                     onChange={(e) => setFormData((prev) => ({ ...prev, price: Number.parseFloat(e.target.value) }))}
                     required
+                    className="h-8 text-xs"
                   />
                 </div>
                 <div>
-                  <Label htmlFor="compare_at_price">Compare at Price ($)</Label>
+                  <Label htmlFor="compare_at_price" className="text-xs font-medium text-text-primary">Compare at Price ($)</Label>
                   <Input
                     id="compare_at_price"
                     type="number"
@@ -311,12 +314,13 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
                     onChange={(e) =>
                       setFormData((prev) => ({ ...prev, compare_at_price: Number.parseFloat(e.target.value) || 0 }))
                     }
+                    className="h-8 text-xs"
                   />
                 </div>
               </div>
 
               <div>
-                <Label htmlFor="quantity">Quantity Available</Label>
+                <Label htmlFor="quantity" className="text-xs font-medium text-text-primary">Quantity Available</Label>
                 <Input
                   id="quantity"
                   type="number"
@@ -327,8 +331,9 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
                     setFormData((prev) => ({ ...prev, quantity: value }))
                   }}
                   placeholder="Enter total quantity available"
+                  className="h-8 text-xs"
                 />
-                <p className="text-xs text-muted-foreground mt-1">
+                <p className="text-xs text-text-muted mt-0.5">
                   Total number of units available for this product
                 </p>
               </div>
@@ -454,12 +459,12 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
               </div>
 
               <div>
-                <Label htmlFor="season">Season</Label>
+                <Label htmlFor="season" className="text-xs font-medium text-text-primary">Season</Label>
                 <Select
                   value={formData.season}
                   onValueChange={(value) => setFormData((prev) => ({ ...prev, season: value as "summer" | "winter" | "all_season" }))}
                 >
-                  <SelectTrigger>
+                  <SelectTrigger className="h-8 text-xs">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
