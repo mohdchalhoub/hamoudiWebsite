@@ -45,6 +45,32 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
     ? Math.max(selectedVariant.stock_quantity, product.quantity)
     : product.quantity
 
+  // Calculate dynamic price based on selected variant
+  const currentPrice = selectedVariant 
+    ? product.price + (selectedVariant.price_adjustment || 0)
+    : product.price
+  
+  // Check if price is different from base price
+  const hasPriceAdjustment = selectedVariant && selectedVariant.price_adjustment !== 0
+
+  // Debug logging
+  console.log('ProductDetailClient Debug:', {
+    selectedSize,
+    selectedAge,
+    selectedColor,
+    selectedVariant: selectedVariant ? {
+      id: selectedVariant.id,
+      size: selectedVariant.size,
+      age_range: selectedVariant.age_range,
+      color: selectedVariant.color,
+      price_adjustment: selectedVariant.price_adjustment,
+      stock_quantity: selectedVariant.stock_quantity
+    } : null,
+    basePrice: product.price,
+    currentPrice,
+    hasPriceAdjustment
+  })
+
   const handleAddToCart = async () => {
     if (!isInStock) return
     
@@ -275,9 +301,22 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 <span className="font-medium text-text-primary">{product.product_code}</span>
               </div>
             )}
-            <div className="flex justify-between items-center py-0.5 px-0.5 bg-background-subtle rounded-md">
+            <div className={`flex justify-between items-center py-0.5 px-0.5 rounded-md transition-colors duration-200 ${
+              hasPriceAdjustment ? 'bg-primary/5 border border-primary/20' : 'bg-background-subtle'
+            }`}>
               <span className="text-text-muted font-medium">Price:</span>
-              <span className="font-medium text-text-primary">${product.price.toFixed(2)}</span>
+              <div className="flex items-center gap-1">
+                <span className={`font-medium transition-colors duration-200 ${
+                  hasPriceAdjustment ? 'text-primary' : 'text-text-primary'
+                }`}>
+                  ${currentPrice.toFixed(2)}
+                </span>
+                {hasPriceAdjustment && (
+                  <span className="text-xs text-text-muted">
+                    ({selectedVariant.price_adjustment > 0 ? '+' : ''}${selectedVariant.price_adjustment.toFixed(2)})
+                  </span>
+                )}
+              </div>
             </div>
             <div className="flex justify-between items-center py-0.5 px-0.5 bg-background-subtle rounded-md">
               <span className="text-text-muted font-medium">Season:</span>
