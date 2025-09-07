@@ -27,6 +27,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
   const [selectedColor, setSelectedColor] = useState(availableColors[0] || '')
   const [quantity, setQuantity] = useState(1)
   const [isAddingToCart, setIsAddingToCart] = useState(false)
+  const [isAddingToWishlist, setIsAddingToWishlist] = useState(false)
 
   // Find the selected variant
   const selectedVariant = product.variants?.find(v => {
@@ -55,6 +56,23 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       console.error('Failed to add to cart:', error)
     } finally {
       setIsAddingToCart(false)
+    }
+  }
+
+  const handleAddToWishlist = async () => {
+    if (!isInStock) return
+    
+    setIsAddingToWishlist(true)
+    try {
+      const sizeOrAge = selectedSize || selectedAge
+      if (sizeOrAge && selectedColor) {
+        // Add to wishlist with quantity of 1 (like Add to Cart but fixed quantity)
+        await addItem(product, sizeOrAge, selectedColor, 1)
+      }
+    } catch (error) {
+      console.error('Failed to add to wishlist:', error)
+    } finally {
+      setIsAddingToWishlist(false)
     }
   }
 
@@ -201,10 +219,12 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
         
         <Button
           variant="outline"
-          className="w-full h-8 text-xs font-medium border-border hover:border-text-muted hover:bg-background-subtle text-text-primary transition-colors duration-200"
+          onClick={handleAddToWishlist}
+          disabled={!isInStock || isAddingToWishlist}
+          className="w-full h-8 text-xs font-medium border-border hover:border-text-muted hover:bg-background-subtle text-text-primary transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Heart className="mr-1 h-3 w-3" />
-          Add to Wishlist
+          {isAddingToWishlist ? "Adding..." : isInStock ? "Add to Wishlist" : "Out of Stock"}
         </Button>
       </div>
 
