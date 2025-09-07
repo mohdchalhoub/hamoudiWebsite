@@ -1,80 +1,106 @@
+"use client"
+
+import { useState, useEffect } from "react"
 import { ServerHeader } from "@/components/server-header"
 import { Footer } from "@/components/footer"
 import { Product3DCarousel } from "@/components/product-3d-carousel"
+import { MobileProductPagination } from "@/components/mobile-product-pagination"
+import { ProductFilters } from "@/components/product-filters"
 import { AnimatedSection } from "@/components/animated-section"
+import { SectionHeader } from "@/components/section-header"
 import { getProducts } from "@/lib/database"
-import { Badge } from "@/components/ui/badge"
+import type { ProductWithDetails } from "@/lib/database.types"
 
-// Force dynamic rendering and disable caching
-export const dynamic = 'force-dynamic'
-export const revalidate = 0
+export default function OnSalePage() {
+  const [onSaleProducts, setOnSaleProducts] = useState<ProductWithDetails[]>([])
+  const [filteredProducts, setFilteredProducts] = useState<ProductWithDetails[]>([])
+  const [loading, setLoading] = useState(true)
 
-export default async function OnSalePage() {
-  // Fetch all products that are on sale with cache busting
-  const onSaleProducts = await getProducts({ 
-    on_sale: true, 
-    active: true,
-    _cacheBust: Date.now()
-  })
+  useEffect(() => {
+    const loadProducts = async () => {
+      try {
+        setLoading(true)
+        const products = await getProducts({ 
+          on_sale: true, 
+          active: true,
+          _cacheBust: Date.now()
+        })
+        setOnSaleProducts(products)
+        setFilteredProducts(products)
+      } catch (error) {
+        console.error('Failed to load products:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+    loadProducts()
+  }, [])
+
+  const handleFilteredProducts = (filtered: ProductWithDetails[]) => {
+    setFilteredProducts(filtered)
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen">
+        <ServerHeader />
+        <div className="container mx-auto px-4 py-8">
+          <div className="text-center">
+            <p className="text-text-muted">Loading products...</p>
+          </div>
+        </div>
+        <Footer />
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen">
       <ServerHeader />
 
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-accent-600 to-secondary-600 text-white py-16 overflow-hidden">
-        <div className="absolute inset-0 bg-black/10"></div>
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <AnimatedSection animation="fade-down" className="space-y-6">
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <span className="text-6xl">🔥</span>
-              <h1 className="text-4xl lg:text-5xl font-bold animate-gradient bg-gradient-to-r from-white to-secondary-100 bg-clip-text text-transparent">
-                On Sale
-              </h1>
-              <span className="text-6xl">🔥</span>
-            </div>
-            <p className="text-xl opacity-90 max-w-2xl mx-auto leading-relaxed">
-              Limited time offers! Don't miss out on these amazing deals. Shop now before they're gone!
-            </p>
-            <Badge className="bg-white/20 text-white text-lg px-4 py-2 border-white/30">
-              {onSaleProducts.length} Product{onSaleProducts.length !== 1 ? "s" : ""} on Sale
-            </Badge>
+      <section className="bg-background">
+        <div className="container mx-auto px-4">
+          <AnimatedSection animation="fade-up">
+            <SectionHeader 
+              title="On Sale"
+              subtitle="Limited time offers! Don't miss out on these amazing deals. Shop now before they're gone!"
+            />
           </AnimatedSection>
         </div>
-        {/* Floating decorative elements */}
-        <div className="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full animate-float"></div>
-        <div className="absolute bottom-10 right-10 w-16 h-16 bg-white/10 rounded-full animate-float-delayed"></div>
-        <div className="absolute top-1/2 right-20 w-12 h-12 bg-white/5 rounded-full animate-bounce"></div>
-        <div className="absolute top-1/3 left-20 w-8 h-8 bg-white/5 rounded-full animate-pulse"></div>
       </section>
 
       <div className="container mx-auto px-4 py-8">
         {onSaleProducts.length > 0 ? (
           <>
+            {/* Filter Section */}
+            <ProductFilters 
+              products={onSaleProducts}
+              onFilteredProducts={handleFilteredProducts}
+            />
+
             <AnimatedSection animation="fade-up" className="mb-8">
               <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
-                <span className="w-1 h-8 bg-red-600 rounded-full"></span>
-                Amazing Deals Available
+                <span className="w-1 h-8 bg-primary rounded-full"></span>
+                {filteredProducts.length} Product{filteredProducts.length !== 1 ? "s" : ""} on Sale
               </h2>
-              <p className="text-muted-foreground">
-                Save big on these limited-time offers. Prices won't stay this low for long!
-              </p>
+              <p className="text-text-muted">Save big on these limited-time offers. Prices won't stay this low for long!</p>
             </AnimatedSection>
 
-            <Product3DCarousel products={onSaleProducts} />
+            <MobileProductPagination products={filteredProducts} />
           </>
         ) : (
           <AnimatedSection animation="fade-up" className="text-center py-16">
             <div className="space-y-4">
               <div className="text-6xl">😔</div>
-              <h2 className="text-2xl font-bold text-gray-600">No Sale Items Available</h2>
-              <p className="text-muted-foreground max-w-md mx-auto">
+              <h2 className="text-2xl font-bold text-text-primary">No Sale Items Available</h2>
+              <p className="text-text-muted max-w-md mx-auto">
                 There are currently no products on sale. Check back soon for amazing deals!
               </p>
               <div className="pt-4">
                 <a 
                   href="/" 
-                  className="inline-flex items-center px-6 py-3 bg-gradient-to-r from-primary-600 to-accent-600 text-white font-medium rounded-lg hover:shadow-lg transition-all duration-300 hover:scale-105"
+                  className="inline-flex items-center px-6 py-3 bg-primary hover:bg-primary-hover text-white font-medium rounded-none hover:shadow-lg transition-all duration-300"
                 >
                   Browse All Products
                 </a>

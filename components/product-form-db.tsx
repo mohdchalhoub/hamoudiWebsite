@@ -531,22 +531,22 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
                   </div>
                 ) : (
                   <div className="space-y-1">
-                    <Select
+                    <Input
+                      type="number"
+                      placeholder="Age (e.g., 5, 8, 12)"
                       value={newVariant.age_range}
-                      onValueChange={(value) => setNewVariant(prev => ({ ...prev, age_range: value }))}
-                    >
-                      <SelectTrigger className="transition-all duration-200">
-                        <SelectValue placeholder="Select age" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        <SelectItem value="3-5">3-5 years</SelectItem>
-                        <SelectItem value="6-8">6-8 years</SelectItem>
-                        <SelectItem value="9-12">9-12 years</SelectItem>
-                        <SelectItem value="13-16">13-16 years</SelectItem>
-                        <SelectItem value="3-12">3-12 years</SelectItem>
-                      </SelectContent>
-                    </Select>
-                    <p className="text-xs text-muted-foreground">Choose age range</p>
+                      onChange={(e) => {
+                        const value = e.target.value
+                        // Only allow positive numbers
+                        if (value === '' || (Number(value) > 0 && Number(value) <= 18)) {
+                          setNewVariant(prev => ({ ...prev, age_range: value }))
+                        }
+                      }}
+                      min="1"
+                      max="18"
+                      className="transition-all duration-200"
+                    />
+                    <p className="text-xs text-muted-foreground">Enter age (1-18 years)</p>
                   </div>
                 )}
                 <Input

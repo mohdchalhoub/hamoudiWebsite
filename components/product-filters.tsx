@@ -1,285 +1,316 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Checkbox } from "@/components/ui/checkbox"
-import { Label } from "@/components/ui/label"
-import { Slider } from "@/components/ui/slider"
-import { Badge } from "@/components/ui/badge"
-import { X, Sun, Snowflake } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Card, CardContent } from "@/components/ui/card"
+import { Search, X } from "lucide-react"
+import { getAllCategories } from "@/lib/database"
+import type { ProductWithDetails } from "@/lib/database.types"
 
 interface ProductFiltersProps {
-  onFiltersChange: (filters: FilterState) => void
-  availableSizes: string[]
-  availableColors: string[]
-  priceRange: [number, number]
+  products: ProductWithDetails[]
+  onFilteredProducts: (filteredProducts: ProductWithDetails[]) => void
+  gender?: 'boys' | 'girls' | 'unisex'
 }
 
-export interface FilterState {
-  sizes: string[]
-  colors: string[]
-  seasons: string[]
-  priceRange: [number, number]
-  inStockOnly: boolean
-  featuredOnly: boolean
+interface FilterState {
+  category: string
+  season: string
+  age: string
+  color: string
 }
 
-export function ProductFilters({ onFiltersChange, availableSizes, availableColors, priceRange }: ProductFiltersProps) {
+export function ProductFilters({ products, onFilteredProducts, gender }: ProductFiltersProps) {
+  const [categories, setCategories] = useState<any[]>([])
   const [filters, setFilters] = useState<FilterState>({
-    sizes: [],
-    colors: [],
-    seasons: [],
-    priceRange: priceRange,
-    inStockOnly: false,
-    featuredOnly: false,
+    category: '',
+    season: '',
+    age: '',
+    color: ''
   })
+  const [isFiltered, setIsFiltered] = useState(false)
 
-  const updateFilters = (newFilters: Partial<FilterState>) => {
-    const updated = { ...filters, ...newFilters }
-    setFilters(updated)
-    onFiltersChange(updated)
-  }
-
-  const clearAllFilters = () => {
-    const cleared: FilterState = {
-      sizes: [],
-      colors: [],
-      seasons: [],
-      priceRange: priceRange,
-      inStockOnly: false,
-      featuredOnly: false,
+  // Load categories on mount
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        const cats = await getAllCategories()
+        setCategories(cats)
+      } catch (error) {
+        console.error('Failed to load categories:', error)
+      }
     }
-    setFilters(cleared)
-    onFiltersChange(cleared)
+    loadCategories()
+  }, [])
+
+  // Get unique values for filter options
+  const getUniqueValues = (key: keyof ProductWithDetails) => {
+    const values = new Set<string>()
+    products.forEach(product => {
+      if (product[key]) {
+        values.add(String(product[key]))
+      }
+    })
+    return Array.from(values).sort()
   }
 
-  const hasActiveFilters =
-    filters.sizes.length > 0 ||
-    filters.colors.length > 0 ||
-    filters.seasons.length > 0 ||
-    filters.inStockOnly ||
-    filters.featuredOnly ||
-    filters.priceRange[0] !== priceRange[0] ||
-    filters.priceRange[1] !== priceRange[1]
+  // Get unique colors from variants
+  const getUniqueColors = () => {
+    const colors = new Set<string>()
+    products.forEach(product => {
+      product.variants?.forEach(variant => {
+        if (variant.color) {
+          colors.add(variant.color)
+        }
+      })
+    })
+    return Array.from(colors).sort()
+  }
+
+  // Get unique ages from variants
+  const getUniqueAges = () => {
+    const ages = new Set<string>()
+    products.forEach(product => {
+      product.variants?.forEach(variant => {
+        if (variant.age_range) {
+          ages.add(variant.age_range)
+        }
+      })
+    })
+    return Array.from(ages).sort((a, b) => Number(a) - Number(b))
+  }
+
+  const handleFilterChange = (filterType: keyof FilterState, value: string) => {
+    setFilters(prev => ({
+      ...prev,
+      [filterType]: value
+    }))
+  }
+
+  const applyFilters = () => {
+    let filteredProducts = products
+
+    // Apply category filter
+    if (filters.category) {
+      filteredProducts = filteredProducts.filter(product => 
+        product.category_id === filters.category
+      )
+    }
+
+    // Apply season filter
+    if (filters.season) {
+      filteredProducts = filteredProducts.filter(product => 
+        product.season === filters.season
+      )
+    }
+
+    // Apply age filter
+    if (filters.age) {
+      filteredProducts = filteredProducts.filter(product => 
+        product.variants?.some(variant => variant.age_range === filters.age)
+      )
+    }
+
+    // Apply color filter
+    if (filters.color) {
+      filteredProducts = filteredProducts.filter(product => 
+        product.variants?.some(variant => variant.color === filters.color)
+      )
+    }
+
+    onFilteredProducts(filteredProducts)
+    setIsFiltered(true)
+  }
+
+  const clearFilters = () => {
+    setFilters({
+      category: '',
+      season: '',
+      age: '',
+      color: ''
+    })
+    onFilteredProducts(products)
+    setIsFiltered(false)
+  }
+
+  const hasActiveFilters = Object.values(filters).some(value => value !== '')
 
   return (
-    <Card className="sticky top-4">
-      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
-        <CardTitle className="text-lg">Filters</CardTitle>
+    <Card className="mb-6">
+      <CardContent className="p-4">
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h3 className="text-lg font-semibold text-text-primary">Filter Products</h3>
         {hasActiveFilters && (
-          <Button variant="ghost" size="sm" onClick={clearAllFilters}>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={clearFilters}
+                className="text-text-muted hover:text-text-primary"
+              >
             <X className="h-4 w-4 mr-1" />
             Clear All
           </Button>
         )}
-      </CardHeader>
-      <CardContent className="space-y-6">
-        {/* Season */}
-        <div className="space-y-3">
-          <Label className="text-sm font-medium">Season</Label>
-          <div className="flex gap-2">
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="season-summer"
-                checked={filters.seasons.includes("summer")}
-                onCheckedChange={(checked) => {
-                  if (checked) {
-                    updateFilters({ seasons: [...filters.seasons, "summer"] })
-                  } else {
-                    updateFilters({ seasons: filters.seasons.filter((s) => s !== "summer") })
-                  }
-                }}
-              />
-              <Label htmlFor="season-summer" className="text-sm flex items-center gap-2">
-                <Sun className="h-4 w-4 text-yellow-500" />
-                Summer
-              </Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="season-winter"
-                checked={filters.seasons.includes("winter")}
-                onCheckedChange={(checked) => {
-                  if (checked) {
-                    updateFilters({ seasons: [...filters.seasons, "winter"] })
-                  } else {
-                    updateFilters({ seasons: filters.seasons.filter((s) => s !== "winter") })
-                  }
-                }}
-              />
-              <Label htmlFor="season-winter" className="text-sm flex items-center gap-2">
-                <Snowflake className="h-4 w-4 text-primary-500" />
-                Winter
-              </Label>
-            </div>
-          </div>
         </div>
 
-        {/* Price Range */}
-        <div className="space-y-3">
-          <Label className="text-sm font-medium">Price Range</Label>
-          <div className="px-2">
-            <Slider
-              value={filters.priceRange}
-              onValueChange={(value) => updateFilters({ priceRange: value as [number, number] })}
-              max={priceRange[1]}
-              min={priceRange[0]}
-              step={1}
-              className="w-full"
-            />
-          </div>
-          <div className="flex justify-between text-sm text-muted-foreground">
-            <span>${filters.priceRange[0]}</span>
-            <span>${filters.priceRange[1]}</span>
-          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            {/* Category Filter */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-text-primary">Category</label>
+              <Select
+                value={filters.category || "all"}
+                onValueChange={(value) => handleFilterChange('category', value === "all" ? "" : value)}
+              >
+                <SelectTrigger className="bg-background border border-border">
+                  <SelectValue placeholder="All Categories" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Categories</SelectItem>
+                  {categories.map((category) => (
+                    <SelectItem key={category.id} value={category.id}>
+                      {category.name}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
         </div>
 
-        {/* Sizes */}
-        <div className="space-y-3">
-          <Label className="text-sm font-medium">Sizes</Label>
-          <div className="flex flex-wrap gap-2">
-            {availableSizes.map((size) => (
-              <div key={size} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`size-${size}`}
-                  checked={filters.sizes.includes(size)}
-                  onCheckedChange={(checked) => {
-                    if (checked) {
-                      updateFilters({ sizes: [...filters.sizes, size] })
-                    } else {
-                      updateFilters({ sizes: filters.sizes.filter((s) => s !== size) })
-                    }
-                  }}
-                />
-                <Label htmlFor={`size-${size}`} className="text-sm">
-                  {size}
-                </Label>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Colors */}
-        <div className="space-y-3">
-          <Label className="text-sm font-medium">Colors</Label>
+            {/* Season Filter */}
           <div className="space-y-2">
-            {availableColors.map((color) => (
-              <div key={color} className="flex items-center space-x-2">
-                <Checkbox
-                  id={`color-${color}`}
-                  checked={filters.colors.includes(color)}
-                  onCheckedChange={(checked) => {
-                    if (checked) {
-                      updateFilters({ colors: [...filters.colors, color] })
-                    } else {
-                      updateFilters({ colors: filters.colors.filter((c) => c !== color) })
-                    }
-                  }}
-                />
-                <Label htmlFor={`color-${color}`} className="text-sm flex items-center gap-2">
-                  <div
-                    className={`w-4 h-4 rounded-full border-2 border-white shadow-sm ${
-                      color.toLowerCase().includes("blue")
-                        ? "bg-blue-500"
-                        : color.toLowerCase().includes("pink")
-                          ? "bg-pink-500"
-                          : color.toLowerCase().includes("purple")
-                            ? "bg-purple-500"
-                            : color.toLowerCase().includes("red")
-                              ? "bg-red-500"
-                              : color.toLowerCase().includes("green")
-                                ? "bg-green-500"
-                                : color.toLowerCase().includes("yellow")
-                                  ? "bg-yellow-500"
-                                  : color.toLowerCase().includes("black")
-                                    ? "bg-black"
-                                    : color.toLowerCase().includes("white")
-                                      ? "bg-white border-gray-300"
-                                      : "bg-gray-400"
-                    }`}
-                  />
-                  {color}
-                </Label>
-              </div>
-            ))}
-          </div>
+              <label className="text-sm font-medium text-text-primary">Season</label>
+              <Select
+                value={filters.season || "all"}
+                onValueChange={(value) => handleFilterChange('season', value === "all" ? "" : value)}
+              >
+                <SelectTrigger className="bg-background border border-border">
+                  <SelectValue placeholder="All Seasons" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Seasons</SelectItem>
+                  <SelectItem value="summer">☀️ Summer</SelectItem>
+                  <SelectItem value="winter">❄️ Winter</SelectItem>
+                  <SelectItem value="all_season">🌍 All Season</SelectItem>
+                </SelectContent>
+              </Select>
         </div>
 
-        {/* Special Filters */}
-        <div className="space-y-3">
-          <Label className="text-sm font-medium">Special</Label>
-          <div className="space-y-2">
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="in-stock"
-                checked={filters.inStockOnly}
-                onCheckedChange={(checked) => updateFilters({ inStockOnly: !!checked })}
-              />
-              <Label htmlFor="in-stock" className="text-sm">
-                In Stock Only
-              </Label>
+            {/* Age Filter */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-text-primary">Age</label>
+              <Select
+                value={filters.age || "all"}
+                onValueChange={(value) => handleFilterChange('age', value === "all" ? "" : value)}
+              >
+                <SelectTrigger className="bg-background border border-border">
+                  <SelectValue placeholder="All Ages" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Ages</SelectItem>
+                  {getUniqueAges().map((age) => (
+                    <SelectItem key={age} value={age}>
+                      {age} years
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
-            <div className="flex items-center space-x-2">
-              <Checkbox
-                id="featured"
-                checked={filters.featuredOnly}
-                onCheckedChange={(checked) => updateFilters({ featuredOnly: !!checked })}
-              />
-              <Label htmlFor="featured" className="text-sm">
-                Featured Items
-              </Label>
+
+            {/* Color Filter */}
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-text-primary">Color</label>
+              <Select
+                value={filters.color || "all"}
+                onValueChange={(value) => handleFilterChange('color', value === "all" ? "" : value)}
+              >
+                <SelectTrigger className="bg-background border border-border">
+                  <SelectValue placeholder="All Colors" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Colors</SelectItem>
+                  {getUniqueColors().map((color) => (
+                    <SelectItem key={color} value={color}>
+                      {color}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
+
+          {/* Search Button */}
+          <div className="flex justify-center pt-2">
+            <Button
+              onClick={applyFilters}
+              className="bg-primary hover:bg-primary-hover text-white px-8"
+            >
+              <Search className="h-4 w-4 mr-2" />
+              Search
+            </Button>
         </div>
 
-        {/* Active Filters */}
+          {/* Active Filters Display */}
         {hasActiveFilters && (
-          <div className="space-y-2">
-            <Label className="text-sm font-medium">Active Filters</Label>
-            <div className="flex flex-wrap gap-1">
-              {filters.seasons.map((season) => (
-                <Badge key={season} variant="secondary" className="text-xs">
-                  {season === "summer" ? "☀️" : "❄️"} {season.charAt(0).toUpperCase() + season.slice(1)}
-                  <X
-                    className="h-3 w-3 ml-1 cursor-pointer"
-                    onClick={() => updateFilters({ seasons: filters.seasons.filter((s) => s !== season) })}
-                  />
-                </Badge>
-              ))}
-              {filters.sizes.map((size) => (
-                <Badge key={size} variant="secondary" className="text-xs">
-                  Size: {size}
-                  <X
-                    className="h-3 w-3 ml-1 cursor-pointer"
-                    onClick={() => updateFilters({ sizes: filters.sizes.filter((s) => s !== size) })}
-                  />
-                </Badge>
-              ))}
-              {filters.colors.map((color) => (
-                <Badge key={color} variant="secondary" className="text-xs">
-                  {color}
-                  <X
-                    className="h-3 w-3 ml-1 cursor-pointer"
-                    onClick={() => updateFilters({ colors: filters.colors.filter((c) => c !== color) })}
-                  />
-                </Badge>
-              ))}
-              {filters.inStockOnly && (
-                <Badge variant="secondary" className="text-xs">
-                  In Stock
-                  <X className="h-3 w-3 ml-1 cursor-pointer" onClick={() => updateFilters({ inStockOnly: false })} />
-                </Badge>
-              )}
-              {filters.featuredOnly && (
-                <Badge variant="secondary" className="text-xs">
-                  Featured
-                  <X className="h-3 w-3 ml-1 cursor-pointer" onClick={() => updateFilters({ featuredOnly: false })} />
-                </Badge>
+            <div className="pt-2 border-t border-border">
+              <div className="flex flex-wrap gap-2">
+                {filters.category && (
+                  <div className="flex items-center gap-1 bg-background-subtle border border-border px-2 py-1 rounded text-sm">
+                    <span className="text-text-muted">Category:</span>
+                    <span className="text-text-primary">
+                      {categories.find(c => c.id === filters.category)?.name}
+                    </span>
+                    <button
+                      onClick={() => handleFilterChange('category', '')}
+                      className="text-text-muted hover:text-text-primary ml-1"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                )}
+                {filters.season && (
+                  <div className="flex items-center gap-1 bg-background-subtle border border-border px-2 py-1 rounded text-sm">
+                    <span className="text-text-muted">Season:</span>
+                    <span className="text-text-primary">
+                      {filters.season === 'summer' ? 'Summer' : 
+                       filters.season === 'winter' ? 'Winter' : 'All Season'}
+                    </span>
+                    <button
+                      onClick={() => handleFilterChange('season', '')}
+                      className="text-text-muted hover:text-text-primary ml-1"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                )}
+                {filters.age && (
+                  <div className="flex items-center gap-1 bg-background-subtle border border-border px-2 py-1 rounded text-sm">
+                    <span className="text-text-muted">Age:</span>
+                    <span className="text-text-primary">{filters.age} years</span>
+                    <button
+                      onClick={() => handleFilterChange('age', '')}
+                      className="text-text-muted hover:text-text-primary ml-1"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
+                )}
+                {filters.color && (
+                  <div className="flex items-center gap-1 bg-background-subtle border border-border px-2 py-1 rounded text-sm">
+                    <span className="text-text-muted">Color:</span>
+                    <span className="text-text-primary">{filters.color}</span>
+                    <button
+                      onClick={() => handleFilterChange('color', '')}
+                      className="text-text-muted hover:text-text-primary ml-1"
+                    >
+                      <X className="h-3 w-3" />
+                    </button>
+                  </div>
               )}
             </div>
           </div>
         )}
+        </div>
       </CardContent>
     </Card>
   )
