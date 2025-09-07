@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Card, CardContent } from "@/components/ui/card"
-import { Search, X } from "lucide-react"
+import { Search, X, Filter } from "lucide-react"
 import { getAllCategories } from "@/lib/database"
 import type { ProductWithDetails } from "@/lib/database.types"
 
@@ -30,6 +30,7 @@ export function ProductFilters({ products, onFilteredProducts, gender }: Product
     color: ''
   })
   const [isFiltered, setIsFiltered] = useState(false)
+  const [isFilterOpen, setIsFilterOpen] = useState(false)
 
   // Load categories on mount
   useEffect(() => {
@@ -134,28 +135,62 @@ export function ProductFilters({ products, onFilteredProducts, gender }: Product
     setIsFiltered(false)
   }
 
+  const toggleFilter = () => {
+    setIsFilterOpen(!isFilterOpen)
+  }
+
   const hasActiveFilters = Object.values(filters).some(value => value !== '')
 
   return (
-    <Card className="mb-6">
-      <CardContent className="p-4">
-        <div className="space-y-4">
-          <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold text-text-primary">Filter Products</h3>
+    <div className="mb-6">
+      {/* Mobile Filter Button */}
+      <div className="lg:hidden mb-4">
+        <Button
+          onClick={toggleFilter}
+          variant="outline"
+          className="w-full bg-background border border-border text-text-primary hover:bg-background-subtle"
+        >
+          <Filter className="h-4 w-4 mr-2" />
+          Filter Products
+          {hasActiveFilters && (
+            <span className="ml-2 bg-primary text-white text-xs px-2 py-1 rounded-full">
+              {Object.values(filters).filter(value => value !== '').length}
+            </span>
+          )}
+        </Button>
+      </div>
+
+      {/* Filter Content */}
+      <Card className={`${isFilterOpen ? 'block' : 'hidden'} lg:block`}>
+        <CardContent className="p-4">
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-lg font-semibold text-text-primary">Filter Products</h3>
+              <div className="flex items-center gap-2">
         {hasActiveFilters && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={clearFilters}
-                className="text-text-muted hover:text-text-primary"
-              >
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={clearFilters}
+                    className="text-text-muted hover:text-text-primary"
+                  >
             <X className="h-4 w-4 mr-1" />
             Clear All
           </Button>
         )}
+                {/* Mobile close button */}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={toggleFilter}
+                  className="lg:hidden text-text-muted hover:text-text-primary"
+                >
+                  <X className="h-4 w-4" />
+                </Button>
+          </div>
         </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {/* Category Filter */}
             <div className="space-y-2">
               <label className="text-sm font-medium text-text-primary">Category</label>
@@ -197,7 +232,7 @@ export function ProductFilters({ products, onFilteredProducts, gender }: Product
         </div>
 
             {/* Age Filter */}
-            <div className="space-y-2">
+          <div className="space-y-2">
               <label className="text-sm font-medium text-text-primary">Age</label>
               <Select
                 value={filters.age || "all"}
@@ -239,79 +274,80 @@ export function ProductFilters({ products, onFilteredProducts, gender }: Product
             </div>
           </div>
 
-          {/* Search Button */}
-          <div className="flex justify-center pt-2">
-            <Button
-              onClick={applyFilters}
-              className="bg-primary hover:bg-primary-hover text-white px-8"
-            >
-              <Search className="h-4 w-4 mr-2" />
-              Search
-            </Button>
-        </div>
-
-          {/* Active Filters Display */}
-        {hasActiveFilters && (
-            <div className="pt-2 border-t border-border">
-              <div className="flex flex-wrap gap-2">
-                {filters.category && (
-                  <div className="flex items-center gap-1 bg-background-subtle border border-border px-2 py-1 rounded text-sm">
-                    <span className="text-text-muted">Category:</span>
-                    <span className="text-text-primary">
-                      {categories.find(c => c.id === filters.category)?.name}
-                    </span>
-                    <button
-                      onClick={() => handleFilterChange('category', '')}
-                      className="text-text-muted hover:text-text-primary ml-1"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </div>
-                )}
-                {filters.season && (
-                  <div className="flex items-center gap-1 bg-background-subtle border border-border px-2 py-1 rounded text-sm">
-                    <span className="text-text-muted">Season:</span>
-                    <span className="text-text-primary">
-                      {filters.season === 'summer' ? 'Summer' : 
-                       filters.season === 'winter' ? 'Winter' : 'All Season'}
-                    </span>
-                    <button
-                      onClick={() => handleFilterChange('season', '')}
-                      className="text-text-muted hover:text-text-primary ml-1"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </div>
-                )}
-                {filters.age && (
-                  <div className="flex items-center gap-1 bg-background-subtle border border-border px-2 py-1 rounded text-sm">
-                    <span className="text-text-muted">Age:</span>
-                    <span className="text-text-primary">{filters.age} years</span>
-                    <button
-                      onClick={() => handleFilterChange('age', '')}
-                      className="text-text-muted hover:text-text-primary ml-1"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </div>
-                )}
-                {filters.color && (
-                  <div className="flex items-center gap-1 bg-background-subtle border border-border px-2 py-1 rounded text-sm">
-                    <span className="text-text-muted">Color:</span>
-                    <span className="text-text-primary">{filters.color}</span>
-                    <button
-                      onClick={() => handleFilterChange('color', '')}
-                      className="text-text-muted hover:text-text-primary ml-1"
-                    >
-                      <X className="h-3 w-3" />
-                    </button>
-                  </div>
-              )}
+            {/* Search Button */}
+            <div className="flex justify-center pt-2">
+              <Button
+                onClick={applyFilters}
+                className="bg-primary hover:bg-primary-hover text-white px-8"
+              >
+                <Search className="h-4 w-4 mr-2" />
+                Search
+              </Button>
             </div>
+
+            {/* Active Filters Display */}
+            {hasActiveFilters && (
+              <div className="pt-2 border-t border-border">
+                <div className="flex flex-wrap gap-2">
+                  {filters.category && (
+                    <div className="flex items-center gap-1 bg-background-subtle border border-border px-2 py-1 rounded text-sm">
+                      <span className="text-text-muted">Category:</span>
+                      <span className="text-text-primary">
+                        {categories.find(c => c.id === filters.category)?.name}
+                      </span>
+                      <button
+                        onClick={() => handleFilterChange('category', '')}
+                        className="text-text-muted hover:text-text-primary ml-1"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  )}
+                  {filters.season && (
+                    <div className="flex items-center gap-1 bg-background-subtle border border-border px-2 py-1 rounded text-sm">
+                      <span className="text-text-muted">Season:</span>
+                      <span className="text-text-primary">
+                        {filters.season === 'summer' ? 'Summer' : 
+                         filters.season === 'winter' ? 'Winter' : 'All Season'}
+                      </span>
+                      <button
+                        onClick={() => handleFilterChange('season', '')}
+                        className="text-text-muted hover:text-text-primary ml-1"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  )}
+                  {filters.age && (
+                    <div className="flex items-center gap-1 bg-background-subtle border border-border px-2 py-1 rounded text-sm">
+                      <span className="text-text-muted">Age:</span>
+                      <span className="text-text-primary">{filters.age} years</span>
+                      <button
+                        onClick={() => handleFilterChange('age', '')}
+                        className="text-text-muted hover:text-text-primary ml-1"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  )}
+                  {filters.color && (
+                    <div className="flex items-center gap-1 bg-background-subtle border border-border px-2 py-1 rounded text-sm">
+                      <span className="text-text-muted">Color:</span>
+                      <span className="text-text-primary">{filters.color}</span>
+                      <button
+                        onClick={() => handleFilterChange('color', '')}
+                        className="text-text-muted hover:text-text-primary ml-1"
+                      >
+                        <X className="h-3 w-3" />
+                      </button>
+                    </div>
+                  )}
+                </div>
+              </div>
+            )}
           </div>
-        )}
-        </div>
-      </CardContent>
-    </Card>
+        </CardContent>
+      </Card>
+    </div>
   )
 }
