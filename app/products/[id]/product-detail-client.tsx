@@ -71,10 +71,10 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4">
       {/* Size/Age Selection */}
       {(availableSizes.length > 0 || availableAges.length > 0) && (
-        <div className="space-y-3">
+        <div className="space-y-2">
           <Label className="text-sm font-medium text-text-primary">
             {availableSizes.length > 0 ? 'Size' : 'Age Range'}
           </Label>
@@ -114,7 +114,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
 
       {/* Color Selection */}
       {availableColors.length > 0 && (
-        <div className="space-y-3">
+        <div className="space-y-2">
           <Label className="text-sm font-medium text-text-primary">Color</Label>
           <RadioGroup
             value={selectedColor}
@@ -141,7 +141,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       )}
 
       {/* Stock Status */}
-      <div className="flex items-center justify-center py-2">
+      <div className="flex items-center justify-center py-1">
         {isInStock ? (
           <div className="flex items-center gap-2 text-sm">
             <span className="text-green-600">✓</span>
@@ -209,39 +209,39 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       </div>
 
       {/* Enhanced Product Information */}
-      <div className="space-y-4 pt-4">
+      <div className="space-y-3 pt-2">
         <Separator className="border-border" />
         
         {/* Product Details */}
-        <div className="bg-background border border-border rounded-md p-4">
-          <h3 className="text-sm font-medium text-text-primary mb-3">Product Details</h3>
-          <div className="space-y-2 text-sm">
+        <div className="bg-background border border-border rounded-md p-3">
+          <h3 className="text-sm font-medium text-text-primary mb-2">Product Details</h3>
+          <div className="space-y-1 text-sm">
             {product.brand && (
-              <div className="flex justify-between items-center py-2 px-3 bg-background-subtle rounded-md">
+              <div className="flex justify-between items-center py-1.5 px-2 bg-background-subtle rounded-md">
                 <span className="text-text-muted font-medium">Brand:</span>
                 <span className="font-medium text-text-primary">{product.brand}</span>
               </div>
             )}
             {product.material && (
-              <div className="flex justify-between items-center py-2 px-3 bg-background-subtle rounded-md">
+              <div className="flex justify-between items-center py-1.5 px-2 bg-background-subtle rounded-md">
                 <span className="text-text-muted font-medium">Material:</span>
                 <span className="font-medium text-text-primary">{product.material}</span>
               </div>
             )}
             {product.age_range && (
-              <div className="flex justify-between items-center py-2 px-3 bg-background-subtle rounded-md">
+              <div className="flex justify-between items-center py-1.5 px-2 bg-background-subtle rounded-md">
                 <span className="text-text-muted font-medium">Age Range:</span>
                 <span className="font-medium text-text-primary">{product.age_range} years</span>
               </div>
             )}
             {product.gender && (
-              <div className="flex justify-between items-center py-2 px-3 bg-background-subtle rounded-md">
+              <div className="flex justify-between items-center py-1.5 px-2 bg-background-subtle rounded-md">
                 <span className="text-text-muted font-medium">Gender:</span>
                 <span className="font-medium text-text-primary capitalize">{product.gender}</span>
               </div>
             )}
             {product.weight_grams && (
-              <div className="flex justify-between items-center py-2 px-3 bg-background-subtle rounded-md">
+              <div className="flex justify-between items-center py-1.5 px-2 bg-background-subtle rounded-md">
                 <span className="text-text-muted font-medium">Weight:</span>
                 <span className="font-medium text-text-primary">{product.weight_grams}g</span>
               </div>
@@ -251,30 +251,12 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
 
         {/* Care Instructions */}
         {product.care_instructions && (
-          <div className="bg-background border border-border rounded-md p-4">
-            <h4 className="text-sm font-medium text-text-primary mb-2">Care Instructions</h4>
+          <div className="bg-background border border-border rounded-md p-3">
+            <h4 className="text-sm font-medium text-text-primary mb-1">Care Instructions</h4>
             <p className="text-sm text-text-secondary leading-relaxed">{product.care_instructions}</p>
           </div>
         )}
 
-        {/* Shipping & Returns */}
-        <div className="bg-background border border-border rounded-md p-4">
-          <h3 className="text-sm font-medium text-text-primary mb-3">Shipping & Returns</h3>
-          <div className="space-y-2 text-sm">
-            <div className="flex items-center gap-3 py-2 px-3 bg-background-subtle rounded-md">
-              <Truck className="h-4 w-4 text-text-muted" />
-              <span className="text-text-secondary font-medium">Free shipping on orders over $50</span>
-            </div>
-            <div className="flex items-center gap-3 py-2 px-3 bg-background-subtle rounded-md">
-              <Package className="h-4 w-4 text-text-muted" />
-              <span className="text-text-secondary font-medium">30-day return policy</span>
-            </div>
-            <div className="flex items-center gap-3 py-2 px-3 bg-background-subtle rounded-md">
-              <RotateCcw className="h-4 w-4 text-text-muted" />
-              <span className="text-text-secondary font-medium">Free exchanges within 14 days</span>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   )
