@@ -75,7 +75,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       {/* Size/Age Selection */}
       {(availableSizes.length > 0 || availableAges.length > 0) && (
         <div className="space-y-3">
-          <Label className="text-base font-semibold text-gray-800">
+          <Label className="text-sm font-medium text-text-primary">
             {availableSizes.length > 0 ? 'Size' : 'Age Range'}
           </Label>
           <RadioGroup
@@ -87,22 +87,22 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
                 setSelectedAge(value)
               }
             }}
-            className="flex flex-wrap gap-3"
+            className="flex flex-wrap gap-2"
           >
             {availableSizes.length > 0 ? (
               availableSizes.map((size) => (
-                <div key={size} className="flex items-center space-x-3 p-3 bg-white rounded-xl border border-gray-200 hover:border-primary-300 hover:shadow-md transition-all duration-300 hover:scale-105">
-                  <RadioGroupItem value={size || ''} id={size || ''} className="text-primary-600" />
-                  <Label htmlFor={size || ''} className="text-sm font-semibold cursor-pointer text-gray-700">
+                <div key={size} className="flex items-center space-x-2 p-2 bg-background border border-border rounded-md hover:border-text-muted transition-colors duration-200">
+                  <RadioGroupItem value={size || ''} id={size || ''} className="text-primary" />
+                  <Label htmlFor={size || ''} className="text-sm font-medium cursor-pointer text-text-primary">
                     {size}
                   </Label>
                 </div>
               ))
             ) : (
               availableAges.map((age) => (
-                <div key={age} className="flex items-center space-x-3 p-3 bg-white rounded-xl border border-gray-200 hover:border-accent-300 hover:shadow-md transition-all duration-300 hover:scale-105">
-                  <RadioGroupItem value={age || ''} id={age || ''} className="text-accent-600" />
-                  <Label htmlFor={age || ''} className="text-sm font-semibold cursor-pointer text-gray-700">
+                <div key={age} className="flex items-center space-x-2 p-2 bg-background border border-border rounded-md hover:border-text-muted transition-colors duration-200">
+                  <RadioGroupItem value={age || ''} id={age || ''} className="text-primary" />
+                  <Label htmlFor={age || ''} className="text-sm font-medium cursor-pointer text-text-primary">
                     {age} years
                   </Label>
                 </div>
@@ -115,20 +115,20 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       {/* Color Selection */}
       {availableColors.length > 0 && (
         <div className="space-y-3">
-          <Label className="text-base font-semibold text-gray-800">Color</Label>
+          <Label className="text-sm font-medium text-text-primary">Color</Label>
           <RadioGroup
             value={selectedColor}
             onValueChange={setSelectedColor}
-            className="flex flex-wrap gap-3"
+            className="flex flex-wrap gap-2"
           >
             {availableColors.map((color) => {
               const variant = product.variants?.find(v => v.color === color)
               return (
-                <div key={color} className="flex items-center space-x-3 p-3 bg-white rounded-xl border border-gray-200 hover:border-emerald-300 hover:shadow-md transition-all duration-300 hover:scale-105">
-                  <RadioGroupItem value={color} id={color} className="text-emerald-600" />
-                  <Label htmlFor={color} className="flex items-center gap-3 text-sm font-semibold cursor-pointer text-gray-700">
+                <div key={color} className="flex items-center space-x-2 p-2 bg-background border border-border rounded-md hover:border-text-muted transition-colors duration-200">
+                  <RadioGroupItem value={color} id={color} className="text-primary" />
+                  <Label htmlFor={color} className="flex items-center gap-2 text-sm font-medium cursor-pointer text-text-primary">
                     <div
-                      className="w-5 h-5 rounded-full border-2 border-gray-300 shadow-sm"
+                      className="w-4 h-4 rounded-full border border-border"
                       style={{ backgroundColor: variant?.color_hex || '#6B7280' }}
                     />
                     {color}
@@ -141,49 +141,36 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       )}
 
       {/* Stock Status */}
-      <div className="flex items-center justify-center py-3">
+      <div className="flex items-center justify-center py-2">
         {isInStock ? (
-          <div className="bg-green-50 rounded-xl p-4 border border-green-200">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
-                <span className="text-white text-sm font-bold">✓</span>
-              </div>
-              <div>
-                <p className="font-semibold text-green-800">In Stock</p>
-                <p className="text-sm text-green-600">{availableQuantity} available</p>
-              </div>
-            </div>
+          <div className="flex items-center gap-2 text-sm">
+            <span className="text-green-600">✓</span>
+            <span className="font-medium text-text-primary">In Stock</span>
+            <span className="text-text-muted">({availableQuantity} available)</span>
           </div>
         ) : (
-          <div className="bg-accent-50 rounded-xl p-4 border border-accent-200">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 bg-accent-500 rounded-full flex items-center justify-center">
-                <span className="text-white text-sm font-bold">✗</span>
-              </div>
-              <div>
-                <p className="font-semibold text-accent-800">Out of Stock</p>
-                <p className="text-sm text-accent-600">Check back soon</p>
-              </div>
-            </div>
+          <div className="flex items-center gap-2 text-sm">
+            <span className="text-red-500">✗</span>
+            <span className="font-medium text-text-primary">Out of Stock</span>
           </div>
         )}
       </div>
 
       {/* Quantity Selector */}
-      <div className="space-y-3">
-        <Label className="text-base font-semibold text-gray-800">Quantity</Label>
-        <div className="flex items-center justify-center gap-4">
+      <div className="space-y-2">
+        <Label className="text-sm font-medium text-text-primary">Quantity</Label>
+        <div className="flex items-center justify-center gap-3">
           <Button
             variant="outline"
             size="icon"
             onClick={decrementQuantity}
             disabled={quantity <= 1}
-            className="h-10 w-10 hover:bg-accent-50 hover:border-accent-300 transition-all duration-300 hover:scale-105"
+            className="h-8 w-8 border-border hover:border-text-muted transition-colors duration-200"
           >
-            <Minus className="h-4 w-4" />
+            <Minus className="h-3 w-3" />
           </Button>
-          <div className="bg-white rounded-xl px-4 py-2 border border-gray-300 shadow-sm">
-            <span className="text-xl font-bold min-w-[2rem] text-center text-gray-900">
+          <div className="bg-background border border-border rounded-md px-3 py-1">
+            <span className="text-sm font-medium min-w-[1.5rem] text-center text-text-primary">
               {quantity}
             </span>
           </div>
@@ -192,71 +179,71 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             size="icon"
             onClick={incrementQuantity}
             disabled={quantity >= maxQuantity}
-            className="h-10 w-10 hover:bg-green-50 hover:border-green-300 transition-all duration-300 hover:scale-105"
+            className="h-8 w-8 border-border hover:border-text-muted transition-colors duration-200"
           >
-            <Plus className="h-4 w-4" />
+            <Plus className="h-3 w-3" />
           </Button>
         </div>
       </div>
 
-      <Separator className="border-gray-200" />
+      <Separator className="border-border" />
 
       {/* Action Buttons */}
-      <div className="space-y-3">
+      <div className="space-y-2">
         <Button
           onClick={handleAddToCart}
           disabled={!isInStock || isAddingToCart}
-          className="w-full h-12 text-base font-semibold bg-primary-600 hover:bg-primary-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full h-10 text-sm font-medium bg-primary hover:bg-primary-hover text-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <ShoppingCart className="mr-2 h-5 w-5" />
+          <ShoppingCart className="mr-2 h-4 w-4" />
           {isAddingToCart ? "Adding..." : isInStock ? "Add to Cart" : "Out of Stock"}
         </Button>
         
         <Button
           variant="outline"
-          className="w-full h-12 text-base font-semibold border-2 border-accent-300 hover:border-accent-400 hover:bg-accent-50 text-accent-700 transition-all duration-300 hover:scale-105"
+          className="w-full h-10 text-sm font-medium border-border hover:border-text-muted hover:bg-background-subtle text-text-primary transition-colors duration-200"
         >
-          <Heart className="mr-2 h-5 w-5" />
+          <Heart className="mr-2 h-4 w-4" />
           Add to Wishlist
         </Button>
       </div>
 
       {/* Enhanced Product Information */}
       <div className="space-y-4 pt-4">
-        <Separator className="border-gray-200" />
+        <Separator className="border-border" />
         
         {/* Product Details */}
-        <div className="bg-white rounded-xl p-4 border border-gray-200">
-          <h3 className="text-base font-semibold text-gray-800 mb-3">Product Details</h3>
+        <div className="bg-background border border-border rounded-md p-4">
+          <h3 className="text-sm font-medium text-text-primary mb-3">Product Details</h3>
           <div className="space-y-2 text-sm">
             {product.brand && (
-              <div className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-lg">
-                <span className="text-gray-600 font-medium">Brand:</span>
-                <span className="font-semibold text-gray-800">{product.brand}</span>
+              <div className="flex justify-between items-center py-2 px-3 bg-background-subtle rounded-md">
+                <span className="text-text-muted font-medium">Brand:</span>
+                <span className="font-medium text-text-primary">{product.brand}</span>
               </div>
             )}
             {product.material && (
-              <div className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-lg">
-                <span className="text-gray-600 font-medium">Material:</span>
-                <span className="font-semibold text-gray-800">{product.material}</span>
+              <div className="flex justify-between items-center py-2 px-3 bg-background-subtle rounded-md">
+                <span className="text-text-muted font-medium">Material:</span>
+                <span className="font-medium text-text-primary">{product.material}</span>
               </div>
             )}
             {product.age_range && (
-              <div className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-lg">
-                <span className="text-gray-600 font-medium">Age Range:</span>
-                <span className="font-semibold text-gray-800">{product.age_range} years</span>
+              <div className="flex justify-between items-center py-2 px-3 bg-background-subtle rounded-md">
+                <span className="text-text-muted font-medium">Age Range:</span>
+                <span className="font-medium text-text-primary">{product.age_range} years</span>
               </div>
             )}
             {product.gender && (
-              <div className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-lg">
-                <span className="text-gray-600 font-medium">Gender:</span>
-                <span className="font-semibold text-gray-800 capitalize">{product.gender}</span>
+              <div className="flex justify-between items-center py-2 px-3 bg-background-subtle rounded-md">
+                <span className="text-text-muted font-medium">Gender:</span>
+                <span className="font-medium text-text-primary capitalize">{product.gender}</span>
               </div>
             )}
             {product.weight_grams && (
-              <div className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-lg">
-                <span className="text-gray-600 font-medium">Weight:</span>
-                <span className="font-semibold text-gray-800">{product.weight_grams}g</span>
+              <div className="flex justify-between items-center py-2 px-3 bg-background-subtle rounded-md">
+                <span className="text-text-muted font-medium">Weight:</span>
+                <span className="font-medium text-text-primary">{product.weight_grams}g</span>
               </div>
             )}
           </div>
@@ -264,27 +251,27 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
 
         {/* Care Instructions */}
         {product.care_instructions && (
-          <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
-            <h4 className="text-base font-semibold text-gray-800 mb-2">Care Instructions</h4>
-            <p className="text-sm text-gray-700 leading-relaxed">{product.care_instructions}</p>
+          <div className="bg-background border border-border rounded-md p-4">
+            <h4 className="text-sm font-medium text-text-primary mb-2">Care Instructions</h4>
+            <p className="text-sm text-text-secondary leading-relaxed">{product.care_instructions}</p>
           </div>
         )}
 
         {/* Shipping & Returns */}
-        <div className="bg-primary-50 rounded-xl p-4 border border-primary-200">
-          <h3 className="text-base font-semibold text-gray-800 mb-3">Shipping & Returns</h3>
+        <div className="bg-background border border-border rounded-md p-4">
+          <h3 className="text-sm font-medium text-text-primary mb-3">Shipping & Returns</h3>
           <div className="space-y-2 text-sm">
-            <div className="flex items-center gap-3 py-2 px-3 bg-white rounded-lg">
-              <Truck className="h-4 w-4 text-emerald-500" />
-              <span className="text-gray-700 font-medium">Free shipping on orders over $50</span>
+            <div className="flex items-center gap-3 py-2 px-3 bg-background-subtle rounded-md">
+              <Truck className="h-4 w-4 text-text-muted" />
+              <span className="text-text-secondary font-medium">Free shipping on orders over $50</span>
             </div>
-            <div className="flex items-center gap-3 py-2 px-3 bg-white rounded-lg">
-              <Package className="h-4 w-4 text-primary-500" />
-              <span className="text-gray-700 font-medium">30-day return policy</span>
+            <div className="flex items-center gap-3 py-2 px-3 bg-background-subtle rounded-md">
+              <Package className="h-4 w-4 text-text-muted" />
+              <span className="text-text-secondary font-medium">30-day return policy</span>
             </div>
-            <div className="flex items-center gap-3 py-2 px-3 bg-white rounded-lg">
-              <RotateCcw className="h-4 w-4 text-primary-500" />
-              <span className="text-gray-700 font-medium">Free exchanges within 14 days</span>
+            <div className="flex items-center gap-3 py-2 px-3 bg-background-subtle rounded-md">
+              <RotateCcw className="h-4 w-4 text-text-muted" />
+              <span className="text-text-secondary font-medium">Free exchanges within 14 days</span>
             </div>
           </div>
         </div>
