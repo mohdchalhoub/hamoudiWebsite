@@ -19,7 +19,7 @@ export function Header() {
   ]
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60 shadow-sm">
+    <header className="sticky top-0 z-50 w-full border-b bg-white/95 backdrop-blur-xl supports-[backdrop-filter]:bg-white/90 shadow-lg border-gray-200/50">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
@@ -35,7 +35,7 @@ export function Header() {
               <Link
                 key={item.name}
                 href={item.href}
-                className="text-sm font-medium transition-all duration-300 hover:text-primary hover:scale-105 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-primary after:transition-all after:duration-300 hover:after:w-full"
+                className="text-sm font-medium text-gray-700 transition-all duration-300 hover:text-blue-600 hover:scale-105 relative after:absolute after:bottom-0 after:left-0 after:h-0.5 after:w-0 after:bg-gradient-to-r after:from-blue-600 after:to-pink-600 after:transition-all after:duration-300 hover:after:w-full hover-bounce"
               >
                 {item.name}
               </Link>
@@ -47,7 +47,7 @@ export function Header() {
             <Button
               variant="ghost"
               size="icon"
-              className="hidden sm:flex hover:scale-110 transition-transform duration-200"
+              className="hidden sm:flex hover:scale-110 transition-transform duration-200 hover:text-pink-600 hover-bounce"
             >
               <Heart className="h-4 w-4" />
             </Button>

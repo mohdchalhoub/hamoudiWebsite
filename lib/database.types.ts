@@ -52,6 +52,8 @@ export interface Database {
           material: string | null
           care_instructions: string | null
           images: string[]
+          videos: string[]
+          product_code: string | null
           is_featured: boolean
           is_active: boolean
           is_digital: boolean
@@ -77,6 +79,8 @@ export interface Database {
           material?: string | null
           care_instructions?: string | null
           images?: string[]
+          videos?: string[]
+          product_code?: string | null
           is_featured?: boolean
           is_active?: boolean
           is_digital?: boolean
@@ -102,6 +106,8 @@ export interface Database {
           material?: string | null
           care_instructions?: string | null
           images?: string[]
+          videos?: string[]
+          product_code?: string | null
           is_featured?: boolean
           is_active?: boolean
           is_digital?: boolean
@@ -118,9 +124,11 @@ export interface Database {
           id: string
           product_id: string
           sku: string | null
-          size: string
+          size: string | null
+          age_range: string | null
           color: string
           color_hex: string | null
+          variant_code: string | null
           stock_quantity: number
           price_adjustment: number
           weight_adjustment: number
@@ -131,9 +139,11 @@ export interface Database {
           id?: string
           product_id: string
           sku?: string | null
-          size: string
+          size?: string | null
+          age_range?: string | null
           color: string
           color_hex?: string | null
+          variant_code?: string | null
           stock_quantity?: number
           price_adjustment?: number
           weight_adjustment?: number
@@ -144,9 +154,11 @@ export interface Database {
           id?: string
           product_id?: string
           sku?: string | null
-          size?: string
+          size?: string | null
+          age_range?: string | null
           color?: string
           color_hex?: string | null
+          variant_code?: string | null
           stock_quantity?: number
           price_adjustment?: number
           weight_adjustment?: number

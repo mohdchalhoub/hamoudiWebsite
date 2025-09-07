@@ -1,6 +1,7 @@
 import { Header } from "@/components/header"
 import { Footer } from "@/components/footer"
 import { ProductGridClient } from "@/components/product-grid-client"
+import { AnimatedSection } from "@/components/animated-section"
 import { getProducts } from "@/lib/database"
 
 // Force dynamic rendering and disable caching
@@ -13,35 +14,40 @@ export default async function GirlsPage() {
     gender: 'girls', 
     active: true 
   })
-  
-
 
   return (
     <div className="min-h-screen">
       <Header />
 
       {/* Hero Section */}
-      <section className="bg-gradient-to-r from-pink-600 to-pink-800 text-white py-16">
-        <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl lg:text-5xl font-bold mb-4">Girls Collection</h1>
+      <section className="relative bg-gradient-to-r from-pink-600 to-purple-800 text-white py-16 overflow-hidden">
+        <div className="absolute inset-0 bg-black/10"></div>
+        <div className="container mx-auto px-4 text-center relative z-10">
+          <AnimatedSection animation="fade-down" className="space-y-6">
+            <h1 className="text-4xl lg:text-5xl font-bold mb-4 animate-gradient bg-gradient-to-r from-white to-pink-100 bg-clip-text text-transparent">
+              Girls Collection
+            </h1>
+            <p className="text-xl opacity-90 max-w-2xl mx-auto leading-relaxed">
+              Beautiful and stylish clothes for amazing girls. Express your unique style with confidence!
+            </p>
+          </AnimatedSection>
         </div>
+        {/* Floating decorative elements */}
+        <div className="absolute top-10 right-10 w-20 h-20 bg-white/10 rounded-full animate-float"></div>
+        <div className="absolute bottom-10 left-10 w-16 h-16 bg-white/10 rounded-full animate-float-delayed"></div>
+        <div className="absolute top-1/2 left-20 w-12 h-12 bg-white/5 rounded-full animate-bounce"></div>
       </section>
 
       <div className="container mx-auto px-4 py-8">
-        <div className="mb-6">
-          <h2 className="text-2xl font-bold">
-            {girlsProducts.length} Product{girlsProducts.length !== 1 ? "s" : ""}
+        <AnimatedSection animation="fade-up" className="mb-8">
+          <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
+            <span className="w-1 h-8 bg-pink-600 rounded-full"></span>
+            {girlsProducts.length} Product{girlsProducts.length !== 1 ? "s" : ""} Available
           </h2>
-        </div>
+          <p className="text-muted-foreground">Discover beautiful clothes designed for stylish girls</p>
+        </AnimatedSection>
 
-        {girlsProducts.length > 0 ? (
-          <ProductGridClient products={girlsProducts} />
-        ) : (
-          <div className="text-center py-12">
-            <h3 className="text-lg font-semibold mb-2">No products found</h3>
-            <p className="text-muted-foreground">No girls products are currently available.</p>
-          </div>
-        )}
+        <ProductGridClient products={girlsProducts} />
       </div>
 
       <Footer />

@@ -31,36 +31,44 @@ export default async function HomePage() {
         <div className="container mx-auto px-4 py-16 lg:py-24">
           <AnimatedSection animation="fade-up" className="text-center space-y-8 max-w-4xl mx-auto">
             <div className="space-y-4">
-              <Badge className="bg-blue-600 text-white animate-float border-0">New Collection</Badge>
-              <h1 className="text-4xl lg:text-6xl font-bold text-balance">
-                Fun Fashion for{" "}
-                <span className="bg-gradient-to-r from-blue-600 to-pink-600 bg-clip-text text-transparent animate-gradient">
-                  Amazing Kids
-                </span>
-              </h1>
-              <p className="text-xl text-muted-foreground text-pretty max-w-2xl mx-auto">
-                Discover our playful, modern collection of kids' clothing. Quality fashion that sparks imagination and
-                brings joy to every adventure.
-              </p>
+              <AnimatedSection animation="fade-down" delay={100}>
+                <Badge className="bg-blue-600 text-white animate-float border-0 hover-wiggle">New Collection</Badge>
+              </AnimatedSection>
+              <AnimatedSection animation="fade-up" delay={200}>
+                <h1 className="text-4xl lg:text-6xl font-bold text-balance">
+                  Fun Fashion for{" "}
+                  <span className="bg-gradient-to-r from-blue-600 to-pink-600 bg-clip-text text-transparent animate-gradient">
+                    Amazing Kids
+                  </span>
+                </h1>
+              </AnimatedSection>
+              <AnimatedSection animation="fade-up" delay={300}>
+                <p className="text-xl text-muted-foreground text-pretty max-w-2xl mx-auto">
+                  Discover our playful, modern collection of kids' clothing. Quality fashion that sparks imagination and
+                  brings joy to every adventure.
+                </p>
+              </AnimatedSection>
             </div>
-            <div className="flex flex-row gap-4 max-w-md mx-auto">
-              <Link href="/boys" className="flex-1">
-                <Button size="lg" className="w-full bg-blue-600 hover:bg-blue-700 hover-glow btn-press">
-                  Shop Boys
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-              <Link href="/girls" className="flex-1">
-                <Button
-                  size="lg"
-                  variant="outline"
-                  className="w-full border-pink-600 text-pink-600 hover:bg-pink-50 bg-transparent hover-glow-pink btn-press"
-                >
-                  Shop Girls
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
-            </div>
+            <AnimatedSection animation="elastic" delay={400}>
+              <div className="flex flex-row gap-4 max-w-md mx-auto">
+                <Link href="/boys" className="flex-1">
+                  <Button size="lg" className="w-full bg-blue-600 hover:bg-blue-700 hover-glow hover-bounce btn-press micro-bounce">
+                    Shop Boys
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+                <Link href="/girls" className="flex-1">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="w-full border-pink-600 text-pink-600 hover:bg-pink-50 bg-transparent hover-glow-pink hover-bounce btn-press micro-bounce"
+                  >
+                    Shop Girls
+                    <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </Link>
+              </div>
+            </AnimatedSection>
           </AnimatedSection>
         </div>
       </section>
@@ -72,22 +80,25 @@ export default async function HomePage() {
             <h2 className="text-3xl font-bold mb-4">Featured Products</h2>
             <p className="text-muted-foreground text-lg">Our most popular items that kids absolutely love</p>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6 max-w-6xl mx-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3 md:gap-4 max-w-6xl mx-auto">
             {featuredProducts.slice(0, 4).map((product, index) => (
               <AnimatedSection key={product.id} animation="scale-in" delay={(index + 1) * 100}>
-                <Link href={`/products/${product.slug}`}>
-                  <Card className="overflow-hidden hover-lift cursor-pointer">
-                    <div className="relative aspect-square">
+                <Link href={`/products/${product.id}`}>
+                  <Card className="group overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+                    <div className="relative aspect-[3/4] overflow-hidden">
                       <Image
                         src={product.image_url || "/placeholder.svg"}
                         alt={product.name}
                         fill
-                        className="object-cover"
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
                       />
+                      {product.is_featured && (
+                        <Badge className="absolute top-1 left-1 bg-yellow-500 text-yellow-900 text-xs px-1.5 py-0.5">Featured</Badge>
+                      )}
                     </div>
-                    <CardContent className="p-3 md:p-4">
-                      <h3 className="font-semibold text-sm md:text-base mb-1 md:mb-2 truncate">{product.name}</h3>
-                      <p className="text-blue-600 font-bold text-sm md:text-base">${product.price}</p>
+                    <CardContent className="p-2">
+                      <h3 className="font-semibold text-xs mb-1 line-clamp-2 group-hover:text-primary transition-colors duration-200">{product.name}</h3>
+                      <p className="text-blue-600 font-bold text-sm">${product.price}</p>
                     </CardContent>
                   </Card>
                 </Link>
@@ -115,22 +126,22 @@ export default async function HomePage() {
                   </Button>
                 </Link>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 {boysProducts.map((product, index) => (
                   <AnimatedSection key={product.id} animation="scale-in" delay={(index + 1) * 100}>
-                    <Link href={`/products/${product.slug}`}>
-                      <Card className="overflow-hidden hover-lift cursor-pointer">
-                        <div className="relative aspect-square">
+                    <Link href={`/products/${product.id}`}>
+                      <Card className="group overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+                        <div className="relative aspect-[3/4] overflow-hidden">
                           <Image
                             src={product.image_url || "/placeholder.svg"}
                             alt={product.name}
                             fill
-                            className="object-cover"
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
                           />
                         </div>
-                        <CardContent className="p-3 md:p-4">
-                          <h3 className="font-semibold text-sm md:text-base mb-1 md:mb-2 truncate">{product.name}</h3>
-                          <p className="text-blue-600 font-bold text-sm md:text-base">${product.price}</p>
+                        <CardContent className="p-2">
+                          <h3 className="font-semibold text-xs mb-1 line-clamp-2 group-hover:text-primary transition-colors duration-200">{product.name}</h3>
+                          <p className="text-blue-600 font-bold text-sm">${product.price}</p>
                         </CardContent>
                       </Card>
                     </Link>
@@ -153,22 +164,22 @@ export default async function HomePage() {
                   </Button>
                 </Link>
               </div>
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-2 gap-3">
                 {girlsProducts.map((product, index) => (
                   <AnimatedSection key={product.id} animation="scale-in" delay={(index + 1) * 100}>
-                    <Link href={`/products/${product.slug}`}>
-                      <Card className="overflow-hidden hover-lift cursor-pointer">
-                        <div className="relative aspect-square">
+                    <Link href={`/products/${product.id}`}>
+                      <Card className="group overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
+                        <div className="relative aspect-[3/4] overflow-hidden">
                           <Image
                             src={product.image_url || "/placeholder.svg"}
                             alt={product.name}
                             fill
-                            className="object-cover"
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
                           />
                         </div>
-                        <CardContent className="p-3 md:p-4">
-                          <h3 className="font-semibold text-sm md:text-base mb-1 md:mb-2 truncate">{product.name}</h3>
-                          <p className="text-pink-600 font-bold text-sm md:text-base">${product.price}</p>
+                        <CardContent className="p-2">
+                          <h3 className="font-semibold text-xs mb-1 line-clamp-2 group-hover:text-primary transition-colors duration-200">{product.name}</h3>
+                          <p className="text-pink-600 font-bold text-sm">${product.price}</p>
                         </CardContent>
                       </Card>
                     </Link>

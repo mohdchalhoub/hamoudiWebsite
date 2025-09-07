@@ -12,28 +12,32 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { X, Plus } from "lucide-react"
 import { getAllCategories } from "@/lib/database"
-import { ImageUpload } from "@/components/image-upload"
+import { MultipleMediaUpload } from "@/components/multiple-media-upload"
+import { generateProductCode } from "@/lib/code-generator"
 
 interface ProductFormDbProps {
   onSubmit: (product: any) => Promise<void>
   onCancel: () => void
   isSubmitting?: boolean
+  initialData?: any
 }
 
-export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false }: ProductFormDbProps) {
+export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initialData }: ProductFormDbProps) {
   const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    price: 0,
-    compare_at_price: 0,
-    category_id: "",
-    gender: "boys",
-    image_url: "",
-    is_active: true,
-    is_featured: false,
-    tags: [] as string[],
-    variants: [] as Array<{
-      size: string
+    name: initialData?.name || "",
+    description: initialData?.description || "",
+    price: initialData?.price || 0,
+    compare_at_price: initialData?.compare_at_price || 0,
+    category_id: initialData?.category_id || "",
+    gender: initialData?.gender || "boys",
+    images: initialData?.images || [],
+    videos: initialData?.videos || [],
+    is_active: initialData?.is_active ?? true,
+    is_featured: initialData?.is_featured ?? false,
+    tags: initialData?.tags || [] as string[],
+    variants: initialData?.variants || [] as Array<{
+      size: string | null
+      age_range: string | null
       color: string
       color_hex: string
       stock_quantity: number
@@ -45,15 +49,32 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false }: Prod
   const [categoriesLoading, setCategoriesLoading] = useState(true)
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [newTag, setNewTag] = useState("")
+  const [variantType, setVariantType] = useState<'size' | 'age'>('size')
+  const [generatedProductCode, setGeneratedProductCode] = useState<string | null>(null)
+  const [isGeneratingCode, setIsGeneratingCode] = useState(false)
   const [newVariant, setNewVariant] = useState({
     size: "",
+    age_range: "",
     color: "",
     color_hex: "#000000",
     stock_quantity: 0,
     price_adjustment: 0
   })
 
-  // Load categories on mount
+  // Generate product code function
+  const generateCode = async () => {
+    try {
+      setIsGeneratingCode(true)
+      const code = await generateProductCode()
+      setGeneratedProductCode(code)
+    } catch (error) {
+      console.error('Failed to generate product code:', error)
+    } finally {
+      setIsGeneratingCode(false)
+    }
+  }
+
+  // Load categories and generate product code on mount
   useEffect(() => {
     const loadCategories = async () => {
       try {
@@ -69,7 +90,13 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false }: Prod
         setCategoriesLoading(false)
       }
     }
-    loadCategories()
+    
+    const initializeForm = async () => {
+      await loadCategories()
+      await generateCode()
+    }
+    
+    initializeForm()
   }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -86,14 +113,26 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false }: Prod
       return
     }
     
-    if (!formData.image_url.trim()) {
-      alert('Product image URL is required')
+    if (formData.images.length === 0 && formData.videos.length === 0) {
+      alert('At least one image or video is required')
       return
     }
     
     if (formData.variants.length === 0) {
-      alert('Please add at least one product variant (size and color)')
+      alert('Please add at least one product variant (size/age and color)')
       return
+    }
+    
+    // Validate that each variant has either size or age_range
+    for (const variant of formData.variants) {
+      if (!variant.size && !variant.age_range) {
+        alert('Each variant must have either a size or age range')
+        return
+      }
+      if (variant.size && variant.age_range) {
+        alert('Each variant cannot have both size and age range')
+        return
+      }
     }
     
     try {
@@ -115,13 +154,24 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false }: Prod
   }
 
   const addVariant = () => {
-    if (newVariant.size && newVariant.color) {
+    const sizeOrAge = variantType === 'size' ? newVariant.size : newVariant.age_range
+    if (sizeOrAge && newVariant.color) {
+      const variant = {
+        size: variantType === 'size' ? newVariant.size : null,
+        age_range: variantType === 'age' ? newVariant.age_range : null,
+        color: newVariant.color,
+        color_hex: newVariant.color_hex,
+        stock_quantity: newVariant.stock_quantity,
+        price_adjustment: newVariant.price_adjustment
+      }
+      
       setFormData((prev) => ({ 
         ...prev, 
-        variants: [...prev.variants, { ...newVariant }] 
+        variants: [...prev.variants, variant] 
       }))
       setNewVariant({
         size: "",
+        age_range: "",
         color: "",
         color_hex: "#000000",
         stock_quantity: 0,
@@ -155,6 +205,36 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false }: Prod
                   onChange={(e) => setFormData((prev) => ({ ...prev, name: e.target.value }))}
                   required
                 />
+              </div>
+
+              {/* Generated Product Code Display */}
+              <div>
+                <Label>Generated Product Code</Label>
+                <div className="flex items-center gap-2">
+                  <div className="flex-1 p-3 bg-muted rounded-md border">
+                    {isGeneratingCode ? (
+                      <span className="text-muted-foreground">Generating...</span>
+                    ) : generatedProductCode ? (
+                      <span className="font-mono font-bold text-lg text-primary">
+                        {generatedProductCode}
+                      </span>
+                    ) : (
+                      <span className="text-muted-foreground">No code generated</span>
+                    )}
+                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={generateCode}
+                    disabled={isGeneratingCode}
+                  >
+                    {isGeneratingCode ? "Generating..." : "Regenerate"}
+                  </Button>
+                </div>
+                <p className="text-xs text-muted-foreground mt-1">
+                  This unique 6-digit code will be assigned to your product
+                </p>
               </div>
 
               <div>
@@ -195,11 +275,28 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false }: Prod
               </div>
 
               <div>
-                <ImageUpload
-                  value={formData.image_url}
-                  onChange={(url) => setFormData((prev) => ({ ...prev, image_url: url }))}
-                  onFileSelect={(file) => setSelectedFile(file)}
+                <MultipleMediaUpload
+                  value={[
+                    ...formData.images.map((url, index) => ({
+                      id: `img-${index}`,
+                      url,
+                      type: 'image' as const,
+                      name: `Image ${index + 1}`
+                    })),
+                    ...formData.videos.map((url, index) => ({
+                      id: `vid-${index}`,
+                      url,
+                      type: 'video' as const,
+                      name: `Video ${index + 1}`
+                    }))
+                  ]}
+                  onChange={(media) => {
+                    const images = media.filter(m => m.type === 'image').map(m => m.url)
+                    const videos = media.filter(m => m.type === 'video').map(m => m.url)
+                    setFormData((prev) => ({ ...prev, images, videos }))
+                  }}
                   disabled={isSubmitting || categoriesLoading}
+                  maxItems={10}
                 />
               </div>
             </div>
@@ -265,14 +362,69 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false }: Prod
 
           {/* Product Variants */}
           <div>
-            <Label>Product Variants (Sizes & Colors)</Label>
+            <Label>Product Variants</Label>
+            <div className="text-xs text-green-600 mb-2">✅ Updated with Size/Age selector</div>
             <div className="space-y-4">
+              {/* Variant Type Selector */}
+              <div className="flex gap-4 items-center">
+                <Label>Variant Type:</Label>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant={variantType === 'size' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => {
+                      setVariantType('size')
+                      setNewVariant(prev => ({ ...prev, age_range: '' }))
+                    }}
+                  >
+                    Size
+                  </Button>
+                  <Button
+                    type="button"
+                    variant={variantType === 'age' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => {
+                      setVariantType('age')
+                      setNewVariant(prev => ({ ...prev, size: '' }))
+                    }}
+                  >
+                    Age
+                  </Button>
+                </div>
+              </div>
+              
               <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
-                <Input
-                  placeholder="Size (e.g., S, M, L)"
-                  value={newVariant.size}
-                  onChange={(e) => setNewVariant(prev => ({ ...prev, size: e.target.value }))}
-                />
+                {variantType === 'size' ? (
+                  <div className="space-y-1">
+                    <Input
+                      placeholder="Size (e.g., S, M, L)"
+                      value={newVariant.size}
+                      onChange={(e) => setNewVariant(prev => ({ ...prev, size: e.target.value }))}
+                      className="transition-all duration-200"
+                    />
+                    <p className="text-xs text-muted-foreground">Enter size (S, M, L, etc.)</p>
+                  </div>
+                ) : (
+                  <div className="space-y-1">
+                    <Select
+                      value={newVariant.age_range}
+                      onValueChange={(value) => setNewVariant(prev => ({ ...prev, age_range: value }))}
+                    >
+                      <SelectTrigger className="transition-all duration-200">
+                        <SelectValue placeholder="Select age" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="3-5">3-5 years</SelectItem>
+                        <SelectItem value="6-8">6-8 years</SelectItem>
+                        <SelectItem value="9-12">9-12 years</SelectItem>
+                        <SelectItem value="13-16">13-16 years</SelectItem>
+                        <SelectItem value="3-12">3-12 years</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-muted-foreground">Choose age range</p>
+                  </div>
+                )}
                 <Input
                   placeholder="Color name"
                   value={newVariant.color}
@@ -304,20 +456,32 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false }: Prod
               
               <div className="space-y-2">
                 {formData.variants.map((variant, index) => (
-                  <div key={index} className="flex items-center gap-2 p-2 border rounded">
-                    <Badge variant="secondary">{variant.size}</Badge>
-                    <Badge variant="secondary">{variant.color}</Badge>
-                    <div 
-                      className="w-4 h-4 rounded border" 
-                      style={{ backgroundColor: variant.color_hex }}
-                    />
-                    <span className="text-sm">Stock: {variant.stock_quantity}</span>
-                    <span className="text-sm">Price: +${variant.price_adjustment}</span>
+                  <div key={index} className="flex items-center gap-2 p-3 border rounded-lg bg-gray-50">
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary" className="font-semibold">
+                        {variant.size || variant.age_range}
+                      </Badge>
+                      <Badge variant="outline">{variant.color}</Badge>
+                      <div 
+                        className="w-4 h-4 rounded border shadow-sm" 
+                        style={{ backgroundColor: variant.color_hex }}
+                      />
+                    </div>
+                    <div className="flex items-center gap-3 text-sm text-gray-600">
+                      <span>Stock: {variant.stock_quantity}</span>
+                      <span>Price: +${variant.price_adjustment}</span>
+                      {variant.variant_code && (
+                        <Badge variant="default" className="bg-blue-600 text-white font-mono">
+                          {variant.variant_code}
+                        </Badge>
+                      )}
+                    </div>
                     <Button 
                       type="button" 
                       variant="ghost" 
                       size="sm"
                       onClick={() => removeVariant(index)}
+                      className="ml-auto hover:bg-red-100 hover:text-red-600"
                     >
                       <X className="h-3 w-3" />
                     </Button>
@@ -354,7 +518,12 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false }: Prod
               Cancel
             </Button>
             <Button type="submit" disabled={isSubmitting || categoriesLoading}>
-              {isSubmitting ? "Adding Product..." : categoriesLoading ? "Loading..." : "Add Product"}
+              {isSubmitting 
+                ? (initialData ? "Updating Product..." : "Adding Product...") 
+                : categoriesLoading 
+                  ? "Loading..." 
+                  : (initialData ? "Save Changes" : "Add Product")
+              }
             </Button>
           </div>
         </form>

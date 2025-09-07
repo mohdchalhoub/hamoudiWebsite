@@ -19,17 +19,20 @@ interface ProductCardProps {
 export function ProductCard({ product }: ProductCardProps) {
   const { addItem } = useCart()
   
-  // Get available sizes and colors from variants
-  const availableSizes = [...new Set(product.variants?.map(v => v.size) || [])]
+  // Get available sizes/ages and colors from variants
+  const availableSizes = [...new Set(product.variants?.map(v => v.size).filter(Boolean) || [])]
+  const availableAges = [...new Set(product.variants?.map(v => v.age_range).filter(Boolean) || [])]
   const availableColors = [...new Set(product.variants?.map(v => v.color) || [])]
   
   const [selectedSize, setSelectedSize] = useState(availableSizes[0] || '')
+  const [selectedAge, setSelectedAge] = useState(availableAges[0] || '')
   const [selectedColor, setSelectedColor] = useState(availableColors[0] || '')
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault()
-    if (selectedSize && selectedColor) {
-      await addItem(product, selectedSize, selectedColor)
+    const sizeOrAge = selectedSize || selectedAge
+    if (sizeOrAge && selectedColor) {
+      await addItem(product, sizeOrAge, selectedColor)
     }
   }
 
@@ -42,69 +45,69 @@ export function ProductCard({ product }: ProductCardProps) {
 
   return (
     <Link href={`/products/${product.id}`}>
-      <Card className="group overflow-hidden transition-all duration-500 hover:shadow-2xl hover:-translate-y-2 hover-lift">
-        <div className="relative aspect-square overflow-hidden">
+      <Card className="group overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer h-full">
+        <div className="relative aspect-[3/4] overflow-hidden">
           <Image
             src={product.image_url || "/placeholder.svg"}
             alt={product.name}
             fill
-            className="object-cover transition-transform duration-700 group-hover:scale-110"
+            className="object-cover transition-transform duration-500 group-hover:scale-105"
           />
           {product.is_featured && (
-            <Badge className="absolute top-2 left-2 bg-yellow-500 text-yellow-900 animate-float">Featured</Badge>
+            <Badge className="absolute top-1 left-1 bg-yellow-500 text-yellow-900 text-xs px-1.5 py-0.5">Featured</Badge>
           )}
           {discountPercentage > 0 && (
-            <Badge className="absolute top-2 right-2 bg-red-500 text-white animate-float-delayed">
+            <Badge className="absolute top-1 right-1 bg-red-500 text-white text-xs px-1.5 py-0.5">
               -{discountPercentage}%
             </Badge>
           )}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
           <Button
             size="icon"
             variant="secondary"
-            className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 hover:scale-110"
+            className="absolute top-1 right-1 h-6 w-6 opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110"
             onClick={(e) => {
               e.preventDefault()
               // Add to wishlist functionality
             }}
           >
-            <Heart className="h-4 w-4" />
+            <Heart className="h-3 w-3" />
           </Button>
         </div>
-        <CardContent className="p-4">
-          <h3 className="font-semibold text-lg mb-2 text-balance group-hover:text-primary transition-colors duration-300">
+        <CardContent className="p-3">
+          <h3 className="font-semibold text-sm mb-1 line-clamp-2 group-hover:text-primary transition-colors duration-200">
             {product.name}
           </h3>
-          <p className="text-muted-foreground text-sm mb-3 line-clamp-2">{product.description}</p>
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <span className="font-bold text-lg text-primary">${product.price}</span>
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-1">
+              <span className="font-bold text-base text-primary">${product.price}</span>
               {product.compare_at_price && (
-                <span className="text-sm text-muted-foreground line-through">${product.compare_at_price}</span>
+                <span className="text-xs text-muted-foreground line-through">${product.compare_at_price}</span>
               )}
             </div>
-            <div className="flex gap-1">
-              {availableColors.slice(0, 3).map((color, index) => {
+            <div className="flex gap-0.5">
+              {availableColors.slice(0, 2).map((color, index) => {
                 const variant = product.variants?.find(v => v.color === color)
                 return (
                   <div
                     key={index}
-                    className="w-4 h-4 rounded-full border-2 border-white shadow-sm transition-transform duration-200 hover:scale-125"
+                    className="w-3 h-3 rounded-full border border-white shadow-sm transition-transform duration-200 hover:scale-125"
                     style={{ backgroundColor: variant?.color_hex || '#gray' }}
                   />
                 )
               })}
-              {availableColors.length > 3 && (
-                <span className="text-xs text-muted-foreground">+{availableColors.length - 3}</span>
+              {availableColors.length > 2 && (
+                <span className="text-xs text-muted-foreground">+{availableColors.length - 2}</span>
               )}
             </div>
           </div>
           <Button
-            className="w-full btn-press transition-all duration-200"
+            size="sm"
+            className="w-full text-xs h-8 transition-all duration-200 hover:scale-105"
             onClick={handleAddToCart}
             disabled={!isInStock}
           >
-            <ShoppingCart className="h-4 w-4 mr-2" />
+            <ShoppingCart className="h-3 w-3 mr-1" />
             {isInStock ? "Add to Cart" : "Out of Stock"}
           </Button>
         </CardContent>

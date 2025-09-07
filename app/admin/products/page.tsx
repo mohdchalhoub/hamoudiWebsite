@@ -69,16 +69,24 @@ export default async function AdminProductsPage() {
             <CardHeader className="p-4">
               <div className="relative aspect-square rounded-lg overflow-hidden mb-4">
                 <Image 
-                  src={product.image_url || "/placeholder.svg"} 
+                  src={product.images?.[0] || "/placeholder.svg"} 
                   alt={product.name} 
                   fill 
-                  className="object-cover" 
+                  className="object-cover"
                 />
                 {product.is_featured && (
                   <Badge className="absolute top-2 left-2 bg-yellow-500 text-yellow-900">Featured</Badge>
                 )}
               </div>
               <CardTitle className="text-lg">{product.name}</CardTitle>
+              {product.product_code && (
+                <div className="mt-2">
+                  <span className="text-xs text-muted-foreground">Code: </span>
+                  <span className="font-mono font-semibold text-sm bg-gray-100 px-2 py-1 rounded">
+                    {product.product_code}
+                  </span>
+                </div>
+              )}
             </CardHeader>
             <CardContent className="p-4 pt-0">
               <div className="space-y-3">
@@ -118,9 +126,26 @@ export default async function AdminProductsPage() {
                   </div>
                 </div>
                 {product.variants && product.variants.length > 0 && (
-                  <div className="text-xs text-muted-foreground">
-                    {product.variants.length} variant{product.variants.length !== 1 ? 's' : ''} • 
-                    Stock: {product.variants.reduce((sum, v) => sum + (v.stock_quantity || 0), 0)} units
+                  <div className="space-y-2">
+                    <div className="text-xs text-muted-foreground">
+                      {product.variants.length} variant{product.variants.length !== 1 ? 's' : ''} • 
+                      Stock: {product.variants.reduce((sum, v) => sum + (v.stock_quantity || 0), 0)} units
+                    </div>
+                    <div className="space-y-1">
+                      <div className="text-xs font-medium text-slate-700">Variant Codes:</div>
+                      <div className="flex flex-wrap gap-1">
+                        {product.variants.map((variant, index) => (
+                          <div key={variant.id || index} className="flex items-center gap-1">
+                            <span className="text-xs font-mono bg-slate-100 px-1.5 py-0.5 rounded border">
+                              {variant.variant_code || 'N/A'}
+                            </span>
+                            <span className="text-xs text-slate-500">
+                              ({variant.size || variant.age_range} - {variant.color})
+                            </span>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
                   </div>
                 )}
               </div>

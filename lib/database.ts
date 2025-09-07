@@ -165,6 +165,7 @@ export async function getProductById(id: string): Promise<ProductWithDetails | n
       reviews:reviews(*)
     `)
     .eq('id', id)
+    .eq('is_active', true)
     .single()
 
   if (error) {
@@ -409,6 +410,9 @@ export async function searchProducts(query: string, filters?: {
 
 // Admin functions (using service role)
 export async function createProduct(productData: any): Promise<Product> {
+  // Import code generation functions
+  const { generateProductCode, generateVariantCode } = await import('./code-generator')
+  
   // Extract variants from the product data
   const { variants, ...productInfo } = productData
   
@@ -421,9 +425,13 @@ export async function createProduct(productData: any): Promise<Product> {
     throw new Error('Category is required')
   }
   
-  if (!productInfo.image_url?.trim()) {
-    throw new Error('Product image URL is required')
+  if ((!productInfo.images || productInfo.images.length === 0) && 
+      (!productInfo.videos || productInfo.videos.length === 0)) {
+    throw new Error('At least one image or video is required')
   }
+  
+  // Generate unique product code
+  const productCode = await generateProductCode()
   
   // Generate slug from name
   const slug = productInfo.name
@@ -435,6 +443,7 @@ export async function createProduct(productData: any): Promise<Product> {
   const productInsertData = {
     ...productInfo,
     slug,
+    product_code: productCode,
     created_at: new Date().toISOString(),
     updated_at: new Date().toISOString()
   }
@@ -450,15 +459,31 @@ export async function createProduct(productData: any): Promise<Product> {
 
   // Create variants if they exist
   if (variants && variants.length > 0) {
-    const variantData = variants.map((variant: any) => ({
-      product_id: product.id,
-      size: variant.size,
-      color: variant.color,
-      color_hex: variant.color_hex,
-      stock_quantity: variant.stock_quantity,
-      price_adjustment: variant.price_adjustment || 0,
-      sku: variant.sku || `${product.name.substring(0, 3).toUpperCase()}-${variant.size}-${variant.color.substring(0, 3).toUpperCase()}-${Date.now().toString().slice(-4)}`,
-      created_at: new Date().toISOString()
+    const variantData = await Promise.all(variants.map(async (variant: any) => {
+      // Validate that either size or age_range is provided, but not both
+      if (!variant.size && !variant.age_range) {
+        throw new Error('Either size or age_range must be provided for each variant')
+      }
+      if (variant.size && variant.age_range) {
+        throw new Error('Cannot specify both size and age_range for the same variant')
+      }
+      
+      // Generate variant code based on size/age + color
+      const sizeOrAge = variant.size || variant.age_range
+      const variantCode = await generateVariantCode(sizeOrAge, variant.color)
+      
+      return {
+        product_id: product.id,
+        size: variant.size || null,
+        age_range: variant.age_range || null,
+        color: variant.color,
+        color_hex: variant.color_hex,
+        variant_code: variantCode,
+        stock_quantity: variant.stock_quantity,
+        price_adjustment: variant.price_adjustment || 0,
+        sku: variant.sku || `${product.name.substring(0, 3).toUpperCase()}-${sizeOrAge}-${variant.color.substring(0, 3).toUpperCase()}-${Date.now().toString().slice(-4)}`,
+        created_at: new Date().toISOString()
+      }
     }))
 
     const { error: variantError } = await supabaseAdmin
@@ -475,15 +500,67 @@ export async function createProduct(productData: any): Promise<Product> {
   return product
 }
 
-export async function updateProduct(id: string, updates: ProductUpdate): Promise<Product> {
+export async function updateProduct(id: string, updates: any): Promise<Product> {
+  // Import code generation functions
+  const { generateVariantCode } = await import('./code-generator')
+  
+  // Separate variants from other product data
+  const { variants, ...productUpdates } = updates
+  
+  // Update the main product data
   const { data, error } = await supabaseAdmin
     .from('products')
-    .update(updates)
+    .update(productUpdates)
     .eq('id', id)
     .select()
     .single()
 
   if (error) throw error
+
+  // Handle variants if provided
+  if (variants && Array.isArray(variants)) {
+    // Delete existing variants
+    await supabaseAdmin
+      .from('product_variants')
+      .delete()
+      .eq('product_id', id)
+
+    // Insert new variants
+    if (variants.length > 0) {
+      const variantsToInsert = await Promise.all(variants.map(async (variant: any) => {
+        // Validate that either size or age_range is provided, but not both
+        if (!variant.size && !variant.age_range) {
+          throw new Error('Either size or age_range must be provided for each variant')
+        }
+        if (variant.size && variant.age_range) {
+          throw new Error('Cannot specify both size and age_range for the same variant')
+        }
+        
+        // Generate variant code based on size/age + color
+        const sizeOrAge = variant.size || variant.age_range
+        const variantCode = await generateVariantCode(sizeOrAge, variant.color)
+        
+        return {
+          product_id: id,
+          size: variant.size || null,
+          age_range: variant.age_range || null,
+          color: variant.color,
+          color_hex: variant.color_hex,
+          variant_code: variantCode,
+          stock_quantity: variant.stock_quantity || 0,
+          price_adjustment: variant.price_adjustment || 0,
+          is_active: variant.is_active !== false
+        }
+      }))
+
+      const { error: variantsError } = await supabaseAdmin
+        .from('product_variants')
+        .insert(variantsToInsert)
+
+      if (variantsError) throw variantsError
+    }
+  }
+
   return data
 }
 

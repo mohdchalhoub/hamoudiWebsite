@@ -46,6 +46,7 @@ export function NewProductClient() {
       </div>
 
       <ProductFormDb 
+        key={`product-form-${Date.now()}`}
         onSubmit={handleSubmit}
         onCancel={handleCancel}
         isSubmitting={isSubmitting}
