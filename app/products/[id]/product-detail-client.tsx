@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useCart } from "@/contexts/cart-context"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -11,9 +11,10 @@ import type { ProductWithDetails } from "@/lib/database.types"
 
 interface ProductDetailClientProps {
   product: ProductWithDetails
+  onPriceChange?: (price: number) => void
 }
 
-export function ProductDetailClient({ product }: ProductDetailClientProps) {
+export function ProductDetailClient({ product, onPriceChange }: ProductDetailClientProps) {
   const { addItem } = useCart()
   
   // Get available sizes/ages and colors from variants
@@ -58,6 +59,13 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
   
   // Check if price is different from base price
   const hasPriceAdjustment = selectedVariant && selectedVariant.price_adjustment !== 0
+
+  // Notify parent component when price changes
+  useEffect(() => {
+    if (onPriceChange) {
+      onPriceChange(currentPrice)
+    }
+  }, [currentPrice, onPriceChange])
 
   // Debug logging
   console.log('ProductDetailClient Debug:', {
