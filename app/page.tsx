@@ -14,12 +14,13 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 export default async function HomePage() {
-  // Fetch products from database
+  // Fetch products from database with cache busting
+  const cacheBust = Date.now()
   const [featuredProducts, boysProducts, girlsProducts, onSaleProducts] = await Promise.all([
-    getProducts({ featured: true, active: true, limit: 4 }),
-    getProducts({ gender: 'boys', active: true, limit: 2 }),
-    getProducts({ gender: 'girls', active: true, limit: 2 }),
-    getProducts({ on_sale: true, active: true, limit: 4 })
+    getProducts({ featured: true, active: true, limit: 4, _cacheBust: cacheBust }),
+    getProducts({ gender: 'boys', active: true, limit: 2, _cacheBust: cacheBust }),
+    getProducts({ gender: 'girls', active: true, limit: 2, _cacheBust: cacheBust }),
+    getProducts({ on_sale: true, active: true, limit: 4, _cacheBust: cacheBust })
   ])
   
 
@@ -37,7 +38,8 @@ export default async function HomePage() {
               </AnimatedSection>
               <AnimatedSection animation="fade-up" delay={200}>
                 <h1 className="text-4xl lg:text-6xl font-bold text-balance">
-                  Fun Fashion for{" "}
+                  Luxe Fashion for
+                  <br />
                   <span className="bg-gradient-to-r from-blue-600 to-pink-600 bg-clip-text text-transparent animate-gradient">
                     Amazing Kids
                   </span>
@@ -88,7 +90,7 @@ export default async function HomePage() {
                   <Card className="group overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
                     <div className="relative aspect-[3/4] overflow-hidden">
                       <Image
-                        src={product.image_url || "/placeholder.svg"}
+                        src={product.images?.[0] || "/placeholder.svg"}
                         alt={product.name}
                         fill
                         className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -185,7 +187,7 @@ export default async function HomePage() {
                       <Card className="group overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
                         <div className="relative aspect-[3/4] overflow-hidden">
                           <Image
-                            src={product.image_url || "/placeholder.svg"}
+                            src={product.images?.[0] || "/placeholder.svg"}
                             alt={product.name}
                             fill
                             className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -223,7 +225,7 @@ export default async function HomePage() {
                       <Card className="group overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 cursor-pointer">
                         <div className="relative aspect-[3/4] overflow-hidden">
                           <Image
-                            src={product.image_url || "/placeholder.svg"}
+                            src={product.images?.[0] || "/placeholder.svg"}
                             alt={product.name}
                             fill
                             className="object-cover transition-transform duration-500 group-hover:scale-105"

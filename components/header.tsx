@@ -30,7 +30,7 @@ export function Header({ hasSaleProducts = false }: HeaderProps) {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2 group">
             <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-pink-600 bg-clip-text text-transparent animate-gradient group-hover:scale-105 transition-transform duration-300">
-              KidsWear
+              KidsCorner
             </div>
           </Link>
 

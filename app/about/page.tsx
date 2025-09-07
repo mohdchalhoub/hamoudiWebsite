@@ -14,7 +14,7 @@ export default function AboutPage() {
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl lg:text-5xl font-bold mb-6 text-balance">
             About{" "}
-            <span className="bg-gradient-to-r from-blue-600 to-pink-600 bg-clip-text text-transparent">KidsWear</span>
+            <span className="bg-gradient-to-r from-blue-600 to-pink-600 bg-clip-text text-transparent">KidsCorner</span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-3xl mx-auto text-pretty">
             We're passionate about creating fun, comfortable, and stylish clothing that lets kids be kids while giving
@@ -31,7 +31,7 @@ export default function AboutPage() {
               <h2 className="text-3xl font-bold">Our Story</h2>
               <div className="space-y-4 text-muted-foreground">
                 <p>
-                  KidsWear was born from a simple belief: children deserve clothing that's as vibrant and imaginative as
+                  KidsCorner was born from a simple belief: children deserve clothing that's as vibrant and imaginative as
                   they are. As parents ourselves, we understand the challenge of finding clothes that are both fun for
                   kids and practical for families.
                 </p>

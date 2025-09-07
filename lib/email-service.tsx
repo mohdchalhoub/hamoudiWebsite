@@ -57,7 +57,7 @@ export class EmailService {
     const text = `
 Hi ${order.customerInfo.name},
 
-Thank you for your order! We're excited to get your KidsWear items to you.
+Thank you for your order! We're excited to get your KidsCorner items to you.
 
 Order Details:
 Order ID: ${order.id}
@@ -74,11 +74,11 @@ ${order.customerInfo.address}
 We'll process your order and contact you soon with delivery details.
 
 Best regards,
-The KidsWear Team
+The KidsCorner Team
 
 ---
-KidsWear - Fun Fashion for Kids
-Email: hello@kidswear.com
+KidsCorner - Luxe Fashion for Kids
+Email: hello@kidscorner.com
 Phone: +1 (555) 123-4567
     `.trim()
 
@@ -101,14 +101,14 @@ Phone: +1 (555) 123-4567
 </head>
 <body>
   <div class="header">
-    <h1>KidsWear</h1>
+    <h1>KidsCorner</h1>
     <h2>Order Confirmation</h2>
   </div>
   
   <div class="content">
     <p>Hi ${order.customerInfo.name},</p>
     
-    <p>Thank you for your order! We're excited to get your KidsWear items to you.</p>
+    <p>Thank you for your order! We're excited to get your KidsCorner items to you.</p>
     
     <div class="order-details">
       <h3>Order Details</h3>
@@ -136,12 +136,12 @@ Phone: +1 (555) 123-4567
     
     <p>We'll process your order and contact you soon with delivery details.</p>
     
-    <p>Best regards,<br>The KidsWear Team</p>
+    <p>Best regards,<br>The KidsCorner Team</p>
   </div>
   
   <div class="footer">
-    <p>KidsWear - Fun Fashion for Kids</p>
-    <p>Email: hello@kidswear.com | Phone: +1 (555) 123-4567</p>
+    <p>KidsCorner - Luxe Fashion for Kids</p>
+    <p>Email: hello@kidscorner.com | Phone: +1 (555) 123-4567</p>
   </div>
 </body>
 </html>
@@ -156,7 +156,7 @@ Phone: +1 (555) 123-4567
     const statusMessages = {
       confirmed: "Your order has been confirmed and is being prepared for shipment.",
       shipped: "Great news! Your order has been shipped and is on its way to you.",
-      delivered: "Your order has been delivered! We hope you love your new KidsWear items.",
+      delivered: "Your order has been delivered! We hope you love your new KidsCorner items.",
     }
 
     const message =
@@ -174,7 +174,7 @@ Status: ${newStatus.toUpperCase()}
 If you have any questions, please don't hesitate to contact us.
 
 Best regards,
-The KidsWear Team
+The KidsCorner Team
     `.trim()
 
     const html = `
@@ -193,7 +193,7 @@ The KidsWear Team
 </head>
 <body>
   <div class="header">
-    <h1>KidsWear</h1>
+    <h1>KidsCorner</h1>
     <h2>Order Update</h2>
   </div>
   
@@ -208,12 +208,12 @@ The KidsWear Team
     
     <p>If you have any questions, please don't hesitate to contact us.</p>
     
-    <p>Best regards,<br>The KidsWear Team</p>
+    <p>Best regards,<br>The KidsCorner Team</p>
   </div>
   
   <div class="footer">
-    <p>KidsWear - Fun Fashion for Kids</p>
-    <p>Email: hello@kidswear.com | Phone: +1 (555) 123-4567</p>
+    <p>KidsCorner - Luxe Fashion for Kids</p>
+    <p>Email: hello@kidscorner.com | Phone: +1 (555) 123-4567</p>
   </div>
 </body>
 </html>

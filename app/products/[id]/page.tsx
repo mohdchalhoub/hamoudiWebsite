@@ -91,6 +91,23 @@ export default async function ProductPage({ params }: ProductPageProps) {
                       </span>
                     </div>
                   )}
+                  
+                  {/* Season Badge */}
+                  {product.season && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-xs text-slate-500">Season:</span>
+                      <Badge className={`px-2 py-1 text-xs font-semibold ${
+                        product.season === 'summer' 
+                          ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' 
+                          : product.season === 'winter'
+                          ? 'bg-gradient-to-r from-blue-400 to-blue-600 text-white'
+                          : 'bg-gradient-to-r from-green-400 to-emerald-500 text-white'
+                      }`}>
+                        {product.season === 'summer' ? '☀️ Summer' : product.season === 'winter' ? '❄️ Winter' : '🌍 All Season'}
+                      </Badge>
+                    </div>
+                  )}
+                  
                   <p className="text-slate-600 text-sm leading-relaxed line-clamp-2">{product.description}</p>
                 </div>
 

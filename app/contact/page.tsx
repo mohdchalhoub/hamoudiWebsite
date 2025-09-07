@@ -45,7 +45,7 @@ export default function ContactPage() {
   }
 
   const handleWhatsAppContact = () => {
-    const message = `Hi KidsWear! I have a question about your products.`
+    const message = `Hi KidsCorner! I have a question about your products.`
     const whatsappLink = WhatsAppService.generateWhatsAppLink("+15551234567", message)
     window.open(whatsappLink, "_blank")
   }
@@ -148,7 +148,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <h3 className="font-semibold mb-1">Email Us</h3>
-                    <p className="text-muted-foreground">hello@kidswear.com</p>
+                    <p className="text-muted-foreground">hello@kidscorner.com</p>
                     <p className="text-sm text-muted-foreground">We typically respond within 24 hours</p>
                   </div>
                 </div>

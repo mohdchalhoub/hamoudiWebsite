@@ -9,7 +9,7 @@ import { Toaster } from "@/components/ui/toaster"
 import { Suspense } from "react"
 
 export const metadata: Metadata = {
-  title: "KidsWear - Fun Fashion for Kids",
+  title: "KidsCorner - Luxe Fashion for Kids",
   description: "Modern, playful clothing for boys and girls",
   generator: "v0.app",
 }

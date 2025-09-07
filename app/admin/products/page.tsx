@@ -3,17 +3,21 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { getProducts } from "@/lib/database"
-import { Plus, Edit, Eye, Package } from "lucide-react"
+import { Plus, Edit, Eye, Package, RefreshCw } from "lucide-react"
 import Link from "next/link"
 import { AdminProductActions } from "@/components/admin-product-actions"
+import { RefreshButton } from "@/components/refresh-button"
 
 // Force dynamic rendering and disable caching
 export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 export default async function AdminProductsPage() {
-  // Fetch all products from database
-  const products = await getProducts({ active: true })
+  // Fetch all products from database with cache busting
+  const products = await getProducts({ 
+    active: true,
+    _cacheBust: Date.now() // Add cache busting parameter
+  })
   
 
   return (
@@ -23,12 +27,15 @@ export default async function AdminProductsPage() {
           <h1 className="text-3xl font-bold">Products</h1>
           <p className="text-muted-foreground">Manage your product catalog</p>
         </div>
-        <Button asChild>
-          <Link href="/admin/products/new">
-            <Plus className="h-4 w-4 mr-2" />
-            Add Product
-          </Link>
-        </Button>
+        <div className="flex items-center gap-2">
+          <RefreshButton />
+          <Button asChild>
+            <Link href="/admin/products/new">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Product
+            </Link>
+          </Button>
+        </div>
       </div>
 
       {/* Products Summary */}

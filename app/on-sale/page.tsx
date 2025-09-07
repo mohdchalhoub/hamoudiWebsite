@@ -10,10 +10,11 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 export default async function OnSalePage() {
-  // Fetch all products that are on sale
+  // Fetch all products that are on sale with cache busting
   const onSaleProducts = await getProducts({ 
     on_sale: true, 
-    active: true 
+    active: true,
+    _cacheBust: Date.now()
   })
 
   return (

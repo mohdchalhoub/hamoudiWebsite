@@ -15,7 +15,7 @@ import { Lock } from "lucide-react"
 export default function AdminLoginPage() {
   const { login } = useAdmin()
   const router = useRouter()
-  const [formData, setFormData] = useState({ username: "", password: "" })
+  const [formData, setFormData] = useState({ email: "", password: "" })
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
 
@@ -24,11 +24,11 @@ export default function AdminLoginPage() {
     setIsLoading(true)
     setError("")
 
-    const success = login(formData.username, formData.password)
-    if (success) {
+    const result = await login(formData.email, formData.password)
+    if (result.success) {
       router.push("/admin")
     } else {
-      setError("Invalid username or password")
+      setError(result.error || "Login failed")
     }
     setIsLoading(false)
   }
@@ -50,14 +50,15 @@ export default function AdminLoginPage() {
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <Label htmlFor="username">Username</Label>
+              <Label htmlFor="email">Email</Label>
               <Input
-                id="username"
-                name="username"
-                value={formData.username}
+                id="email"
+                name="email"
+                type="email"
+                value={formData.email}
                 onChange={handleInputChange}
                 required
-                placeholder="Enter username"
+                placeholder="Enter your email"
               />
             </div>
             <div>
@@ -83,11 +84,11 @@ export default function AdminLoginPage() {
           </form>
           <div className="mt-6 p-4 bg-muted rounded-lg">
             <p className="text-sm text-muted-foreground text-center">
-              <strong>Demo Credentials:</strong>
+              <strong>Admin Access:</strong>
               <br />
-              Username: admin
+              Use your registered email and password
               <br />
-              Password: admin123
+              to access the admin dashboard
             </p>
           </div>
         </CardContent>

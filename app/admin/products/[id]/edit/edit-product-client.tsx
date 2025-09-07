@@ -51,6 +51,7 @@ export function EditProductClient({ product }: EditProductClientProps) {
     compare_at_price: product.compare_at_price || 0,
     category_id: product.category_id || "",
     gender: product.gender || "boys",
+    season: product.season || "summer",
     images: product.images || [],
     videos: product.videos || [],
     is_active: product.is_active,

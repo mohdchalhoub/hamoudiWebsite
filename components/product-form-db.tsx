@@ -30,6 +30,7 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
     compare_at_price: initialData?.compare_at_price || 0,
     category_id: initialData?.category_id || "",
     gender: initialData?.gender || "boys",
+    season: initialData?.season || "summer",
     images: initialData?.images || [],
     videos: initialData?.videos || [],
     is_active: initialData?.is_active ?? true,
@@ -429,6 +430,23 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
                     <SelectItem value="boys">Boys</SelectItem>
                     <SelectItem value="girls">Girls</SelectItem>
                     <SelectItem value="unisex">Unisex</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="season">Season</Label>
+                <Select
+                  value={formData.season}
+                  onValueChange={(value) => setFormData((prev) => ({ ...prev, season: value as "summer" | "winter" | "all_season" }))}
+                >
+                  <SelectTrigger>
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="summer">☀️ Summer</SelectItem>
+                    <SelectItem value="winter">❄️ Winter</SelectItem>
+                    <SelectItem value="all_season">🌍 All Season</SelectItem>
                   </SelectContent>
                 </Select>
               </div>

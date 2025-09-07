@@ -3,11 +3,10 @@
 import type React from "react"
 import { createContext, useContext, useEffect, useState } from "react"
 import type { ProductWithDetails } from "@/lib/database.types"
-import { getProducts, createProduct, updateProduct, deleteProduct } from "@/lib/database"
 import { supabase } from "@/lib/supabase"
 import type { User, Session } from "@supabase/supabase-js"
 
-interface AdminContextType {
+interface SecureAdminContextType {
   isAuthenticated: boolean
   isInitialized: boolean
   user: User | null
@@ -21,9 +20,9 @@ interface AdminContextType {
   refreshProducts: () => Promise<void>
 }
 
-const AdminContext = createContext<AdminContextType | undefined>(undefined)
+const SecureAdminContext = createContext<SecureAdminContextType | undefined>(undefined)
 
-export function AdminProvider({ children }: { children: React.ReactNode }) {
+export function SecureAdminProvider({ children }: { children: React.ReactNode }) {
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [user, setUser] = useState<User | null>(null)
   const [products, setProducts] = useState<ProductWithDetails[]>([])
@@ -65,13 +64,39 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     return () => subscription.unsubscribe()
   }, [])
 
+  const getAuthHeaders = async () => {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session?.access_token) {
+      throw new Error('No valid session')
+    }
+    return {
+      'Authorization': `Bearer ${session.access_token}`,
+      'Content-Type': 'application/json'
+    }
+  }
+
   const refreshProducts = async () => {
     if (!isAuthenticated) return
     
     setLoading(true)
     try {
-      const fetchedProducts = await getProducts({ active: true })
-      setProducts(fetchedProducts)
+      const headers = await getAuthHeaders()
+      const response = await fetch('/api/admin/products', {
+        method: 'GET',
+        headers
+      })
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          // Unauthorized - redirect to login
+          await logout()
+          return
+        }
+        throw new Error('Failed to fetch products')
+      }
+
+      const { products } = await response.json()
+      setProducts(products)
     } catch (error) {
       console.error('Failed to fetch products:', error)
     } finally {
@@ -122,7 +147,22 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
   const addProduct = async (productData: any) => {
     try {
-      await createProduct(productData)
+      const headers = await getAuthHeaders()
+      const response = await fetch('/api/admin/products', {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(productData)
+      })
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          await logout()
+          throw new Error('Unauthorized')
+        }
+        const { error } = await response.json()
+        throw new Error(error || 'Failed to add product')
+      }
+
       await refreshProducts()
     } catch (error) {
       console.error('Failed to add product:', error)
@@ -130,9 +170,24 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const updateProductHandler = async (id: string, productData: any) => {
+  const updateProduct = async (id: string, productData: any) => {
     try {
-      await updateProduct(id, productData)
+      const headers = await getAuthHeaders()
+      const response = await fetch(`/api/admin/products/${id}`, {
+        method: 'PUT',
+        headers,
+        body: JSON.stringify(productData)
+      })
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          await logout()
+          throw new Error('Unauthorized')
+        }
+        const { error } = await response.json()
+        throw new Error(error || 'Failed to update product')
+      }
+
       await refreshProducts()
     } catch (error) {
       console.error('Failed to update product:', error)
@@ -140,9 +195,23 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
-  const deleteProductHandler = async (id: string) => {
+  const deleteProduct = async (id: string) => {
     try {
-      await deleteProduct(id)
+      const headers = await getAuthHeaders()
+      const response = await fetch(`/api/admin/products/${id}`, {
+        method: 'DELETE',
+        headers
+      })
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          await logout()
+          throw new Error('Unauthorized')
+        }
+        const { error } = await response.json()
+        throw new Error(error || 'Failed to delete product')
+      }
+
       await refreshProducts()
     } catch (error) {
       console.error('Failed to delete product:', error)
@@ -151,7 +220,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <AdminContext.Provider
+    <SecureAdminContext.Provider
       value={{
         isAuthenticated,
         isInitialized,
@@ -161,20 +230,20 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
         products,
         loading,
         addProduct,
-        updateProduct: updateProductHandler,
-        deleteProduct: deleteProductHandler,
+        updateProduct,
+        deleteProduct,
         refreshProducts,
       }}
     >
       {children}
-    </AdminContext.Provider>
+    </SecureAdminContext.Provider>
   )
 }
 
-export function useAdmin() {
-  const context = useContext(AdminContext)
+export function useSecureAdmin() {
+  const context = useContext(SecureAdminContext)
   if (context === undefined) {
-    throw new Error("useAdmin must be used within an AdminProvider")
+    throw new Error("useSecureAdmin must be used within a SecureAdminProvider")
   }
   return context
 }

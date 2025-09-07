@@ -78,6 +78,22 @@ export function ProductCard({ product }: ProductCardProps) {
           <h3 className="font-semibold text-sm mb-1 line-clamp-2 group-hover:text-primary transition-colors duration-200">
             {product.name}
           </h3>
+          
+          {/* Season Badge */}
+          {product.season && (
+            <div className="mb-2">
+              <Badge className={`px-2 py-0.5 text-xs font-medium ${
+                product.season === 'summer' 
+                  ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' 
+                  : product.season === 'winter'
+                  ? 'bg-gradient-to-r from-blue-400 to-blue-600 text-white'
+                  : 'bg-gradient-to-r from-green-400 to-emerald-500 text-white'
+              }`}>
+                {product.season === 'summer' ? '☀️ Summer' : product.season === 'winter' ? '❄️ Winter' : '🌍 All Season'}
+              </Badge>
+            </div>
+          )}
+          
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-1">
               <span className="font-bold text-base text-primary">${product.price}</span>

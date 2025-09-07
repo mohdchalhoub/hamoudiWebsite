@@ -47,6 +47,7 @@ export interface Database {
           compare_at_price: number | null
           category_id: string | null
           gender: 'boys' | 'girls' | 'unisex'
+          season: 'summer' | 'winter' | 'all_season'
           age_range: string
           brand: string | null
           material: string | null
@@ -75,6 +76,7 @@ export interface Database {
           compare_at_price?: number | null
           category_id?: string | null
           gender: 'boys' | 'girls' | 'unisex'
+          season?: 'summer' | 'winter'
           age_range?: string
           brand?: string | null
           material?: string | null

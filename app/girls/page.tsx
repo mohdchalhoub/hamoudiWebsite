@@ -9,10 +9,11 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 export default async function GirlsPage() {
-  // Fetch girls products from database
+  // Fetch girls products from database with cache busting
   const girlsProducts = await getProducts({ 
     gender: 'girls', 
-    active: true 
+    active: true,
+    _cacheBust: Date.now()
   })
 
   return (

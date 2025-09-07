@@ -8,7 +8,7 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="space-y-4">
             <div className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-pink-600 bg-clip-text text-transparent animate-gradient">
-              KidsWear
+              KidsCorner
             </div>
             <p className="text-gray-300 text-sm leading-relaxed">
               Modern, playful clothing for boys and girls. Quality fashion that kids love and parents trust.
@@ -64,7 +64,7 @@ export function Footer() {
             <div className="space-y-3">
               <div className="flex items-center space-x-3 text-sm text-gray-300">
                 <Mail className="h-4 w-4 text-blue-400" />
-                <span>hello@kidswear.com</span>
+                <span>hello@kidscorner.com</span>
               </div>
               <div className="flex items-center space-x-3 text-sm text-gray-300">
                 <Phone className="h-4 w-4 text-blue-400" />
@@ -80,7 +80,7 @@ export function Footer() {
         <div className="mt-8 pt-8 border-t border-gray-700/50">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
             <p className="text-sm text-gray-400">
-              © 2024 KidsWear. All rights reserved.
+              © 2024 KidsCorner. All rights reserved.
             </p>
             <div className="flex space-x-6 text-sm">
               <Link href="#" className="text-gray-400 hover:text-blue-400 transition-colors duration-300">

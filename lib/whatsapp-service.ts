@@ -45,7 +45,7 @@ export class WhatsAppService {
       .join("\n")
 
     return `
-🎉 *KidsWear Order Confirmation*
+🎉 *KidsCorner Order Confirmation*
 
 Hi ${order.customerInfo.name}! Thank you for your order.
 
@@ -65,7 +65,7 @@ We'll process your order and contact you soon with delivery details.
 
 Questions? Reply to this message or call us at +1 (555) 123-4567
 
-*KidsWear - Fun Fashion for Kids* 👶👧👦
+*KidsCorner - Luxe Fashion for Kids* 👶👧👦
     `.trim()
   }
 
@@ -79,7 +79,7 @@ Questions? Reply to this message or call us at +1 (555) 123-4567
     const statusMessages = {
       confirmed: "Your order has been confirmed and is being prepared for shipment.",
       shipped: "Great news! Your order has been shipped and is on its way to you.",
-      delivered: "Your order has been delivered! We hope you love your new KidsWear items.",
+      delivered: "Your order has been delivered! We hope you love your new KidsCorner items.",
     }
 
     const emoji = statusEmojis[newStatus as keyof typeof statusEmojis] || "📋"
@@ -87,7 +87,7 @@ Questions? Reply to this message or call us at +1 (555) 123-4567
       statusMessages[newStatus as keyof typeof statusMessages] || `Your order status has been updated to: ${newStatus}`
 
     return `
-${emoji} *KidsWear Order Update*
+${emoji} *KidsCorner Order Update*
 
 Hi ${order.customerInfo.name}!
 
@@ -99,7 +99,7 @@ Status: *${newStatus.toUpperCase()}*
 
 Questions? Reply to this message or call us at +1 (555) 123-4567
 
-*KidsWear - Fun Fashion for Kids* 👶👧👦
+*KidsCorner - Luxe Fashion for Kids* 👶👧👦
     `.trim()
   }
 

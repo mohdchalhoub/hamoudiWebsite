@@ -6,10 +6,10 @@ import { LogOut, Settings, User } from "lucide-react"
 import Link from "next/link"
 
 export function AdminHeader() {
-  const { logout } = useAdmin()
+  const { logout, user } = useAdmin()
 
-  const handleLogout = () => {
-    logout()
+  const handleLogout = async () => {
+    await logout()
     window.location.href = "/admin/login"
   }
 
@@ -18,10 +18,15 @@ export function AdminHeader() {
       <div className="flex h-16 items-center justify-between px-6">
         <div className="flex items-center space-x-4">
           <Link href="/admin" className="text-2xl font-bold text-primary">
-            KidsWear Admin
+            KidsCorner Admin
           </Link>
         </div>
         <div className="flex items-center space-x-4">
+          {user && (
+            <span className="text-sm text-muted-foreground">
+              {user.email}
+            </span>
+          )}
           <Button variant="ghost" size="icon">
             <Settings className="h-4 w-4" />
           </Button>
