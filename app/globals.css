@@ -32,6 +32,18 @@
   width: auto !important;
 }
 
+.thumbnail-swiper {
+  padding: 0 8px;
+}
+
+.thumbnail-swiper .swiper-slide-thumb-active {
+  opacity: 1;
+}
+
+.thumbnail-swiper .swiper-slide:not(.swiper-slide-thumb-active) {
+  opacity: 0.7;
+}
+
 /* 3D Carousel Styles */
 .product-3d-carousel {
   perspective: 1000px;

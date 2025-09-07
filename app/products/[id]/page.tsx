@@ -5,7 +5,7 @@ import { getProductById, getProducts } from "@/lib/database"
 import { ProductDetailClient } from "./product-detail-client"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ProductGridClient } from "@/components/product-grid-client"
+import { Product3DCarousel } from "@/components/product-3d-carousel"
 import { ProductImageCarousel } from "@/components/product-image-carousel"
 import { ServerHeader } from "@/components/server-header"
 import { Footer } from "@/components/footer"
@@ -159,7 +159,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
                 </h2>
                 <p className="text-gray-600 text-lg font-body">Discover more amazing products</p>
               </div>
-              <ProductGridClient products={relatedProducts} />
+              <Product3DCarousel products={relatedProducts} />
             </div>
           )}
         </div>

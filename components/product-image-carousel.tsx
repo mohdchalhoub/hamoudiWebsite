@@ -1,13 +1,12 @@
 "use client"
 
-import { useState, useRef } from "react"
+import { useState, useRef, useEffect } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ZoomIn, X, ChevronLeft, ChevronRight } from "lucide-react"
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { Navigation, Thumbs, FreeMode } from 'swiper/modules'
-import type { Swiper as SwiperType } from 'swiper'
+import { Navigation } from 'swiper/modules'
 import Lightbox from "yet-another-react-lightbox"
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails"
 import Zoom from "yet-another-react-lightbox/plugins/zoom"
@@ -15,8 +14,6 @@ import Zoom from "yet-another-react-lightbox/plugins/zoom"
 // Import Swiper styles
 import 'swiper/css'
 import 'swiper/css/navigation'
-import 'swiper/css/thumbs'
-import 'swiper/css/free-mode'
 
 interface ProductImageCarouselProps {
   images: string[]
@@ -33,9 +30,9 @@ export function ProductImageCarousel({
   discountPercentage = 0,
   className = ""
 }: ProductImageCarouselProps) {
-  const [thumbsSwiper, setThumbsSwiper] = useState<SwiperType | null>(null)
   const [isLightboxOpen, setIsLightboxOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
+  const swiperRef = useRef<any>(null)
 
   if (!images || images.length === 0) {
     return (
@@ -60,6 +57,13 @@ export function ProductImageCarousel({
     setIsLightboxOpen(false)
   }
 
+  const goToImage = (index: number) => {
+    setActiveIndex(index)
+    if (swiperRef.current) {
+      swiperRef.current.slideTo(index)
+    }
+  }
+
   // Prepare slides for lightbox
   const slides = images.map((image, index) => ({
     src: image,
@@ -71,8 +75,8 @@ export function ProductImageCarousel({
       {/* Main Image Carousel */}
       <div className="relative">
         <Swiper
-          modules={[Navigation, Thumbs]}
-          thumbs={{ swiper: thumbsSwiper && !thumbsSwiper.destroyed ? thumbsSwiper : null }}
+          ref={swiperRef}
+          modules={[Navigation]}
           navigation={{
             nextEl: '.swiper-button-next-custom',
             prevEl: '.swiper-button-prev-custom',
@@ -89,6 +93,10 @@ export function ProductImageCarousel({
                   fill
                   className="object-cover transition-transform duration-500 group-hover:scale-105"
                   priority={index === 0}
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = '/placeholder.svg';
+                  }}
                 />
                 
                 {/* Gradient overlay for better badge visibility */}
@@ -143,37 +151,38 @@ export function ProductImageCarousel({
         )}
       </div>
 
-      {/* Thumbnail Carousel */}
+      {/* Thumbnail Gallery */}
       {images.length > 1 && (
-        <div className="px-2">
-          <Swiper
-            modules={[FreeMode, Thumbs]}
-            onSwiper={setThumbsSwiper}
-            spaceBetween={8}
-            slidesPerView="auto"
-            freeMode={true}
-            watchSlidesProgress={true}
-            className="thumbnail-swiper"
-          >
+        <div className="flex justify-center">
+          <div className="flex gap-3 overflow-x-auto pb-2 max-w-full">
             {images.map((image, index) => (
-              <SwiperSlide key={index} className="!w-20 !h-20">
-                <div 
-                  className={`relative w-full h-full rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-300 hover:scale-105 ${
-                    index === activeIndex 
-                      ? 'border-primary-500 shadow-lg scale-105' 
-                      : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
-                  }`}
-                >
-                  <Image
-                    src={image}
-                    alt={`${productName} thumbnail ${index + 1}`}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              </SwiperSlide>
+              <div
+                key={index}
+                className={`relative flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-300 hover:scale-105 ${
+                  index === activeIndex 
+                    ? 'border-primary-500 shadow-lg scale-105' 
+                    : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
+                }`}
+                onClick={() => goToImage(index)}
+              >
+                <Image
+                  src={image}
+                  alt={`${productName} thumbnail ${index + 1}`}
+                  width={80}
+                  height={80}
+                  className="w-full h-full object-cover"
+                  onError={(e) => {
+                    const target = e.target as HTMLImageElement;
+                    target.src = '/placeholder.svg';
+                  }}
+                />
+                {/* Active indicator */}
+                {index === activeIndex && (
+                  <div className="absolute inset-0 bg-primary-500/20 border-2 border-primary-500 rounded-lg" />
+                )}
+              </div>
             ))}
-          </Swiper>
+          </div>
         </div>
       )}
 
