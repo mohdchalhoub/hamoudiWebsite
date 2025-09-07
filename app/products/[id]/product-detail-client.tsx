@@ -5,7 +5,6 @@ import { useCart } from "@/contexts/cart-context"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Label } from "@/components/ui/label"
 import { Heart, ShoppingCart, Minus, Plus, Package, Truck, RotateCcw } from "lucide-react"
 import type { ProductWithDetails } from "@/lib/database.types"
@@ -100,37 +99,61 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           <Label className="text-xs font-medium text-text-primary">
             {availableSizes.length > 0 ? 'Size' : 'Age Range'}
           </Label>
-          <RadioGroup
-            value={availableSizes.length > 0 ? selectedSize : selectedAge}
-            onValueChange={(value) => {
-              if (availableSizes.length > 0) {
-                setSelectedSize(value)
-              } else {
-                setSelectedAge(value)
-              }
-            }}
-            className="flex flex-wrap gap-2"
-          >
+          <div className="flex flex-wrap gap-2">
             {availableSizes.length > 0 ? (
-              availableSizes.map((size) => (
-                <div key={size} className="flex items-center space-x-1 p-1.5 bg-background border border-border rounded-md hover:border-text-muted transition-colors duration-200">
-                  <RadioGroupItem value={size || ''} id={size || ''} className="text-primary" />
-                  <Label htmlFor={size || ''} className="text-xs font-medium cursor-pointer text-text-primary">
-                    {size}
-                  </Label>
-                </div>
-              ))
+              availableSizes.map((size) => {
+                const isSelected = selectedSize === size
+                return (
+                  <div 
+                    key={size} 
+                    onClick={() => setSelectedSize(size || '')}
+                    className={`flex items-center space-x-1 p-1.5 border rounded-md transition-colors duration-200 cursor-pointer ${
+                      isSelected 
+                        ? 'bg-primary text-white border-primary' 
+                        : 'bg-background border-border hover:border-text-muted text-text-primary'
+                    }`}
+                  >
+                    <div className={`w-3 h-3 rounded-full border-2 ${
+                      isSelected 
+                        ? 'bg-white border-white' 
+                        : 'border-primary'
+                    }`}>
+                      {isSelected && <div className="w-full h-full rounded-full bg-primary"></div>}
+                    </div>
+                    <span className="text-xs font-medium">
+                      {size}
+                    </span>
+                  </div>
+                )
+              })
             ) : (
-              availableAges.map((age) => (
-                <div key={age} className="flex items-center space-x-1 p-1.5 bg-background border border-border rounded-md hover:border-text-muted transition-colors duration-200">
-                  <RadioGroupItem value={age || ''} id={age || ''} className="text-primary" />
-                  <Label htmlFor={age || ''} className="text-xs font-medium cursor-pointer text-text-primary">
-                    {age} years
-                  </Label>
-                </div>
-              ))
+              availableAges.map((age) => {
+                const isSelected = selectedAge === age
+                return (
+                  <div 
+                    key={age} 
+                    onClick={() => setSelectedAge(age || '')}
+                    className={`flex items-center space-x-1 p-1.5 border rounded-md transition-colors duration-200 cursor-pointer ${
+                      isSelected 
+                        ? 'bg-primary text-white border-primary' 
+                        : 'bg-background border-border hover:border-text-muted text-text-primary'
+                    }`}
+                  >
+                    <div className={`w-3 h-3 rounded-full border-2 ${
+                      isSelected 
+                        ? 'bg-white border-white' 
+                        : 'border-primary'
+                    }`}>
+                      {isSelected && <div className="w-full h-full rounded-full bg-primary"></div>}
+                    </div>
+                    <span className="text-xs font-medium">
+                      {age} years
+                    </span>
+                  </div>
+                )
+              })
             )}
-          </RadioGroup>
+          </div>
         </div>
       )}
 
@@ -138,27 +161,33 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       {availableColors.length > 0 && (
         <div className="space-y-1">
           <Label className="text-xs font-medium text-text-primary">Color</Label>
-          <RadioGroup
-            value={selectedColor}
-            onValueChange={setSelectedColor}
-            className="flex flex-wrap gap-2"
-          >
+          <div className="flex flex-wrap gap-2">
             {availableColors.map((color) => {
               const variant = product.variants?.find(v => v.color === color)
+              const isSelected = selectedColor === color
               return (
-                <div key={color} className="flex items-center space-x-1 p-1.5 bg-background border border-border rounded-md hover:border-text-muted transition-colors duration-200">
-                  <RadioGroupItem value={color} id={color} className="text-primary" />
-                  <Label htmlFor={color} className="flex items-center gap-1 text-xs font-medium cursor-pointer text-text-primary">
-                    <div
-                      className="w-3 h-3 rounded-full border border-border"
-                      style={{ backgroundColor: variant?.color_hex || '#6B7280' }}
-                    />
+                <div 
+                  key={color} 
+                  onClick={() => setSelectedColor(color)}
+                  className={`flex items-center space-x-1 p-1.5 border rounded-md transition-colors duration-200 cursor-pointer ${
+                    isSelected 
+                      ? 'bg-primary text-white border-primary' 
+                      : 'bg-background border-border hover:border-text-muted text-text-primary'
+                  }`}
+                >
+                  <div
+                    className={`w-3 h-3 rounded-full border-2 ${
+                      isSelected ? 'border-white' : 'border-border'
+                    }`}
+                    style={{ backgroundColor: variant?.color_hex || '#6B7280' }}
+                  />
+                  <span className="text-xs font-medium">
                     {color}
-                  </Label>
+                  </span>
                 </div>
               )
             })}
-          </RadioGroup>
+          </div>
         </div>
       )}
 
