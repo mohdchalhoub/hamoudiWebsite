@@ -43,10 +43,10 @@ export function ProductCard({ product }: ProductCardProps) {
     ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100)
     : 0
 
-  // Check if product is in stock - use product quantity if no variants, otherwise use variant stock
-  const isInStock = product.variants?.length > 0 
+  // Check if product is in stock - consider both product quantity and variant stock
+  const isInStock = product.quantity > 0 || (product.variants?.length > 0 
     ? product.variants.some(v => v.stock_quantity > 0) 
-    : product.quantity > 0
+    : false)
 
   return (
     <div className="h-full animate-fade-in-up hover:-translate-y-3 transition-transform duration-500">

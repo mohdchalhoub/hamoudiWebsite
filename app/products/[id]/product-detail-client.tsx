@@ -37,10 +37,14 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
     return sizeMatch && ageMatch && colorMatch
   })
 
-  // Check stock status - use product quantity if no variants, otherwise use variant stock
-  const isInStock = selectedVariant ? selectedVariant.stock_quantity > 0 : product.quantity > 0
-  const maxQuantity = selectedVariant ? Math.min(selectedVariant.stock_quantity, 10) : Math.min(product.quantity, 10)
-  const availableQuantity = selectedVariant ? selectedVariant.stock_quantity : product.quantity
+  // Check stock status - consider both product quantity and variant stock
+  const isInStock = product.quantity > 0 || (selectedVariant ? selectedVariant.stock_quantity > 0 : false)
+  const maxQuantity = selectedVariant 
+    ? Math.min(Math.max(selectedVariant.stock_quantity, product.quantity), 10) 
+    : Math.min(product.quantity, 10)
+  const availableQuantity = selectedVariant 
+    ? Math.max(selectedVariant.stock_quantity, product.quantity)
+    : product.quantity
 
   const handleAddToCart = async () => {
     if (!isInStock) return
