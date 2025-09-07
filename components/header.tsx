@@ -5,6 +5,7 @@ import { useState, useEffect } from "react"
 // Removed framer-motion imports to use CSS animations instead
 import { Button } from "@/components/ui/button"
 import { CartDrawer } from "./cart-drawer"
+import { SearchBar } from "./search-bar"
 import { Menu, Heart, X } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
 
@@ -69,6 +70,11 @@ export function Header({ hasSaleProducts = false }: HeaderProps) {
             ))}
           </nav>
 
+          {/* Search Bar */}
+          <div className="hidden md:block flex-1 max-w-md mx-8">
+            <SearchBar />
+          </div>
+
           {/* Actions */}
           <div className="flex items-center space-x-2 animate-fade-in-right" style={{ animationDelay: '0.5s' }}>
             <div className="hover:scale-110 hover:rotate-5 transition-all duration-500">
@@ -119,6 +125,11 @@ export function Header({ hasSaleProducts = false }: HeaderProps) {
               </SheetTrigger>
               <SheetContent side="right" className="w-[300px] sm:w-[400px]">
                 <div className="flex flex-col space-y-4 mt-8 animate-fade-in-right">
+                  {/* Mobile Search Bar */}
+                  <div className="px-4 pb-4">
+                    <SearchBar />
+                  </div>
+                  
                   {navigation.map((item, index) => (
                     <div
                       key={item.name}
