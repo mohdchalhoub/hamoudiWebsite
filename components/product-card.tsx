@@ -50,14 +50,14 @@ export function ProductCard({ product }: ProductCardProps) {
     <div className="h-full animate-fade-in-up hover:-translate-y-3 transition-transform duration-500">
       <Link href={`/products/${product.id}`}>
         <Card 
-          className="group premium-card cursor-pointer h-full border-0 overflow-hidden"
+          className="group cursor-pointer h-full border-0 overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 bg-white rounded-2xl"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          <div className="relative aspect-[3/4] overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100">
+          <div className="relative aspect-[3/4] overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 rounded-t-2xl">
             <div className="relative w-full h-full group-hover:scale-110 transition-transform duration-700">
               <Image
-                src={product.image_url || "/placeholder.svg"}
+                src={product.images?.[0] || "/placeholder.svg"}
                 alt={product.name}
                 fill
                 className="object-cover transition-all duration-700"
@@ -108,17 +108,17 @@ export function ProductCard({ product }: ProductCardProps) {
             </div>
           </div>
           
-          <CardContent className="p-6">
+          <CardContent className="p-5">
             <div className="animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-              <h3 className="font-semibold text-base mb-3 line-clamp-2 group-hover:text-primary transition-colors duration-300 font-body">
+              <h3 className="font-semibold text-lg mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors duration-300 font-body text-gray-900">
                 {product.name}
               </h3>
             </div>
             
             {/* Season Badge */}
             {product.season && (
-              <div className="mb-3 animate-scale-in" style={{ animationDelay: '0.2s' }}>
-                <Badge className={`px-2 py-1 text-xs font-medium ${
+              <div className="mb-4 animate-scale-in" style={{ animationDelay: '0.2s' }}>
+                <Badge className={`px-3 py-1.5 text-xs font-semibold rounded-full ${
                   product.season === 'summer' 
                     ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' 
                     : product.season === 'winter'
@@ -130,20 +130,20 @@ export function ProductCard({ product }: ProductCardProps) {
               </div>
             )}
             
-            <div className="flex items-center justify-between mb-3 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
+            <div className="flex items-center justify-between mb-4 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-lg text-primary">${product.price}</span>
+                <span className="font-bold text-xl text-blue-600">${Number(product.price).toFixed(2)}</span>
                 {product.compare_at_price && (
-                  <span className="text-sm text-muted-foreground line-through">${product.compare_at_price}</span>
+                  <span className="text-sm text-gray-400 line-through">${Number(product.compare_at_price).toFixed(2)}</span>
                 )}
               </div>
-              <div className="flex gap-1">
+              <div className="flex gap-1.5">
                 {availableColors.slice(0, 3).map((color, index) => {
                   const variant = product.variants?.find(v => v.color === color)
                   return (
                     <div
                       key={index}
-                      className="w-4 h-4 rounded-full border-2 border-white shadow-sm hover:scale-110 transition-transform duration-200 animate-scale-in"
+                      className="w-5 h-5 rounded-full border-2 border-gray-200 shadow-sm hover:scale-110 transition-transform duration-200 animate-scale-in"
                       style={{ 
                         backgroundColor: variant?.color_hex || '#gray',
                         animationDelay: `${index * 0.1}s`
@@ -152,7 +152,7 @@ export function ProductCard({ product }: ProductCardProps) {
                   )
                 })}
                 {availableColors.length > 3 && (
-                  <span className="text-xs text-muted-foreground ml-1">+{availableColors.length - 3}</span>
+                  <span className="text-xs text-gray-500 ml-1 font-medium">+{availableColors.length - 3}</span>
                 )}
               </div>
             </div>
@@ -160,7 +160,11 @@ export function ProductCard({ product }: ProductCardProps) {
             <div className="animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
               <Button
                 size="sm"
-                className="w-full premium-button text-sm h-11 transition-all duration-500 hover:scale-105"
+                className={`w-full text-sm h-12 transition-all duration-500 hover:scale-105 ${
+                  isInStock 
+                    ? 'bg-blue-600 hover:bg-blue-700 text-white' 
+                    : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                }`}
                 onClick={handleAddToCart}
                 disabled={!isInStock}
               >
