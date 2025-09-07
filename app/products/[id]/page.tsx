@@ -6,7 +6,7 @@ import { ProductDetailClient } from "./product-detail-client"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ProductGridClient } from "@/components/product-grid-client"
-import { ProductImageGallery } from "@/components/product-image-gallery"
+import { ProductImageCarousel } from "@/components/product-image-carousel"
 import { ServerHeader } from "@/components/server-header"
 import { Footer } from "@/components/footer"
 import { ArrowLeft } from "lucide-react"
@@ -36,67 +36,76 @@ export default async function ProductPage({ params }: ProductPageProps) {
     : 0
 
   return (
-    <div className="min-h-screen flex flex-col bg-gradient-to-br from-slate-100 via-gray-50 to-slate-100">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50">
       <ServerHeader />
       <main className="flex-1">
-        <div className="container mx-auto px-3 py-3">
+        <div className="container mx-auto px-4 py-6 max-w-7xl">
           {/* Back to Home Button */}
-          <div className="mb-3">
+          <div className="mb-6">
             <Link href="/">
-              <Button variant="outline" size="sm" className="flex items-center gap-2 hover:scale-105 transition-all duration-200 bg-slate-100/90 backdrop-blur-sm border-slate-300/50 shadow-sm hover:shadow-md text-slate-700">
+              <Button variant="outline" size="sm" className="flex items-center gap-2 hover:scale-105 transition-all duration-300 bg-white/90 backdrop-blur-sm border-gray-300/50 shadow-sm hover:shadow-lg text-gray-700 hover:bg-gray-50">
                 <ArrowLeft className="h-4 w-4" />
                 Back to Home
               </Button>
             </Link>
           </div>
 
-          {/* Main Product Section with Enhanced Desktop Layout */}
-          <div className="bg-slate-50/80 backdrop-blur-sm rounded-xl shadow-lg border border-slate-200/30 p-4 mb-4 max-w-7xl mx-auto">
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8 items-start">
+          {/* Main Product Section - Modern Design */}
+          <div className="bg-white rounded-3xl shadow-xl border border-gray-200/50 p-8 mb-8 animate-fade-in-up">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
               {/* Product Images */}
-              <div className="flex flex-col items-center lg:items-start">
-                <ProductImageGallery
+              <div className="flex flex-col items-center lg:items-start animate-fade-in-left" data-aos="fade-right" data-aos-delay="200">
+                <ProductImageCarousel
                   images={product.images || []}
                   productName={product.name}
                   isFeatured={product.is_featured}
                   discountPercentage={discountPercentage}
-                  className="max-w-lg w-full"
+                  className="w-full max-w-md"
                 />
                 
                 {/* Additional product info below image */}
-                <div className="mt-1 text-center lg:text-left">
-                  <div className="flex items-center justify-center lg:justify-start gap-2 text-xs text-slate-600">
-                    <div className="flex items-center gap-1">
-                      <div className="w-1 h-1 bg-emerald-500 rounded-full animate-pulse"></div>
-                      <span>In Stock</span>
+                <div className="mt-4 text-center lg:text-left">
+                  <div className="flex items-center justify-center lg:justify-start gap-3 text-sm text-gray-600">
+                    <div className="flex items-center gap-2 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200">
+                      <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
+                      <span className="font-medium">In Stock</span>
                     </div>
-                    <div className="flex items-center gap-1">
-                      <div className="w-1 h-1 bg-blue-500 rounded-full"></div>
-                      <span>Free Shipping</span>
+                    <div className="flex items-center gap-2 bg-blue-50 px-3 py-1.5 rounded-full border border-blue-200">
+                      <div className="w-2 h-2 bg-blue-500 rounded-full"></div>
+                      <span className="font-medium">Free Shipping</span>
                     </div>
                   </div>
                 </div>
               </div>
 
               {/* Product Details */}
-              <div className="space-y-2">
-                {/* Product Title and Code */}
-                <div className="space-y-1">
-                  <h1 className="text-xl lg:text-2xl font-bold text-slate-800 leading-tight">{product.name}</h1>
+              <div className="space-y-6 animate-fade-in-right" data-aos="fade-left" data-aos-delay="400">
+                {/* Product Title */}
+                <div className="space-y-4">
+                  <h1 className="text-3xl lg:text-4xl font-display font-bold text-gray-900 leading-tight">
+                    {product.name}
+                  </h1>
+                  
+                  {/* Product Code Display - Styled */}
                   {product.product_code && (
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-slate-500">Product Code:</span>
-                      <span className="font-mono font-semibold text-xs bg-slate-200 px-2 py-1 rounded border border-slate-300 text-slate-700">
-                        {product.product_code}
-                      </span>
+                    <div className="bg-gray-100 rounded-xl p-4 border border-gray-200">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 bg-blue-100 rounded-full flex items-center justify-center">
+                          <span className="text-blue-600 font-bold text-sm">#</span>
+                        </div>
+                        <div>
+                          <p className="text-sm font-medium text-gray-600">Product Code</p>
+                          <p className="font-mono font-bold text-lg text-gray-900">{product.product_code}</p>
+                        </div>
+                      </div>
                     </div>
                   )}
                   
-                  {/* Season Badge */}
+                  {/* Season Badge - Enhanced */}
                   {product.season && (
-                    <div className="flex items-center gap-2">
-                      <span className="text-xs text-slate-500">Season:</span>
-                      <Badge className={`px-2 py-1 text-xs font-semibold ${
+                    <div className="flex items-center gap-3">
+                      <span className="text-sm font-medium text-gray-600">Season:</span>
+                      <Badge className={`px-4 py-2 text-sm font-semibold rounded-full shadow-sm ${
                         product.season === 'summer' 
                           ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' 
                           : product.season === 'winter'
@@ -108,84 +117,33 @@ export default async function ProductPage({ params }: ProductPageProps) {
                     </div>
                   )}
                   
-                  <p className="text-slate-600 text-sm leading-relaxed line-clamp-2">{product.description}</p>
+                  {/* Description - Styled Box */}
+                  <div className="bg-gray-50 rounded-xl p-4 border border-gray-200">
+                    <p className="text-gray-600 text-base leading-relaxed font-body">{product.description}</p>
+                  </div>
                 </div>
 
-                {/* Price Section */}
-                <div className="bg-slate-100 rounded-lg p-2 border border-slate-200">
-                  <div className="flex items-center gap-2">
-                    <span className="text-xl lg:text-2xl font-bold text-slate-800">
-                      ${product.price}
-                    </span>
-                    {product.compare_at_price && (
-                      <span className="text-base text-slate-400 line-through">${product.compare_at_price}</span>
-                    )}
+                {/* Price Section - Enhanced */}
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-200 shadow-sm">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <span className="text-3xl lg:text-4xl font-display font-bold text-gray-900">
+                        ${product.price}
+                      </span>
+                      {product.compare_at_price && (
+                        <span className="text-xl text-gray-400 line-through">${product.compare_at_price}</span>
+                      )}
+                    </div>
                     {discountPercentage > 0 && (
-                      <Badge className="bg-gradient-to-r from-red-500 to-red-600 text-white px-2 py-1 text-xs font-semibold shadow-lg">
-                        Save {discountPercentage}%
+                      <Badge className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 text-sm font-bold shadow-lg">
+                        🔥 Save {discountPercentage}%
                       </Badge>
                     )}
                   </div>
                 </div>
 
-                {/* Product Variants */}
-                <div className="space-y-1">
-                  {/* Show sizes if available, otherwise show ages */}
-                  {product.variants?.some(v => v.size) ? (
-                    <div className="bg-slate-100 rounded-md p-2 border border-slate-200">
-                      <h3 className="font-semibold text-slate-700 mb-1 flex items-center gap-1 text-xs">
-                        <span className="w-1 h-1 bg-blue-500 rounded-full"></span>
-                        Available Sizes
-                      </h3>
-                      <div className="flex flex-wrap gap-1">
-                        {[...new Set(product.variants?.map(v => v.size).filter(Boolean))].map((size) => (
-                          <Badge key={size} variant="outline" className="px-1.5 py-0.5 text-xs font-medium hover:bg-blue-100 hover:border-blue-400 transition-colors bg-slate-50 border-slate-300 text-slate-700">
-                            {size}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  ) : (
-                    <div className="bg-slate-100 rounded-md p-2 border border-slate-200">
-                      <h3 className="font-semibold text-slate-700 mb-1 flex items-center gap-1 text-xs">
-                        <span className="w-1 h-1 bg-pink-500 rounded-full"></span>
-                        Available Ages
-                      </h3>
-                      <div className="flex flex-wrap gap-1">
-                        {[...new Set(product.variants?.map(v => v.age_range).filter(Boolean))].map((age) => (
-                          <Badge key={age} variant="outline" className="px-1.5 py-0.5 text-xs font-medium hover:bg-pink-100 hover:border-pink-400 transition-colors bg-slate-50 border-slate-300 text-slate-700">
-                            {age} years
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  )}
-
-                  {/* Colors */}
-                  <div className="bg-slate-100 rounded-md p-2 border border-slate-200">
-                    <h3 className="font-semibold text-slate-700 mb-1 flex items-center gap-1 text-xs">
-                      <span className="w-1 h-1 bg-emerald-500 rounded-full"></span>
-                      Available Colors
-                    </h3>
-                    <div className="flex flex-wrap gap-1">
-                      {[...new Set(product.variants?.map(v => v.color))].map((color) => {
-                        const variant = product.variants?.find(v => v.color === color)
-                        return (
-                          <div key={color} className="flex items-center gap-1 bg-slate-50 rounded-sm px-1.5 py-0.5 border border-slate-300 hover:shadow-sm transition-shadow">
-                            <div
-                              className="w-3 h-3 rounded-full border border-slate-200 shadow-sm"
-                              style={{ backgroundColor: variant?.color_hex || '#6B7280' }}
-                            />
-                            <span className="text-xs font-medium text-slate-700">{color}</span>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  </div>
-                </div>
-
                 {/* Enhanced Product Detail Client */}
-                <div className="bg-slate-100 rounded-lg p-2 border border-slate-200 shadow-sm">
+                <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200">
                   <ProductDetailClient product={product} />
                 </div>
               </div>
@@ -194,12 +152,12 @@ export default async function ProductPage({ params }: ProductPageProps) {
 
           {/* Related Products Section */}
           {relatedProducts.length > 0 && (
-            <div className="bg-slate-50/80 backdrop-blur-sm rounded-xl shadow-lg border border-slate-200/30 p-4">
-              <div className="text-center mb-4">
-                <h2 className="text-xl lg:text-2xl font-bold text-slate-800 mb-1">
+            <div className="bg-white rounded-3xl shadow-xl border border-gray-200/50 p-8 animate-fade-in-up" data-aos="fade-up" data-aos-delay="600">
+              <div className="text-center mb-8">
+                <h2 className="text-3xl lg:text-4xl font-display font-bold text-gray-900 mb-3">
                   You Might Also Like
                 </h2>
-                <p className="text-slate-600 text-sm">Discover more amazing products</p>
+                <p className="text-gray-600 text-lg font-body">Discover more amazing products</p>
               </div>
               <ProductGridClient products={relatedProducts} />
             </div>

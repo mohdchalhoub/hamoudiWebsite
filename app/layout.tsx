@@ -7,6 +7,8 @@ import "./globals.css"
 import { CartProvider } from "@/contexts/cart-context"
 import { Toaster } from "@/components/ui/toaster"
 import { Suspense } from "react"
+import { ThemeProvider } from "@/components/theme-provider"
+import { AOSProvider } from "@/components/aos-provider"
 
 export const metadata: Metadata = {
   title: "KidsCorner - Luxe Fashion for Kids",
@@ -20,14 +22,23 @@ export default function RootLayout({
   children: React.ReactNode
 }>) {
   return (
-    <html lang="en">
-      <body className={`font-sans ${GeistSans.variable} ${GeistMono.variable}`}>
-        <Suspense fallback={null}>
-          <CartProvider>
-            {children}
-            <Toaster />
-          </CartProvider>
-        </Suspense>
+    <html lang="en" suppressHydrationWarning>
+      <body className={`font-body ${GeistSans.variable} ${GeistMono.variable} antialiased`}>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="light"
+          enableSystem
+          disableTransitionOnChange
+        >
+          <AOSProvider>
+            <Suspense fallback={null}>
+              <CartProvider>
+                {children}
+                <Toaster />
+              </CartProvider>
+            </Suspense>
+          </AOSProvider>
+        </ThemeProvider>
         <Analytics />
       </body>
     </html>

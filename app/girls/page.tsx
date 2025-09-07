@@ -1,6 +1,6 @@
 import { ServerHeader } from "@/components/server-header"
 import { Footer } from "@/components/footer"
-import { ProductGridClient } from "@/components/product-grid-client"
+import { Product3DCarousel } from "@/components/product-3d-carousel"
 import { AnimatedSection } from "@/components/animated-section"
 import { getProducts } from "@/lib/database"
 
@@ -48,7 +48,7 @@ export default async function GirlsPage() {
           <p className="text-muted-foreground">Discover beautiful clothes designed for stylish girls</p>
         </AnimatedSection>
 
-        <ProductGridClient products={girlsProducts} />
+        <Product3DCarousel products={girlsProducts} />
       </div>
 
       <Footer />

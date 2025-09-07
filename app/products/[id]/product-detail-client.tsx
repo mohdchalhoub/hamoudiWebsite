@@ -5,6 +5,8 @@ import { useCart } from "@/contexts/cart-context"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
+import { Label } from "@/components/ui/label"
 import { Heart, ShoppingCart, Minus, Plus, Package, Truck, RotateCcw } from "lucide-react"
 import type { ProductWithDetails } from "@/lib/database.types"
 
@@ -67,226 +69,220 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
   }
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-6">
       {/* Size/Age Selection */}
       {(availableSizes.length > 0 || availableAges.length > 0) && (
-        <div className="bg-slate-100 rounded-md p-2 border border-slate-200">
-          <h3 className="font-semibold text-slate-700 mb-1 flex items-center gap-1 text-xs">
-            <span className="w-1 h-1 bg-blue-500 rounded-full"></span>
-            {availableSizes.length > 0 ? 'Select Size' : 'Select Age Range'}
-          </h3>
-          <div className="flex flex-wrap gap-2">
+        <div className="space-y-3">
+          <Label className="text-base font-semibold text-gray-800">
+            {availableSizes.length > 0 ? 'Size' : 'Age Range'}
+          </Label>
+          <RadioGroup
+            value={availableSizes.length > 0 ? selectedSize : selectedAge}
+            onValueChange={(value) => {
+              if (availableSizes.length > 0) {
+                setSelectedSize(value)
+              } else {
+                setSelectedAge(value)
+              }
+            }}
+            className="flex flex-wrap gap-3"
+          >
             {availableSizes.length > 0 ? (
               availableSizes.map((size) => (
-                <Button
-                  key={size}
-                  variant={selectedSize === size ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setSelectedSize(size || '')}
-                  className={`min-w-[40px] h-7 text-xs font-medium transition-all duration-200 ${
-                    selectedSize === size 
-                      ? 'bg-blue-600 text-white shadow-md' 
-                      : 'hover:bg-blue-100 hover:border-blue-400 bg-slate-50 border-slate-300 text-slate-700'
-                  }`}
-                >
-                  {size}
-                </Button>
+                <div key={size} className="flex items-center space-x-3 p-3 bg-white rounded-xl border border-gray-200 hover:border-blue-300 hover:shadow-md transition-all duration-300 hover:scale-105">
+                  <RadioGroupItem value={size || ''} id={size || ''} className="text-blue-600" />
+                  <Label htmlFor={size || ''} className="text-sm font-semibold cursor-pointer text-gray-700">
+                    {size}
+                  </Label>
+                </div>
               ))
             ) : (
               availableAges.map((age) => (
-                <Button
-                  key={age}
-                  variant={selectedAge === age ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setSelectedAge(age || '')}
-                  className={`min-w-[40px] h-7 text-xs font-medium transition-all duration-200 ${
-                    selectedAge === age 
-                      ? 'bg-pink-600 text-white shadow-md' 
-                      : 'hover:bg-pink-100 hover:border-pink-400 bg-slate-50 border-slate-300 text-slate-700'
-                  }`}
-                >
-                  {age}
-                </Button>
+                <div key={age} className="flex items-center space-x-3 p-3 bg-white rounded-xl border border-gray-200 hover:border-pink-300 hover:shadow-md transition-all duration-300 hover:scale-105">
+                  <RadioGroupItem value={age || ''} id={age || ''} className="text-pink-600" />
+                  <Label htmlFor={age || ''} className="text-sm font-semibold cursor-pointer text-gray-700">
+                    {age} years
+                  </Label>
+                </div>
               ))
             )}
-          </div>
+          </RadioGroup>
         </div>
       )}
 
       {/* Color Selection */}
       {availableColors.length > 0 && (
-        <div className="bg-slate-100 rounded-md p-2 border border-slate-200">
-          <h3 className="font-semibold text-slate-700 mb-1 flex items-center gap-1 text-xs">
-            <span className="w-1 h-1 bg-emerald-500 rounded-full"></span>
-            Select Color
-          </h3>
-          <div className="flex flex-wrap gap-2">
+        <div className="space-y-3">
+          <Label className="text-base font-semibold text-gray-800">Color</Label>
+          <RadioGroup
+            value={selectedColor}
+            onValueChange={setSelectedColor}
+            className="flex flex-wrap gap-3"
+          >
             {availableColors.map((color) => {
               const variant = product.variants?.find(v => v.color === color)
               return (
-                <Button
-                  key={color}
-                  variant={selectedColor === color ? "default" : "outline"}
-                  size="sm"
-                  onClick={() => setSelectedColor(color)}
-                  className={`flex items-center gap-1 min-w-[70px] h-7 text-xs font-medium transition-all duration-200 ${
-                    selectedColor === color 
-                      ? 'bg-emerald-600 text-white shadow-md' 
-                      : 'hover:bg-emerald-100 hover:border-emerald-400 bg-slate-50 border-slate-300 text-slate-700'
-                  }`}
-                >
-                  <div
-                    className="w-3 h-3 rounded-full border border-white shadow-sm"
-                    style={{ backgroundColor: variant?.color_hex || '#6B7280' }}
-                  />
-                  {color}
-                </Button>
+                <div key={color} className="flex items-center space-x-3 p-3 bg-white rounded-xl border border-gray-200 hover:border-emerald-300 hover:shadow-md transition-all duration-300 hover:scale-105">
+                  <RadioGroupItem value={color} id={color} className="text-emerald-600" />
+                  <Label htmlFor={color} className="flex items-center gap-3 text-sm font-semibold cursor-pointer text-gray-700">
+                    <div
+                      className="w-5 h-5 rounded-full border-2 border-gray-300 shadow-sm"
+                      style={{ backgroundColor: variant?.color_hex || '#6B7280' }}
+                    />
+                    {color}
+                  </Label>
+                </div>
               )
             })}
-          </div>
+          </RadioGroup>
         </div>
       )}
 
       {/* Stock Status */}
-      <div className="flex items-center justify-center">
+      <div className="flex items-center justify-center py-3">
         {isInStock ? (
-          <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-4 py-2 text-sm font-semibold shadow-lg">
-            ✅ In Stock ({selectedVariant?.stock_quantity} available)
-          </Badge>
+          <div className="bg-green-50 rounded-xl p-4 border border-green-200">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center">
+                <span className="text-white text-sm font-bold">✓</span>
+              </div>
+              <div>
+                <p className="font-semibold text-green-800">In Stock</p>
+                <p className="text-sm text-green-600">{selectedVariant?.stock_quantity} available</p>
+              </div>
+            </div>
+          </div>
         ) : (
-          <Badge variant="destructive" className="px-4 py-2 text-sm font-semibold">❌ Out of Stock</Badge>
+          <div className="bg-red-50 rounded-xl p-4 border border-red-200">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 bg-red-500 rounded-full flex items-center justify-center">
+                <span className="text-white text-sm font-bold">✗</span>
+              </div>
+              <div>
+                <p className="font-semibold text-red-800">Out of Stock</p>
+                <p className="text-sm text-red-600">Check back soon</p>
+              </div>
+            </div>
+          </div>
         )}
       </div>
 
       {/* Quantity Selector */}
-      <div className="bg-slate-100 rounded-md p-2 border border-slate-200">
-        <h3 className="font-semibold text-slate-700 mb-1 text-center text-xs">Quantity</h3>
-        <div className="flex items-center justify-center gap-3">
+      <div className="space-y-3">
+        <Label className="text-base font-semibold text-gray-800">Quantity</Label>
+        <div className="flex items-center justify-center gap-4">
           <Button
             variant="outline"
             size="icon"
             onClick={decrementQuantity}
             disabled={quantity <= 1}
-            className="h-7 w-7 hover:bg-red-100 hover:border-red-400 transition-colors bg-slate-50 border-slate-300"
+            className="h-10 w-10 hover:bg-red-50 hover:border-red-300 transition-all duration-300 hover:scale-105"
           >
             <Minus className="h-4 w-4" />
           </Button>
-          <span className="text-base font-bold min-w-[2rem] text-center bg-slate-50 rounded-sm px-2 py-1 border border-slate-300 text-slate-700">
-            {quantity}
-          </span>
+          <div className="bg-white rounded-xl px-4 py-2 border border-gray-300 shadow-sm">
+            <span className="text-xl font-bold min-w-[2rem] text-center text-gray-900">
+              {quantity}
+            </span>
+          </div>
           <Button
             variant="outline"
             size="icon"
             onClick={incrementQuantity}
             disabled={quantity >= maxQuantity}
-            className="h-7 w-7 hover:bg-green-100 hover:border-green-400 transition-colors bg-slate-50 border-slate-300"
+            className="h-10 w-10 hover:bg-green-50 hover:border-green-300 transition-all duration-300 hover:scale-105"
           >
             <Plus className="h-4 w-4" />
           </Button>
         </div>
       </div>
 
-      <Separator className="my-2" />
+      <Separator className="border-gray-200" />
 
       {/* Action Buttons */}
-      <div className="space-y-1">
+      <div className="space-y-3">
         <Button
           onClick={handleAddToCart}
           disabled={!isInStock || isAddingToCart}
-          className="w-full h-9 text-xs font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
-          size="sm"
+          className="w-full h-12 text-base font-semibold bg-blue-600 hover:bg-blue-700 text-white shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <ShoppingCart className="mr-1 h-3 w-3" />
+          <ShoppingCart className="mr-2 h-5 w-5" />
           {isAddingToCart ? "Adding..." : isInStock ? "Add to Cart" : "Out of Stock"}
         </Button>
         
         <Button
           variant="outline"
-          className="w-full h-9 text-xs font-semibold border border-slate-300 hover:border-pink-400 hover:bg-pink-100 transition-all duration-300 hover:scale-105 bg-slate-50 text-slate-700"
-          size="sm"
+          className="w-full h-12 text-base font-semibold border-2 border-pink-300 hover:border-pink-400 hover:bg-pink-50 text-pink-700 transition-all duration-300 hover:scale-105"
         >
-          <Heart className="mr-1 h-3 w-3" />
+          <Heart className="mr-2 h-5 w-5" />
           Add to Wishlist
         </Button>
       </div>
 
-      {/* Product Information */}
-      <div className="space-y-2 pt-2">
-        <Separator />
+      {/* Enhanced Product Information */}
+      <div className="space-y-4 pt-4">
+        <Separator className="border-gray-200" />
         
         {/* Product Details */}
-        <div className="space-y-1">
-          <h3 className="font-semibold text-xs text-slate-700">Product Details</h3>
-          
-          {product.brand && (
-            <div className="flex justify-between text-xs">
-              <span className="text-slate-500">Brand:</span>
-              <span className="font-medium text-slate-700">{product.brand}</span>
-            </div>
-          )}
-          
-          {product.material && (
-            <div className="flex justify-between text-xs">
-              <span className="text-slate-500">Material:</span>
-              <span className="font-medium text-slate-700">{product.material}</span>
-            </div>
-          )}
-          
-          {product.age_range && (
-            <div className="flex justify-between text-xs">
-              <span className="text-slate-500">Age Range:</span>
-              <span className="font-medium text-slate-700">{product.age_range} years</span>
-            </div>
-          )}
-          
-          {product.gender && (
-            <div className="flex justify-between text-xs">
-              <span className="text-slate-500">Gender:</span>
-              <span className="font-medium capitalize text-slate-700">{product.gender}</span>
-            </div>
-          )}
-          
-          {product.weight_grams && (
-            <div className="flex justify-between text-xs">
-              <span className="text-slate-500">Weight:</span>
-              <span className="font-medium text-slate-700">{product.weight_grams}g</span>
-            </div>
-          )}
+        <div className="bg-white rounded-xl p-4 border border-gray-200">
+          <h3 className="text-base font-semibold text-gray-800 mb-3">Product Details</h3>
+          <div className="space-y-2 text-sm">
+            {product.brand && (
+              <div className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-lg">
+                <span className="text-gray-600 font-medium">Brand:</span>
+                <span className="font-semibold text-gray-800">{product.brand}</span>
+              </div>
+            )}
+            {product.material && (
+              <div className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-lg">
+                <span className="text-gray-600 font-medium">Material:</span>
+                <span className="font-semibold text-gray-800">{product.material}</span>
+              </div>
+            )}
+            {product.age_range && (
+              <div className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-lg">
+                <span className="text-gray-600 font-medium">Age Range:</span>
+                <span className="font-semibold text-gray-800">{product.age_range} years</span>
+              </div>
+            )}
+            {product.gender && (
+              <div className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-lg">
+                <span className="text-gray-600 font-medium">Gender:</span>
+                <span className="font-semibold text-gray-800 capitalize">{product.gender}</span>
+              </div>
+            )}
+            {product.weight_grams && (
+              <div className="flex justify-between items-center py-2 px-3 bg-gray-50 rounded-lg">
+                <span className="text-gray-600 font-medium">Weight:</span>
+                <span className="font-semibold text-gray-800">{product.weight_grams}g</span>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Care Instructions */}
         {product.care_instructions && (
-          <div className="space-y-1">
-            <h4 className="font-semibold text-xs text-slate-700">Care Instructions</h4>
-            <p className="text-xs text-slate-600">{product.care_instructions}</p>
+          <div className="bg-amber-50 rounded-xl p-4 border border-amber-200">
+            <h4 className="text-base font-semibold text-gray-800 mb-2">Care Instructions</h4>
+            <p className="text-sm text-gray-700 leading-relaxed">{product.care_instructions}</p>
           </div>
         )}
 
         {/* Shipping & Returns */}
-        <div className="space-y-1">
-          <h3 className="font-semibold text-xs text-slate-700">Shipping & Returns</h3>
-          
-          <div className="flex items-start gap-2">
-            <Truck className="h-3 w-3 text-emerald-500 mt-0.5" />
-            <div>
-              <p className="font-medium text-xs text-slate-700">Free Shipping</p>
-              <p className="text-xs text-slate-500">On orders over $50</p>
+        <div className="bg-blue-50 rounded-xl p-4 border border-blue-200">
+          <h3 className="text-base font-semibold text-gray-800 mb-3">Shipping & Returns</h3>
+          <div className="space-y-2 text-sm">
+            <div className="flex items-center gap-3 py-2 px-3 bg-white rounded-lg">
+              <Truck className="h-4 w-4 text-emerald-500" />
+              <span className="text-gray-700 font-medium">Free shipping on orders over $50</span>
             </div>
-          </div>
-          
-          <div className="flex items-start gap-2">
-            <Package className="h-3 w-3 text-blue-500 mt-0.5" />
-            <div>
-              <p className="font-medium text-xs text-slate-700">Easy Returns</p>
-              <p className="text-xs text-slate-500">30-day return policy</p>
+            <div className="flex items-center gap-3 py-2 px-3 bg-white rounded-lg">
+              <Package className="h-4 w-4 text-blue-500" />
+              <span className="text-gray-700 font-medium">30-day return policy</span>
             </div>
-          </div>
-          
-          <div className="flex items-start gap-2">
-            <RotateCcw className="h-3 w-3 text-purple-500 mt-0.5" />
-            <div>
-              <p className="font-medium text-xs text-slate-700">Exchange Policy</p>
-              <p className="text-xs text-slate-500">Free exchanges within 14 days</p>
+            <div className="flex items-center gap-3 py-2 px-3 bg-white rounded-lg">
+              <RotateCcw className="h-4 w-4 text-purple-500" />
+              <span className="text-gray-700 font-medium">Free exchanges within 14 days</span>
             </div>
           </div>
         </div>

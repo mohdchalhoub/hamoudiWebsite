@@ -4,7 +4,10 @@ import { useState } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { ChevronLeft, ChevronRight, ZoomIn } from "lucide-react"
+import { ChevronLeft, ChevronRight, ZoomIn, X } from "lucide-react"
+import Lightbox from "yet-another-react-lightbox"
+import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails"
+import Zoom from "yet-another-react-lightbox/plugins/zoom"
 
 interface ProductImageGalleryProps {
   images: string[]
@@ -22,7 +25,7 @@ export function ProductImageGallery({
   className = ""
 }: ProductImageGalleryProps) {
   const [currentImageIndex, setCurrentImageIndex] = useState(0)
-  const [isFullscreen, setIsFullscreen] = useState(false)
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false)
 
   if (!images || images.length === 0) {
     return (
@@ -53,13 +56,19 @@ export function ProductImageGallery({
     setCurrentImageIndex(index)
   }
 
-  const toggleFullscreen = () => {
-    setIsFullscreen(!isFullscreen)
-    // Reset to current image when opening fullscreen
-    if (!isFullscreen) {
-      setCurrentImageIndex(currentImageIndex)
-    }
+  const openLightbox = () => {
+    setIsLightboxOpen(true)
   }
+
+  const closeLightbox = () => {
+    setIsLightboxOpen(false)
+  }
+
+  // Prepare slides for lightbox
+  const slides = images.map((image, index) => ({
+    src: image,
+    alt: `${productName} - Image ${index + 1}`,
+  }))
 
   return (
     <div className={`space-y-4 ${className}`}>
@@ -71,7 +80,7 @@ export function ProductImageGallery({
           fill
           className="object-cover transition-all duration-700 group-hover:scale-110 cursor-pointer"
           priority
-          onClick={toggleFullscreen}
+          onClick={openLightbox}
         />
         
         {/* Gradient overlay for better badge visibility */}
@@ -124,6 +133,11 @@ export function ProductImageGallery({
             {currentImageIndex + 1} / {images.length}
           </div>
         )}
+
+        {/* Zoom icon */}
+        <div className="absolute bottom-2 right-2 bg-black/60 text-white p-2 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+          <ZoomIn className="h-4 w-4" />
+        </div>
       </div>
 
       {/* Thumbnail Navigation */}
@@ -150,13 +164,33 @@ export function ProductImageGallery({
         </div>
       )}
 
-      {/* Fullscreen Modal */}
-      {isFullscreen && (
+      {/* Lightbox Gallery */}
+      <Lightbox
+        open={isLightboxOpen}
+        close={closeLightbox}
+        slides={slides}
+        index={currentImageIndex}
+        plugins={[Thumbnails, Zoom]}
+        thumbnails={{
+          position: "bottom",
+          width: 120,
+          height: 80,
+        }}
+        zoom={{
+          maxZoomPixelRatio: 3,
+          scrollToZoom: true,
+        }}
+        styles={{
+          container: { backgroundColor: "rgba(0, 0, 0, 0.95)" },
+        }}
+      />
+
+      {/* Fallback Fullscreen Modal */}
+      {isLightboxOpen && (
         <div 
           className="fixed inset-0 bg-black/95 z-50 flex flex-col items-center justify-center p-4"
-          onClick={toggleFullscreen}
+          onClick={closeLightbox}
         >
-          {/* Main Image Container */}
           <div className="relative flex-1 flex items-center justify-center w-full max-w-6xl">
             <Image
               src={currentImage}
@@ -172,7 +206,7 @@ export function ProductImageGallery({
               variant="ghost"
               size="icon"
               className="absolute top-4 right-4 h-12 w-12 bg-white/20 hover:bg-white/30 text-white backdrop-blur-sm"
-              onClick={toggleFullscreen}
+              onClick={closeLightbox}
             >
               <X className="h-6 w-6" />
             </Button>
