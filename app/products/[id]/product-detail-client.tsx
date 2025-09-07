@@ -71,11 +71,11 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
   }
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-3">
       {/* Size/Age Selection */}
       {(availableSizes.length > 0 || availableAges.length > 0) && (
-        <div className="space-y-2">
-          <Label className="text-sm font-medium text-text-primary">
+        <div className="space-y-1">
+          <Label className="text-xs font-medium text-text-primary">
             {availableSizes.length > 0 ? 'Size' : 'Age Range'}
           </Label>
           <RadioGroup
@@ -91,18 +91,18 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
           >
             {availableSizes.length > 0 ? (
               availableSizes.map((size) => (
-                <div key={size} className="flex items-center space-x-2 p-2 bg-background border border-border rounded-md hover:border-text-muted transition-colors duration-200">
+                <div key={size} className="flex items-center space-x-1 p-1.5 bg-background border border-border rounded-md hover:border-text-muted transition-colors duration-200">
                   <RadioGroupItem value={size || ''} id={size || ''} className="text-primary" />
-                  <Label htmlFor={size || ''} className="text-sm font-medium cursor-pointer text-text-primary">
+                  <Label htmlFor={size || ''} className="text-xs font-medium cursor-pointer text-text-primary">
                     {size}
                   </Label>
                 </div>
               ))
             ) : (
               availableAges.map((age) => (
-                <div key={age} className="flex items-center space-x-2 p-2 bg-background border border-border rounded-md hover:border-text-muted transition-colors duration-200">
+                <div key={age} className="flex items-center space-x-1 p-1.5 bg-background border border-border rounded-md hover:border-text-muted transition-colors duration-200">
                   <RadioGroupItem value={age || ''} id={age || ''} className="text-primary" />
-                  <Label htmlFor={age || ''} className="text-sm font-medium cursor-pointer text-text-primary">
+                  <Label htmlFor={age || ''} className="text-xs font-medium cursor-pointer text-text-primary">
                     {age} years
                   </Label>
                 </div>
@@ -114,8 +114,8 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
 
       {/* Color Selection */}
       {availableColors.length > 0 && (
-        <div className="space-y-2">
-          <Label className="text-sm font-medium text-text-primary">Color</Label>
+        <div className="space-y-1">
+          <Label className="text-xs font-medium text-text-primary">Color</Label>
           <RadioGroup
             value={selectedColor}
             onValueChange={setSelectedColor}
@@ -124,11 +124,11 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             {availableColors.map((color) => {
               const variant = product.variants?.find(v => v.color === color)
               return (
-                <div key={color} className="flex items-center space-x-2 p-2 bg-background border border-border rounded-md hover:border-text-muted transition-colors duration-200">
+                <div key={color} className="flex items-center space-x-1 p-1.5 bg-background border border-border rounded-md hover:border-text-muted transition-colors duration-200">
                   <RadioGroupItem value={color} id={color} className="text-primary" />
-                  <Label htmlFor={color} className="flex items-center gap-2 text-sm font-medium cursor-pointer text-text-primary">
+                  <Label htmlFor={color} className="flex items-center gap-1 text-xs font-medium cursor-pointer text-text-primary">
                     <div
-                      className="w-4 h-4 rounded-full border border-border"
+                      className="w-3 h-3 rounded-full border border-border"
                       style={{ backgroundColor: variant?.color_hex || '#6B7280' }}
                     />
                     {color}
@@ -141,15 +141,15 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       )}
 
       {/* Stock Status */}
-      <div className="flex items-center justify-center py-1">
+      <div className="flex items-center justify-center py-0.5">
         {isInStock ? (
-          <div className="flex items-center gap-2 text-sm">
+          <div className="flex items-center gap-1 text-xs">
             <span className="text-green-600">✓</span>
             <span className="font-medium text-text-primary">In Stock</span>
             <span className="text-text-muted">({availableQuantity} available)</span>
           </div>
         ) : (
-          <div className="flex items-center gap-2 text-sm">
+          <div className="flex items-center gap-1 text-xs">
             <span className="text-red-500">✗</span>
             <span className="font-medium text-text-primary">Out of Stock</span>
           </div>
@@ -157,20 +157,20 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       </div>
 
       {/* Quantity Selector */}
-      <div className="space-y-2">
-        <Label className="text-sm font-medium text-text-primary">Quantity</Label>
-        <div className="flex items-center justify-center gap-3">
+      <div className="space-y-1">
+        <Label className="text-xs font-medium text-text-primary">Quantity</Label>
+        <div className="flex items-center justify-center gap-2">
           <Button
             variant="outline"
             size="icon"
             onClick={decrementQuantity}
             disabled={quantity <= 1}
-            className="h-8 w-8 border-border hover:border-text-muted transition-colors duration-200"
+            className="h-7 w-7 border-border hover:border-text-muted transition-colors duration-200"
           >
-            <Minus className="h-3 w-3" />
+            <Minus className="h-2.5 w-2.5" />
           </Button>
-          <div className="bg-background border border-border rounded-md px-3 py-1">
-            <span className="text-sm font-medium min-w-[1.5rem] text-center text-text-primary">
+          <div className="bg-background border border-border rounded-md px-2 py-0.5">
+            <span className="text-xs font-medium min-w-[1rem] text-center text-text-primary">
               {quantity}
             </span>
           </div>
@@ -179,9 +179,9 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
             size="icon"
             onClick={incrementQuantity}
             disabled={quantity >= maxQuantity}
-            className="h-8 w-8 border-border hover:border-text-muted transition-colors duration-200"
+            className="h-7 w-7 border-border hover:border-text-muted transition-colors duration-200"
           >
-            <Plus className="h-3 w-3" />
+            <Plus className="h-2.5 w-2.5" />
           </Button>
         </div>
       </div>
@@ -189,59 +189,59 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
       <Separator className="border-border" />
 
       {/* Action Buttons */}
-      <div className="space-y-2">
+      <div className="space-y-1">
         <Button
           onClick={handleAddToCart}
           disabled={!isInStock || isAddingToCart}
-          className="w-full h-10 text-sm font-medium bg-primary hover:bg-primary-hover text-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full h-8 text-xs font-medium bg-primary hover:bg-primary-hover text-white transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <ShoppingCart className="mr-2 h-4 w-4" />
+          <ShoppingCart className="mr-1 h-3 w-3" />
           {isAddingToCart ? "Adding..." : isInStock ? "Add to Cart" : "Out of Stock"}
         </Button>
         
         <Button
           variant="outline"
-          className="w-full h-10 text-sm font-medium border-border hover:border-text-muted hover:bg-background-subtle text-text-primary transition-colors duration-200"
+          className="w-full h-8 text-xs font-medium border-border hover:border-text-muted hover:bg-background-subtle text-text-primary transition-colors duration-200"
         >
-          <Heart className="mr-2 h-4 w-4" />
+          <Heart className="mr-1 h-3 w-3" />
           Add to Wishlist
         </Button>
       </div>
 
       {/* Enhanced Product Information */}
-      <div className="space-y-3 pt-2">
+      <div className="space-y-2 pt-1">
         <Separator className="border-border" />
         
         {/* Product Details */}
-        <div className="bg-background border border-border rounded-md p-3">
-          <h3 className="text-sm font-medium text-text-primary mb-2">Product Details</h3>
-          <div className="space-y-1 text-sm">
+        <div className="bg-background border border-border rounded-md p-2">
+          <h3 className="text-xs font-medium text-text-primary mb-1">Product Details</h3>
+          <div className="space-y-0.5 text-xs">
             {product.brand && (
-              <div className="flex justify-between items-center py-1.5 px-2 bg-background-subtle rounded-md">
+              <div className="flex justify-between items-center py-1 px-1.5 bg-background-subtle rounded-md">
                 <span className="text-text-muted font-medium">Brand:</span>
                 <span className="font-medium text-text-primary">{product.brand}</span>
               </div>
             )}
             {product.material && (
-              <div className="flex justify-between items-center py-1.5 px-2 bg-background-subtle rounded-md">
+              <div className="flex justify-between items-center py-1 px-1.5 bg-background-subtle rounded-md">
                 <span className="text-text-muted font-medium">Material:</span>
                 <span className="font-medium text-text-primary">{product.material}</span>
               </div>
             )}
             {product.age_range && (
-              <div className="flex justify-between items-center py-1.5 px-2 bg-background-subtle rounded-md">
+              <div className="flex justify-between items-center py-1 px-1.5 bg-background-subtle rounded-md">
                 <span className="text-text-muted font-medium">Age Range:</span>
                 <span className="font-medium text-text-primary">{product.age_range} years</span>
               </div>
             )}
             {product.gender && (
-              <div className="flex justify-between items-center py-1.5 px-2 bg-background-subtle rounded-md">
+              <div className="flex justify-between items-center py-1 px-1.5 bg-background-subtle rounded-md">
                 <span className="text-text-muted font-medium">Gender:</span>
                 <span className="font-medium text-text-primary capitalize">{product.gender}</span>
               </div>
             )}
             {product.weight_grams && (
-              <div className="flex justify-between items-center py-1.5 px-2 bg-background-subtle rounded-md">
+              <div className="flex justify-between items-center py-1 px-1.5 bg-background-subtle rounded-md">
                 <span className="text-text-muted font-medium">Weight:</span>
                 <span className="font-medium text-text-primary">{product.weight_grams}g</span>
               </div>
@@ -251,9 +251,9 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
 
         {/* Care Instructions */}
         {product.care_instructions && (
-          <div className="bg-background border border-border rounded-md p-3">
-            <h4 className="text-sm font-medium text-text-primary mb-1">Care Instructions</h4>
-            <p className="text-sm text-text-secondary leading-relaxed">{product.care_instructions}</p>
+          <div className="bg-background border border-border rounded-md p-2">
+            <h4 className="text-xs font-medium text-text-primary mb-0.5">Care Instructions</h4>
+            <p className="text-xs text-text-secondary leading-relaxed">{product.care_instructions}</p>
           </div>
         )}
 
