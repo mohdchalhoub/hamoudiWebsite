@@ -57,18 +57,57 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     try {
       const sessionId = getSessionId()
       
+      // Debug logging
+      console.log('Adding item to cart:', {
+        productId: product.id,
+        productName: product.name,
+        sizeOrAge,
+        color,
+        quantity,
+        hasVariants: !!product.variants?.length,
+        availableVariants: product.variants?.map((v: any) => ({
+          id: v.id,
+          size: v.size,
+          age_range: v.age_range,
+          color: v.color
+        }))
+      })
+      
+      // Handle products without variants
+      if (!product.variants || product.variants.length === 0) {
+        console.log('Product has no variants, creating a default variant entry')
+        // For products without variants, we need to create a cart entry without a variant_id
+        // But first, let's check if the database allows null variant_id
+        throw new Error('Products without variants are not supported in the current cart system')
+      }
+      
       // Find the variant that matches the selected size/age and color
       const variant = product.variants?.find((v: any) => {
         const sizeMatch = v.size === sizeOrAge
         const ageMatch = v.age_range === sizeOrAge
         const colorMatch = v.color === color
-        return (sizeMatch || ageMatch) && colorMatch
+        const matches = (sizeMatch || ageMatch) && colorMatch
+        
+        console.log('Checking variant:', {
+          variantId: v.id,
+          variantSize: v.size,
+          variantAgeRange: v.age_range,
+          variantColor: v.color,
+          sizeMatch,
+          ageMatch,
+          colorMatch,
+          matches
+        })
+        
+        return matches
       })
       
       if (!variant) {
+        console.error('No matching variant found for:', { sizeOrAge, color })
         throw new Error('Selected variant not found')
       }
 
+      console.log('Found matching variant:', variant)
       await addToCart(product.id, variant.id, quantity, undefined, sessionId)
       await refreshCart()
       
