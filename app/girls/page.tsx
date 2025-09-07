@@ -2,6 +2,7 @@ import { ServerHeader } from "@/components/server-header"
 import { Footer } from "@/components/footer"
 import { Product3DCarousel } from "@/components/product-3d-carousel"
 import { DesktopProductGrid } from "@/components/desktop-product-grid"
+import { MobileProductPagination } from "@/components/mobile-product-pagination"
 import { AnimatedSection } from "@/components/animated-section"
 import { SectionHeader } from "@/components/section-header"
 import { getProducts } from "@/lib/database"
@@ -43,7 +44,7 @@ export default async function GirlsPage() {
           <p className="text-text-muted">Discover beautiful clothes designed for stylish girls</p>
         </AnimatedSection>
 
-        <DesktopProductGrid products={girlsProducts} />
+        <MobileProductPagination products={girlsProducts} />
       </div>
 
       <Footer />

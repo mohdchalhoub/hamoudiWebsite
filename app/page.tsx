@@ -9,6 +9,7 @@ import { EnhancedAnimatedSection } from "@/components/enhanced-animated-section"
 import { PageTransition } from "@/components/page-transition"
 import { Product3DCarousel } from "@/components/product-3d-carousel"
 import { DesktopProductGrid } from "@/components/desktop-product-grid"
+import { MobileProductCarousel } from "@/components/mobile-product-carousel"
 import { SectionHeader } from "@/components/section-header"
 import { getProducts } from "@/lib/database"
 import { ArrowRight, Shield, Truck, Heart, Sparkles, Star, Zap } from "lucide-react"
@@ -107,7 +108,7 @@ export default async function HomePage() {
               />
             </EnhancedAnimatedSection>
             
-            <DesktopProductGrid products={featuredProducts} title="Featured Products" />
+            <MobileProductCarousel products={featuredProducts} title="Featured Products" />
           </div>
         </EnhancedAnimatedSection>
 
@@ -123,7 +124,7 @@ export default async function HomePage() {
                 />
               </EnhancedAnimatedSection>
               
-              <DesktopProductGrid products={onSaleProducts} title="On Sale Products" />
+              <MobileProductCarousel products={onSaleProducts} title="On Sale Products" />
             </div>
           </EnhancedAnimatedSection>
         )}
@@ -145,7 +146,7 @@ export default async function HomePage() {
                 </Button>
               </Link>
             </div>
-            <DesktopProductGrid products={boysProducts} />
+            <MobileProductCarousel products={boysProducts} />
           </div>
         </EnhancedAnimatedSection>
 
@@ -166,7 +167,7 @@ export default async function HomePage() {
                 </Button>
               </Link>
             </div>
-            <DesktopProductGrid products={girlsProducts} />
+            <MobileProductCarousel products={girlsProducts} />
           </div>
         </EnhancedAnimatedSection>
 
