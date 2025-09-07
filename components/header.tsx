@@ -34,10 +34,10 @@ export function Header({ hasSaleProducts = false }: HeaderProps) {
 
   return (
     <header 
-      className={`sticky top-0 z-50 w-full border-b backdrop-blur-2xl supports-[backdrop-filter]:bg-white/95 shadow-premium border-gray-200/30 transition-all duration-500 animate-fade-in-down ${
+      className={`sticky top-0 z-50 w-full border-b border-border bg-background transition-all duration-300 ${
         scrolled 
-          ? "bg-white/98 shadow-2xl border-gray-300/40 backdrop-blur-3xl" 
-          : "bg-white/90 shadow-lg border-gray-200/30 backdrop-blur-2xl"
+          ? "shadow-sm" 
+          : "shadow-none"
       }`}
     >
       <div className="container mx-auto px-4">
@@ -45,7 +45,7 @@ export function Header({ hasSaleProducts = false }: HeaderProps) {
           {/* Logo */}
           <div className="hover:scale-105 transition-transform duration-300">
             <Link href="/" className="flex items-center space-x-2 group">
-              <div className="text-2xl font-display font-bold bg-gradient-to-r from-primary-600 via-secondary-600 to-accent-600 bg-clip-text text-transparent animate-gradient group-hover:scale-105 transition-all duration-500">
+              <div className="text-xl font-light text-text-primary">
                 KidsCorner
               </div>
             </Link>
@@ -61,11 +61,9 @@ export function Header({ hasSaleProducts = false }: HeaderProps) {
               >
                 <Link
                   href={item.href}
-                  className="text-sm font-semibold text-gray-700 transition-all duration-500 hover:text-primary-600 hover:scale-105 relative px-3 py-2 rounded-xl group"
+                  className="text-sm font-medium text-text-muted hover:text-primary transition-colors duration-200 px-3 py-2"
                 >
-                  <span className="relative z-10">{item.name}</span>
-                  <div className="absolute inset-0 bg-gradient-to-r from-primary-600/10 via-secondary-600/10 to-accent-600/10 rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-500 scale-95 group-hover:scale-100" />
-                  <div className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-gradient-to-r from-primary-600 to-accent-600 transition-all duration-500 group-hover:w-full group-hover:left-0" />
+                  {item.name}
                 </Link>
               </div>
             ))}
@@ -77,7 +75,7 @@ export function Header({ hasSaleProducts = false }: HeaderProps) {
               <Button
                 variant="ghost"
                 size="icon"
-                className="hidden sm:flex hover:text-accent-600 transition-all duration-500 hover:bg-accent-50 rounded-xl"
+                className="hidden sm:flex hover:text-primary text-text-muted"
               >
                 <Heart className="h-4 w-4" />
               </Button>
@@ -90,9 +88,9 @@ export function Header({ hasSaleProducts = false }: HeaderProps) {
                   <Button
                     variant="outline"
                     size="sm"
-                    className="hidden sm:flex bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-500 rounded-xl font-semibold text-xs px-3 py-1.5"
+                    className="hidden sm:flex bg-background border border-border text-text-primary hover:border-primary hover:text-primary text-xs px-3 py-1.5 rounded-none"
                   >
-                    🔥 Sale
+                    Sale
                   </Button>
                 </Link>
               </div>
@@ -109,7 +107,7 @@ export function Header({ hasSaleProducts = false }: HeaderProps) {
                   <Button
                     variant="ghost"
                     size="icon"
-                    className="md:hidden hover:bg-gray-100 rounded-xl transition-all duration-500"
+                    className="md:hidden text-text-muted"
                   >
                     {isOpen ? (
                       <X className="h-4 w-4 transition-transform duration-300" />
@@ -129,7 +127,7 @@ export function Header({ hasSaleProducts = false }: HeaderProps) {
                     >
                       <Link
                         href={item.href}
-                        className="text-lg font-semibold transition-all duration-500 hover:text-primary hover:translate-x-2 block py-3 px-4 rounded-xl hover:bg-gray-50"
+                        className="text-base font-medium text-text-muted hover:text-primary block py-3 px-4"
                         onClick={() => setIsOpen(false)}
                       >
                         {item.name}
@@ -145,10 +143,10 @@ export function Header({ hasSaleProducts = false }: HeaderProps) {
                     >
                       <Link
                         href="/on-sale"
-                        className="text-lg font-semibold transition-all duration-500 hover:text-red-600 hover:translate-x-2 block py-3 px-4 rounded-xl hover:bg-red-50"
+                        className="text-base font-medium text-text-muted hover:text-primary block py-3 px-4"
                         onClick={() => setIsOpen(false)}
                       >
-                        🔥 On Sale
+                        On Sale
                       </Link>
                     </div>
                   )}

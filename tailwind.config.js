@@ -18,53 +18,25 @@ module.exports = {
     },
     extend: {
       colors: {
-        border: "hsl(var(--border))",
-        input: "hsl(var(--input))",
-        ring: "hsl(var(--ring))",
-        background: "hsl(var(--background))",
-        foreground: "hsl(var(--foreground))",
+        // Zara-inspired neutral foundation
+        background: {
+          DEFAULT: '#FFFFFF', // white base
+          subtle: '#F9FAFB', // light gray
+          soft: '#F3F4F6', // soft gray for footer
+        },
+        text: {
+          primary: '#111827', // black
+          secondary: '#374151', // dark gray
+          muted: '#6B7280', // softer gray
+        },
+        // Accent system
         primary: {
-          DEFAULT: "hsl(var(--primary))",
-          foreground: "hsl(var(--primary-foreground))",
-          50: "#EEF2FF",
-          100: "#E0E7FF",
-          200: "#C7D2FE",
-          300: "#A5B4FC",
-          400: "#818CF8",
-          500: "#6366F1",
-          600: "#4F46E5",
-          700: "#4338CA",
-          800: "#3730A3",
-          900: "#312E81",
+          DEFAULT: '#2563EB', // blue accent
+          hover: '#1E40AF',   // darker hover
         },
-        secondary: {
-          DEFAULT: "hsl(var(--secondary))",
-          foreground: "hsl(var(--secondary-foreground))",
-          50: "#FFFBEB",
-          100: "#FEF3C7",
-          200: "#FDE68A",
-          300: "#FCD34D",
-          400: "#FBBF24",
-          500: "#F59E0B",
-          600: "#D97706",
-          700: "#B45309",
-          800: "#92400E",
-          900: "#78350F",
-        },
-        accent: {
-          DEFAULT: "hsl(var(--accent))",
-          foreground: "hsl(var(--accent-foreground))",
-          50: "#ECFDF5",
-          100: "#D1FAE5",
-          200: "#A7F3D0",
-          300: "#6EE7B7",
-          400: "#34D399",
-          500: "#10B981",
-          600: "#059669",
-          700: "#047857",
-          800: "#065F46",
-          900: "#064E3B",
-        },
+        border: '#E5E7EB', // light border gray
+        
+        // Legacy support for existing components
         destructive: {
           DEFAULT: "hsl(var(--destructive))",
           foreground: "hsl(var(--destructive-foreground))",
@@ -99,10 +71,17 @@ module.exports = {
           ring: "hsl(var(--sidebar-ring))",
         },
       },
+      boxShadow: {
+        card: '0 2px 8px rgba(0, 0, 0, 0.06)', // subtle card shadow
+      },
       borderRadius: {
+        card: '1rem', // rounded-xl for modern cards
         lg: "var(--radius)",
         md: "calc(var(--radius) - 2px)",
         sm: "calc(var(--radius) - 4px)",
+      },
+      transitionDuration: {
+        DEFAULT: '200ms',
       },
       keyframes: {
         "accordion-down": {

@@ -1,7 +1,9 @@
 import { ServerHeader } from "@/components/server-header"
 import { Footer } from "@/components/footer"
 import { Product3DCarousel } from "@/components/product-3d-carousel"
+import { DesktopProductGrid } from "@/components/desktop-product-grid"
 import { AnimatedSection } from "@/components/animated-section"
+import { SectionHeader } from "@/components/section-header"
 import { getProducts } from "@/lib/database"
 
 // Force dynamic rendering and disable caching
@@ -21,34 +23,27 @@ export default async function BoysPage() {
       <ServerHeader />
 
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-r from-primary-600 to-primary-800 text-white py-16 overflow-hidden">
-        <div className="absolute inset-0 bg-black/10"></div>
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <AnimatedSection animation="fade-down" className="space-y-6">
-            <h1 className="text-4xl lg:text-5xl font-bold mb-4 animate-gradient bg-gradient-to-r from-white to-primary-100 bg-clip-text text-transparent">
-              Boys Collection
-            </h1>
-            <p className="text-xl opacity-90 max-w-2xl mx-auto leading-relaxed">
-              Cool and comfortable clothes for adventurous boys. Find the perfect outfit for every occasion!
-            </p>
+      <section className="bg-background">
+        <div className="container mx-auto px-4">
+          <AnimatedSection animation="fade-up">
+            <SectionHeader 
+              title="Boys Collection"
+              subtitle="Cool and comfortable clothes for adventurous boys. Find the perfect outfit for every occasion!"
+            />
           </AnimatedSection>
         </div>
-        {/* Floating decorative elements */}
-        <div className="absolute top-10 left-10 w-20 h-20 bg-white/10 rounded-full animate-float"></div>
-        <div className="absolute bottom-10 right-10 w-16 h-16 bg-white/10 rounded-full animate-float-delayed"></div>
-        <div className="absolute top-1/2 right-20 w-12 h-12 bg-white/5 rounded-full animate-bounce"></div>
       </section>
 
       <div className="container mx-auto px-4 py-8">
         <AnimatedSection animation="fade-up" className="mb-8">
           <h2 className="text-2xl font-bold mb-2 flex items-center gap-2">
-            <span className="w-1 h-8 bg-primary-600 rounded-full"></span>
+            <span className="w-1 h-8 bg-primary rounded-full"></span>
             {boysProducts.length} Product{boysProducts.length !== 1 ? "s" : ""} Available
           </h2>
-          <p className="text-muted-foreground">Discover amazing clothes designed for active boys</p>
+          <p className="text-text-muted">Discover amazing clothes designed for active boys</p>
         </AnimatedSection>
 
-        <Product3DCarousel products={boysProducts} />
+        <DesktopProductGrid products={boysProducts} />
       </div>
 
       <Footer />

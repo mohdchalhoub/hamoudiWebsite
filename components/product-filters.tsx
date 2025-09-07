@@ -181,11 +181,11 @@ export function ProductFilters({ onFiltersChange, availableSizes, availableColor
                   <div
                     className={`w-4 h-4 rounded-full border-2 border-white shadow-sm ${
                       color.toLowerCase().includes("blue")
-                        ? "bg-primary-500"
+                        ? "bg-blue-500"
                         : color.toLowerCase().includes("pink")
-                          ? "bg-accent-500"
+                          ? "bg-pink-500"
                           : color.toLowerCase().includes("purple")
-                            ? "bg-primary-500"
+                            ? "bg-purple-500"
                             : color.toLowerCase().includes("red")
                               ? "bg-red-500"
                               : color.toLowerCase().includes("green")
