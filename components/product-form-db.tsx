@@ -31,6 +31,7 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
     category_id: initialData?.category_id || "",
     gender: initialData?.gender || "boys",
     season: initialData?.season || "summer",
+    quantity: initialData?.quantity || 0,
     images: initialData?.images || [],
     videos: initialData?.videos || [],
     is_active: initialData?.is_active ?? true,
@@ -312,6 +313,24 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
                     }
                   />
                 </div>
+              </div>
+
+              <div>
+                <Label htmlFor="quantity">Quantity Available</Label>
+                <Input
+                  id="quantity"
+                  type="number"
+                  min="0"
+                  value={formData.quantity}
+                  onChange={(e) => {
+                    const value = Number.parseInt(e.target.value) || 0
+                    setFormData((prev) => ({ ...prev, quantity: value }))
+                  }}
+                  placeholder="Enter total quantity available"
+                />
+                <p className="text-xs text-muted-foreground mt-1">
+                  Total number of units available for this product
+                </p>
               </div>
 
               <div>

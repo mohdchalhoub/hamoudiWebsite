@@ -59,6 +59,7 @@ export interface Database {
           is_active: boolean
           is_digital: boolean
           on_sale: boolean
+          quantity: number
           weight_grams: number | null
           dimensions_cm: any | null
           seo_title: string | null
@@ -88,6 +89,7 @@ export interface Database {
           is_active?: boolean
           is_digital?: boolean
           on_sale?: boolean
+          quantity?: number
           weight_grams?: number | null
           dimensions_cm?: any | null
           seo_title?: string | null
@@ -116,6 +118,7 @@ export interface Database {
           is_active?: boolean
           is_digital?: boolean
           on_sale?: boolean
+          quantity?: number
           weight_grams?: number | null
           dimensions_cm?: any | null
           seo_title?: string | null

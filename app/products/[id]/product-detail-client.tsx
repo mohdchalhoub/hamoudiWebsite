@@ -36,8 +36,10 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
     return sizeMatch && ageMatch && colorMatch
   })
 
-  const isInStock = selectedVariant ? selectedVariant.stock_quantity > 0 : false
-  const maxQuantity = selectedVariant ? Math.min(selectedVariant.stock_quantity, 10) : 1
+  // Check stock status - use product quantity if no variants, otherwise use variant stock
+  const isInStock = selectedVariant ? selectedVariant.stock_quantity > 0 : product.quantity > 0
+  const maxQuantity = selectedVariant ? Math.min(selectedVariant.stock_quantity, 10) : Math.min(product.quantity, 10)
+  const availableQuantity = selectedVariant ? selectedVariant.stock_quantity : product.quantity
 
   const handleAddToCart = async () => {
     if (!isInStock) return
@@ -148,7 +150,7 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
               </div>
               <div>
                 <p className="font-semibold text-green-800">In Stock</p>
-                <p className="text-sm text-green-600">{selectedVariant?.stock_quantity} available</p>
+                <p className="text-sm text-green-600">{availableQuantity} available</p>
               </div>
             </div>
           </div>

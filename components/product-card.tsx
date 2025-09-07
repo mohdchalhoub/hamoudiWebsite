@@ -43,8 +43,10 @@ export function ProductCard({ product }: ProductCardProps) {
     ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100)
     : 0
 
-  // Check if product is in stock
-  const isInStock = product.variants?.some(v => v.stock_quantity > 0) || false
+  // Check if product is in stock - use product quantity if no variants, otherwise use variant stock
+  const isInStock = product.variants?.length > 0 
+    ? product.variants.some(v => v.stock_quantity > 0) 
+    : product.quantity > 0
 
   return (
     <div className="h-full animate-fade-in-up hover:-translate-y-3 transition-transform duration-500">
@@ -73,6 +75,12 @@ export function ProductCard({ product }: ProductCardProps) {
             {discountPercentage > 0 && (
               <Badge className="absolute top-4 right-4 bg-background text-text-primary border border-border text-xs px-3 py-1.5 font-medium rounded-none">
                 -{discountPercentage}%
+              </Badge>
+            )}
+            {/* Stock Status Badge */}
+            {!isInStock && (
+              <Badge className="absolute bottom-4 left-4 bg-red-100 text-red-800 border border-red-200 text-xs px-3 py-1.5 font-medium rounded-none">
+                Out of Stock
               </Badge>
             )}
 
