@@ -293,7 +293,7 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <Label htmlFor="price" className="text-xs font-medium text-text-primary">Price ($)</Label>
+                  <Label htmlFor="price" className="text-xs font-medium text-text-primary">Base Price ($)</Label>
                   <Input
                     id="price"
                     type="number"
@@ -318,6 +318,52 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
                   />
                 </div>
               </div>
+
+              {/* Dynamic Price Preview */}
+              {formData.variants.length > 0 && (
+                <div className="bg-background-subtle border border-border rounded-lg p-3">
+                  <Label className="text-xs font-medium text-text-primary mb-2 block">Price Preview</Label>
+                  <div className="space-y-2">
+                    <div className="text-xs text-text-muted">
+                      Base Price: <span className="font-medium">${formData.price.toFixed(2)}</span>
+                    </div>
+                    {formData.variants.map((variant, index) => {
+                      const finalPrice = formData.price + (variant.price_adjustment || 0)
+                      const hasAdjustment = variant.price_adjustment !== 0
+                      
+                      return (
+                        <div key={index} className="flex items-center justify-between text-xs">
+                          <div className="flex items-center gap-2">
+                            <Badge variant="secondary" className="text-xs">
+                              {variant.size || variant.age_range}
+                            </Badge>
+                            <Badge variant="outline" className="text-xs">{variant.color}</Badge>
+                            <div 
+                              className="w-3 h-3 rounded border shadow-sm" 
+                              style={{ backgroundColor: variant.color_hex }}
+                            />
+                          </div>
+                          <div className="flex items-center gap-2">
+                            {hasAdjustment ? (
+                              <>
+                                <span className="text-text-muted line-through">${formData.price.toFixed(2)}</span>
+                                <span className={`font-medium ${variant.price_adjustment > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                  ${finalPrice.toFixed(2)}
+                                </span>
+                                <span className="text-text-muted">
+                                  ({variant.price_adjustment > 0 ? '+' : ''}${variant.price_adjustment.toFixed(2)})
+                                </span>
+                              </>
+                            ) : (
+                              <span className="font-medium text-text-primary">${finalPrice.toFixed(2)}</span>
+                            )}
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
 
               <div>
                 <Label className="text-xs font-medium text-text-primary">Product Quantity</Label>
@@ -634,7 +680,7 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
                         />
                       </div>
                       <div className="flex items-center gap-1">
-                        <Label className="text-xs">Price:</Label>
+                        <Label className="text-xs">Price Adj:</Label>
                         <Input
                           type="number"
                           step="0.01"
@@ -650,6 +696,20 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
                           }}
                           className="h-6 w-20 text-xs"
                         />
+                      </div>
+                      {/* Price Preview for this variant */}
+                      <div className="flex items-center gap-1 text-xs">
+                        <span className="text-text-muted">Final:</span>
+                        {variant.price_adjustment !== 0 ? (
+                          <div className="flex items-center gap-1">
+                            <span className="text-text-muted line-through">${formData.price.toFixed(2)}</span>
+                            <span className={`font-medium ${variant.price_adjustment > 0 ? 'text-green-600' : 'text-red-600'}`}>
+                              ${(formData.price + variant.price_adjustment).toFixed(2)}
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="font-medium text-text-primary">${formData.price.toFixed(2)}</span>
+                        )}
                       </div>
                       {variant.variant_code && (
                         <Badge variant="default" className="bg-primary text-white font-mono text-xs">
