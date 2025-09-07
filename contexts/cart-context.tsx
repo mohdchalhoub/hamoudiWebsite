@@ -9,7 +9,7 @@ import { useToast } from "@/hooks/use-toast"
 interface CartContextType {
   items: CartItemWithProduct[]
   loading: boolean
-  addItem: (product: any, size: string, color: string, quantity?: number) => Promise<void>
+  addItem: (product: any, sizeOrAge: string, color: string, quantity?: number) => Promise<void>
   removeItem: (productId: string, size: string, color: string) => Promise<void>
   updateQuantity: (productId: string, size: string, color: string, quantity: number) => Promise<void>
   clearCartItems: () => Promise<void>
@@ -53,12 +53,18 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     refreshCart()
   }, [])
 
-  const addItem = async (product: any, size: string, color: string, quantity = 1) => {
+  const addItem = async (product: any, sizeOrAge: string, color: string, quantity = 1) => {
     try {
       const sessionId = getSessionId()
       
-      // Find the variant that matches the selected size and color
-      const variant = product.variants?.find((v: any) => v.size === size && v.color === color)
+      // Find the variant that matches the selected size/age and color
+      const variant = product.variants?.find((v: any) => {
+        const sizeMatch = v.size === sizeOrAge
+        const ageMatch = v.age_range === sizeOrAge
+        const colorMatch = v.color === color
+        return (sizeMatch || ageMatch) && colorMatch
+      })
+      
       if (!variant) {
         throw new Error('Selected variant not found')
       }
