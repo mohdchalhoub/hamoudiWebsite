@@ -108,7 +108,7 @@ export function Product3DCarousel({ products, title }: Product3DCarouselProps) {
       
       {/* Desktop Grid View - Hidden on Mobile */}
       <div className="hidden md:block">
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8 max-w-4xl mx-auto">
           {products.map((product, index) => (
             <div key={product.id} className="h-full">
               <ProductCard product={product} />

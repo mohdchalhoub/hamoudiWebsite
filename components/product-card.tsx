@@ -54,7 +54,7 @@ export function ProductCard({ product }: ProductCardProps) {
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
         >
-          <div className="relative aspect-[3/4] overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 rounded-t-2xl">
+          <div className="relative aspect-[4/5] overflow-hidden bg-gradient-to-br from-gray-50 to-gray-100 rounded-t-2xl">
             <div className="relative w-full h-full group-hover:scale-110 transition-transform duration-700">
               <Image
                 src={product.images?.[0] || "/placeholder.svg"}
@@ -108,9 +108,9 @@ export function ProductCard({ product }: ProductCardProps) {
             </div>
           </div>
           
-          <CardContent className="p-5">
+          <CardContent className="p-6">
             <div className="animate-fade-in-up" style={{ animationDelay: '0.1s' }}>
-              <h3 className="font-semibold text-lg mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors duration-300 font-body text-gray-900">
+              <h3 className="font-semibold text-xl mb-4 line-clamp-2 group-hover:text-blue-600 transition-colors duration-300 font-body text-gray-900">
                 {product.name}
               </h3>
             </div>
@@ -132,7 +132,7 @@ export function ProductCard({ product }: ProductCardProps) {
             
             <div className="flex items-center justify-between mb-4 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
               <div className="flex items-center gap-2">
-                <span className="font-bold text-xl text-blue-600">${Number(product.price).toFixed(2)}</span>
+                <span className="font-bold text-2xl text-blue-600">${Number(product.price).toFixed(2)}</span>
                 {product.compare_at_price && (
                   <span className="text-sm text-gray-400 line-through">${Number(product.compare_at_price).toFixed(2)}</span>
                 )}
@@ -160,7 +160,7 @@ export function ProductCard({ product }: ProductCardProps) {
             <div className="animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
               <Button
                 size="sm"
-                className={`w-full text-sm h-12 transition-all duration-500 hover:scale-105 ${
+                className={`w-full text-base h-14 transition-all duration-500 hover:scale-105 ${
                   isInStock 
                     ? 'bg-blue-600 hover:bg-blue-700 text-white' 
                     : 'bg-gray-300 text-gray-500 cursor-not-allowed'
