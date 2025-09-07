@@ -30,10 +30,16 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
 
   // Find the selected variant
   const selectedVariant = product.variants?.find(v => {
-    const sizeMatch = availableSizes.length > 0 ? v.size === selectedSize : true
-    const ageMatch = availableAges.length > 0 ? v.age_range === selectedAge : true
-    const colorMatch = v.color === selectedColor
-    return sizeMatch && ageMatch && colorMatch
+    // For size-based variants: match size and color
+    if (availableSizes.length > 0 && v.size) {
+      return v.size === selectedSize && v.color === selectedColor
+    }
+    // For age-based variants: match age and color
+    if (availableAges.length > 0 && v.age_range) {
+      return v.age_range === selectedAge && v.color === selectedColor
+    }
+    // Fallback: just match color
+    return v.color === selectedColor
   })
 
   // Check stock status - consider both product quantity and variant stock
@@ -58,6 +64,17 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
     selectedSize,
     selectedAge,
     selectedColor,
+    availableSizes,
+    availableAges,
+    availableColors,
+    allVariants: product.variants?.map(v => ({
+      id: v.id,
+      size: v.size,
+      age_range: v.age_range,
+      color: v.color,
+      price_adjustment: v.price_adjustment,
+      stock_quantity: v.stock_quantity
+    })),
     selectedVariant: selectedVariant ? {
       id: selectedVariant.id,
       size: selectedVariant.size,
