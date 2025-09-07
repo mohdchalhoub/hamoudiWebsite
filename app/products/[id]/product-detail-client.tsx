@@ -213,49 +213,49 @@ export function ProductDetailClient({ product }: ProductDetailClientProps) {
         <Separator className="border-border" />
         
         {/* Product Details */}
-        <div className="bg-background border border-border rounded-md p-2">
-          <h3 className="text-xs font-medium text-text-primary mb-1">Product Details</h3>
+        <div className="bg-background border border-border rounded-md p-1">
+          <h3 className="text-xs font-medium text-text-primary mb-0.5">Product Details</h3>
           <div className="space-y-0.5 text-xs">
             {product.product_code && (
-              <div className="flex justify-between items-center py-0.5 px-1.5 bg-background-subtle rounded-md">
+              <div className="flex justify-between items-center py-0.5 px-1 bg-background-subtle rounded-md">
                 <span className="text-text-muted font-medium">Code:</span>
                 <span className="font-medium text-text-primary">{product.product_code}</span>
               </div>
             )}
-            <div className="flex justify-between items-center py-0.5 px-1.5 bg-background-subtle rounded-md">
+            <div className="flex justify-between items-center py-0.5 px-1 bg-background-subtle rounded-md">
               <span className="text-text-muted font-medium">Price:</span>
               <span className="font-medium text-text-primary">${product.price.toFixed(2)}</span>
             </div>
-            <div className="flex justify-between items-center py-0.5 px-1.5 bg-background-subtle rounded-md">
+            <div className="flex justify-between items-center py-0.5 px-1 bg-background-subtle rounded-md">
               <span className="text-text-muted font-medium">Season:</span>
               <span className="font-medium text-text-primary capitalize">{product.season}</span>
             </div>
             {product.brand && (
-              <div className="flex justify-between items-center py-0.5 px-1.5 bg-background-subtle rounded-md">
+              <div className="flex justify-between items-center py-0.5 px-1 bg-background-subtle rounded-md">
                 <span className="text-text-muted font-medium">Brand:</span>
                 <span className="font-medium text-text-primary">{product.brand}</span>
               </div>
             )}
             {product.material && (
-              <div className="flex justify-between items-center py-0.5 px-1.5 bg-background-subtle rounded-md">
+              <div className="flex justify-between items-center py-0.5 px-1 bg-background-subtle rounded-md">
                 <span className="text-text-muted font-medium">Material:</span>
                 <span className="font-medium text-text-primary">{product.material}</span>
               </div>
             )}
             {product.age_range && (
-              <div className="flex justify-between items-center py-0.5 px-1.5 bg-background-subtle rounded-md">
+              <div className="flex justify-between items-center py-0.5 px-1 bg-background-subtle rounded-md">
                 <span className="text-text-muted font-medium">Age Range:</span>
                 <span className="font-medium text-text-primary">{product.age_range} years</span>
               </div>
             )}
             {product.gender && (
-              <div className="flex justify-between items-center py-0.5 px-1.5 bg-background-subtle rounded-md">
+              <div className="flex justify-between items-center py-0.5 px-1 bg-background-subtle rounded-md">
                 <span className="text-text-muted font-medium">Gender:</span>
                 <span className="font-medium text-text-primary capitalize">{product.gender}</span>
               </div>
             )}
             {product.weight_grams && (
-              <div className="flex justify-between items-center py-0.5 px-1.5 bg-background-subtle rounded-md">
+              <div className="flex justify-between items-center py-0.5 px-1 bg-background-subtle rounded-md">
                 <span className="text-text-muted font-medium">Weight:</span>
                 <span className="font-medium text-text-primary">{product.weight_grams}g</span>
               </div>
