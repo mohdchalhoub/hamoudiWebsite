@@ -19,7 +19,7 @@ interface ProductPageClientProps {
 export function ProductPageClient({ product, relatedProducts }: ProductPageClientProps) {
   const [currentPrice, setCurrentPrice] = useState(product.price)
 
-  const discountPercentage = product.compare_at_price
+  const discountPercentage = product.compare_at_price > 0
     ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100)
     : 0
 
@@ -126,7 +126,7 @@ export function ProductPageClient({ product, relatedProducts }: ProductPageClien
                           ${currentPrice.toFixed(2)}
                         </span>
                       )}
-                      {product.compare_at_price && (
+                      {product.compare_at_price > 0 && (
                         <span className="text-xl text-gray-400 line-through">${product.compare_at_price}</span>
                       )}
                     </div>

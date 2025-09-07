@@ -39,7 +39,7 @@ export function ProductCard({ product }: ProductCardProps) {
     }
   }
 
-  const discountPercentage = product.compare_at_price
+  const discountPercentage = product.compare_at_price > 0
     ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100)
     : 0
 
@@ -129,7 +129,7 @@ export function ProductCard({ product }: ProductCardProps) {
             <div className="flex items-center justify-between mb-3 animate-fade-in-up" style={{ animationDelay: '0.3s' }}>
               <div className="flex items-center gap-2">
                 <span className="font-medium text-base text-text-primary">${Number(product.price).toFixed(2)}</span>
-                {product.compare_at_price && (
+                {product.compare_at_price > 0 && (
                   <span className="text-sm text-text-muted line-through">${Number(product.compare_at_price).toFixed(2)}</span>
                 )}
               </div>
