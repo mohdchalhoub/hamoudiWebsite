@@ -331,14 +331,19 @@ export function ProductDetailClient({ product, onPriceChange }: ProductDetailCli
             }`}>
               <span className="text-text-muted font-medium">Price:</span>
               <div className="flex items-center gap-1">
-                <span className={`font-medium transition-colors duration-200 ${
-                  hasPriceAdjustment ? 'text-primary' : 'text-text-primary'
-                }`}>
-                  ${currentPrice.toFixed(2)}
-                </span>
-                {hasPriceAdjustment && (
-                  <span className="text-xs text-text-muted">
-                    ({selectedVariant.price_adjustment > 0 ? '+' : ''}${selectedVariant.price_adjustment.toFixed(2)})
+                {hasPriceAdjustment ? (
+                  <>
+                    <span className="text-text-muted line-through text-xs">${product.price.toFixed(2)}</span>
+                    <span className="font-medium text-primary">
+                      ${currentPrice.toFixed(2)}
+                    </span>
+                    <span className="text-xs text-text-muted">
+                      ({selectedVariant.price_adjustment > 0 ? '+' : ''}${selectedVariant.price_adjustment.toFixed(2)})
+                    </span>
+                  </>
+                ) : (
+                  <span className="font-medium text-text-primary">
+                    ${currentPrice.toFixed(2)}
                   </span>
                 )}
               </div>

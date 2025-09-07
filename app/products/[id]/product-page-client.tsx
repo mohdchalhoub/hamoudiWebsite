@@ -114,9 +114,18 @@ export function ProductPageClient({ product, relatedProducts }: ProductPageClien
                 <div className="bg-gradient-to-r from-primary-50 to-primary-100 rounded-2xl p-6 border border-primary-200 shadow-sm">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-4">
-                      <span className="text-3xl lg:text-4xl font-display font-bold text-gray-900 transition-colors duration-200">
-                        ${currentPrice.toFixed(2)}
-                      </span>
+                      {currentPrice !== product.price ? (
+                        <>
+                          <span className="text-2xl text-gray-400 line-through">${product.price.toFixed(2)}</span>
+                          <span className="text-3xl lg:text-4xl font-display font-bold text-gray-900 transition-colors duration-200">
+                            ${currentPrice.toFixed(2)}
+                          </span>
+                        </>
+                      ) : (
+                        <span className="text-3xl lg:text-4xl font-display font-bold text-gray-900 transition-colors duration-200">
+                          ${currentPrice.toFixed(2)}
+                        </span>
+                      )}
                       {product.compare_at_price && (
                         <span className="text-xl text-gray-400 line-through">${product.compare_at_price}</span>
                       )}
