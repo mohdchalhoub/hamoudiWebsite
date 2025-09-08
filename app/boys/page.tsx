@@ -3,8 +3,6 @@
 import { useState, useEffect } from "react"
 import { ServerHeader } from "@/components/server-header"
 import { Footer } from "@/components/footer"
-import { Product3DCarousel } from "@/components/product-3d-carousel"
-import { DesktopProductGrid } from "@/components/desktop-product-grid"
 import { MobileProductPagination } from "@/components/mobile-product-pagination"
 import { ProductFilters } from "@/components/product-filters"
 import { AnimatedSection } from "@/components/animated-section"
