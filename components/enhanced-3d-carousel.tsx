@@ -81,9 +81,12 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
   }
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    // Only start dragging if it's not a touch on a product card
+    // Only start dragging if it's not a touch on a product card or any interactive element
     const target = e.target as HTMLElement
-    if (target.closest('[data-product-card]')) {
+    if (target.closest('[data-product-card]') || 
+        target.closest('button') || 
+        target.closest('a') ||
+        target.closest('[role="button"]')) {
       return
     }
     setIsDragging(true)
@@ -115,11 +118,16 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
   }
 
   const handleMouseDown = (e: React.MouseEvent) => {
-    // Only start dragging if it's not a click on a product card
+    // Only start dragging if it's not a click on a product card or any interactive element
     const target = e.target as HTMLElement
-    if (target.closest('[data-product-card]')) {
+    if (target.closest('[data-product-card]') || 
+        target.closest('button') || 
+        target.closest('a') ||
+        target.closest('[role="button"]')) {
+      console.log('Carousel: Ignoring mouse down on interactive element')
       return
     }
+    console.log('Carousel: Starting drag')
     setIsDragging(true)
     setStartX(e.clientX)
   }
@@ -166,6 +174,7 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
         <div
           ref={carouselRef}
           className="relative overflow-hidden"
+          style={{ pointerEvents: 'auto' }}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
@@ -232,22 +241,19 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
                             zIndex,
                             transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
                             transformStyle: 'preserve-3d',
+                            pointerEvents: 'auto', // Ensure clicks work
                           }}
                         >
-                          <div className="relative group">
-                            <div
-                              className={`bg-background rounded-card overflow-hidden transition-all duration-500 ${
-                                isActive 
-                                  ? 'shadow-2xl hover:shadow-3xl' 
-                                  : 'shadow-lg'
-                              }`}
-                              style={{
-                                transform: isActive ? 'translateY(-8px)' : 'translateY(0px)',
-                                filter: isActive ? 'brightness(1.05)' : 'brightness(1)',
-                              }}
-                            >
-                              <ProductCard product={product} />
-                            </div>
+                          <div 
+                            className="relative group h-full"
+                            style={{
+                              transform: isActive ? 'translateY(-8px)' : 'translateY(0px)',
+                              filter: isActive ? 'brightness(1.05)' : 'brightness(1)',
+                              transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+                              pointerEvents: 'auto', // Ensure clicks work
+                            }}
+                          >
+                            <ProductCard product={product} />
                           </div>
                         </div>
                       )
