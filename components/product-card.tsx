@@ -78,45 +78,49 @@ export function ProductCard({ product }: ProductCardProps) {
               />
             </div>
             
-            {/* Badges */}
-            {product.is_featured && (
-              <Badge className="absolute top-4 left-4 bg-background text-text-primary border border-border text-xs px-3 py-1.5 font-medium rounded-none">
-                Featured
-              </Badge>
-            )}
-            {discountPercentage > 0 && (
-              <Badge className="absolute top-4 right-4 bg-background text-text-primary border border-border text-xs px-3 py-1.5 font-medium rounded-none">
-                -{discountPercentage}%
-              </Badge>
-            )}
-            {/* Stock Status Badge */}
+            {/* Product Labels - Top Left */}
+            <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col gap-1.5 sm:gap-2 z-10">
+              {product.is_featured && (
+                <Badge className="bg-black text-white border-0 text-xs px-2 py-1 sm:px-3 sm:py-1.5 font-semibold rounded-md shadow-lg">
+                  Featured
+                </Badge>
+              )}
+              {discountPercentage > 0 && (
+                <Badge className="bg-red-600 text-white border-0 text-xs px-2 py-1 sm:px-3 sm:py-1.5 font-semibold rounded-md shadow-lg">
+                  -{discountPercentage}%
+                </Badge>
+              )}
+            </div>
+
+            {/* Stock Status Badge - Bottom Left */}
             {!isInStock && (
-              <Badge className="absolute bottom-4 left-4 bg-red-100 text-red-800 border border-red-200 text-xs px-3 py-1.5 font-medium rounded-none">
+              <Badge className="absolute bottom-2 left-2 sm:bottom-3 sm:left-3 bg-red-600 text-white border-0 text-xs px-2 py-1 sm:px-3 sm:py-1.5 font-semibold rounded-md shadow-lg z-10">
                 Out of Stock
               </Badge>
             )}
 
-            {/* Overlay with actions */}
-            <div className={`absolute inset-0 bg-black/20 transition-opacity duration-200 ${isHovered ? 'opacity-100' : 'opacity-0'}`}>
-              <div className="absolute top-4 right-4 flex flex-col gap-2">
-                <Button
-                  size="icon"
-                  variant="secondary"
-                  className="h-8 w-8 bg-background border border-border hover:border-primary rounded-none"
-                  onClick={handleToggleWishlist}
-                >
-                  <Heart className={`h-3 w-3 ${isLiked ? 'fill-red-500 text-red-500' : 'text-text-muted'}`} />
-                </Button>
-                
-                <Button
-                  size="icon"
-                  variant="secondary"
-                  className="h-8 w-8 bg-background border border-border hover:border-primary rounded-none"
-                >
-                  <Eye className="h-3 w-3 text-text-muted" />
-                </Button>
-              </div>
+            {/* Action Icons - Top Right */}
+            <div className="absolute top-2 right-2 sm:top-3 sm:right-3 flex flex-col gap-1.5 sm:gap-2 z-10">
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-8 w-8 sm:h-9 sm:w-9 bg-white/90 backdrop-blur-sm hover:bg-white hover:shadow-lg border-0 rounded-full transition-all duration-200"
+                onClick={handleToggleWishlist}
+              >
+                <Heart className={`h-3.5 w-3.5 sm:h-4 sm:w-4 ${isLiked ? 'fill-red-500 text-red-500' : 'text-gray-600'}`} />
+              </Button>
+              
+              <Button
+                size="icon"
+                variant="ghost"
+                className="h-8 w-8 sm:h-9 sm:w-9 bg-white/90 backdrop-blur-sm hover:bg-white hover:shadow-lg border-0 rounded-full transition-all duration-200"
+              >
+                <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-600" />
+              </Button>
             </div>
+
+            {/* Hover Overlay */}
+            <div className={`absolute inset-0 bg-black/10 transition-opacity duration-300 ${isHovered ? 'opacity-100' : 'opacity-0'}`} />
           </div>
           
           <CardContent className="p-4">
