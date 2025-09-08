@@ -38,6 +38,7 @@ export function ProductCard({ product }: ProductCardProps) {
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault()
+    e.stopPropagation() // Prevent the Link from navigating
     const sizeOrAge = selectedSize || selectedAge
     if (sizeOrAge && selectedColor) {
       await addItem(product, sizeOrAge, selectedColor)
@@ -46,9 +47,20 @@ export function ProductCard({ product }: ProductCardProps) {
 
   const handleToggleWishlist = (e: React.MouseEvent) => {
     e.preventDefault()
-    e.stopPropagation()
+    e.stopPropagation() // Prevent the Link from navigating
     const sizeOrAge = selectedSize || selectedAge
     addToWishlist(product, sizeOrAge, selectedColor)
+  }
+
+  const handleCardClick = (e: React.MouseEvent) => {
+    // Only navigate if the click is not on a button or interactive element
+    const target = e.target as HTMLElement
+    if (target.closest('button') || target.closest('[data-product-card] button')) {
+      e.preventDefault()
+      e.stopPropagation()
+      return
+    }
+    // Allow the Link to handle navigation
   }
 
   const discountPercentage = product.compare_at_price > 0
@@ -68,6 +80,7 @@ export function ProductCard({ product }: ProductCardProps) {
           className="group cursor-pointer h-full border border-border overflow-hidden hover:border-primary transition-all duration-200 bg-background shadow-card rounded-card"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
+          onClick={handleCardClick}
         >
           <div className="relative aspect-[3/4] overflow-hidden bg-background-subtle">
             <div className="relative w-full h-full group-hover:scale-110 transition-transform duration-700">
@@ -115,6 +128,10 @@ export function ProductCard({ product }: ProductCardProps) {
                 size="icon"
                 variant="ghost"
                 className="h-8 w-8 sm:h-9 sm:w-9 bg-white/90 backdrop-blur-sm hover:bg-white hover:shadow-lg border-0 rounded-full transition-all duration-200"
+                onClick={(e) => {
+                  e.preventDefault()
+                  e.stopPropagation()
+                }}
               >
                 <Eye className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-gray-600" />
               </Button>
