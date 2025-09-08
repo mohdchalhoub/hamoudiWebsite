@@ -17,14 +17,14 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 export default async function HomePage() {
-  // Fetch products from database with cache busting - increased limits for carousel demo
+  // Fetch products from database with cache busting - using sequential queries to avoid connection issues
   const cacheBust = Date.now()
-  const [featuredProducts, boysProducts, girlsProducts, onSaleProducts] = await Promise.all([
-    getProducts({ featured: true, active: true, limit: 8, _cacheBust: cacheBust }),
-    getProducts({ gender: 'boys', active: true, limit: 6, _cacheBust: cacheBust }),
-    getProducts({ gender: 'girls', active: true, limit: 6, _cacheBust: cacheBust }),
-    getProducts({ on_sale: true, active: true, limit: 8, _cacheBust: cacheBust })
-  ])
+  
+  // Use sequential queries instead of Promise.all to avoid connection issues
+  const featuredProducts = await getProducts({ featured: true, active: true, limit: 8, _cacheBust: cacheBust })
+  const boysProducts = await getProducts({ gender: 'boys', active: true, limit: 6, _cacheBust: cacheBust })
+  const girlsProducts = await getProducts({ gender: 'girls', active: true, limit: 6, _cacheBust: cacheBust })
+  const onSaleProducts = await getProducts({ on_sale: true, active: true, limit: 8, _cacheBust: cacheBust })
   
 
   return (
