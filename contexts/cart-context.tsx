@@ -13,6 +13,7 @@ interface CartContextType {
   removeItem: (productId: string, size: string, color: string) => Promise<void>
   updateQuantity: (productId: string, size: string, color: string, quantity: number) => Promise<void>
   clearCartItems: () => Promise<void>
+  clearCart: () => Promise<void> // Alias for clearCartItems for compatibility
   getTotalItems: () => number
   getTotalPrice: () => number
   refreshCart: () => Promise<void>
@@ -95,16 +96,28 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     try {
       const item = items.find(item => 
         item.product_id === productId && 
-        item.variant?.size === size && 
+        (item.variant?.size === size || item.variant?.age_range === size) && 
         item.variant?.color === color
       )
       
       if (item) {
         await removeFromCart(item.id)
         await refreshCart()
+        
+        toast({
+          title: "Item removed",
+          description: "Item has been removed from your cart.",
+        })
+      } else {
+        console.warn('Item not found for removal:', { productId, size, color })
       }
     } catch (error) {
       console.error('Failed to remove item from cart:', error)
+      toast({
+        title: "Error",
+        description: "Failed to remove item from cart. Please try again.",
+        variant: "destructive"
+      })
     }
   }
 
@@ -112,7 +125,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     try {
       const item = items.find(item => 
         item.product_id === productId && 
-        item.variant?.size === size && 
+        (item.variant?.size === size || item.variant?.age_range === size) && 
         item.variant?.color === color
       )
       
@@ -123,9 +136,16 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           await updateCartItemQuantity(item.id, quantity)
           await refreshCart()
         }
+      } else {
+        console.warn('Item not found for quantity update:', { productId, size, color, quantity })
       }
     } catch (error) {
       console.error('Failed to update item quantity:', error)
+      toast({
+        title: "Error",
+        description: "Failed to update item quantity. Please try again.",
+        variant: "destructive"
+      })
     }
   }
 
@@ -159,6 +179,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         removeItem,
         updateQuantity,
         clearCartItems,
+        clearCart: clearCartItems, // Alias for compatibility
         getTotalItems,
         getTotalPrice,
         refreshCart,

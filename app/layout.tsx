@@ -5,6 +5,7 @@ import { GeistMono } from "geist/font/mono"
 import { Analytics } from "@vercel/analytics/next"
 import "./globals.css"
 import { CartProvider } from "@/contexts/cart-context"
+import { WishlistProvider } from "@/contexts/wishlist-context"
 import { Toaster } from "@/components/ui/toaster"
 import { Suspense } from "react"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -33,8 +34,10 @@ export default function RootLayout({
           <AOSProvider>
             <Suspense fallback={null}>
               <CartProvider>
-                {children}
-                <Toaster />
+                <WishlistProvider>
+                  {children}
+                  <Toaster />
+                </WishlistProvider>
               </CartProvider>
             </Suspense>
           </AOSProvider>

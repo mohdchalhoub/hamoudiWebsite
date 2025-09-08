@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { useCart } from "@/contexts/cart-context"
+import { useWishlist } from "@/contexts/wishlist-context"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
@@ -16,6 +17,7 @@ interface ProductDetailClientProps {
 
 export function ProductDetailClient({ product, onPriceChange }: ProductDetailClientProps) {
   const { addItem } = useCart()
+  const { addItem: addToWishlist, isInWishlist } = useWishlist()
   
   // Get available sizes/ages and colors from variants
   const availableSizes = [...new Set(product.variants?.map(v => v.size).filter(Boolean) || [])]
@@ -52,10 +54,11 @@ export function ProductDetailClient({ product, onPriceChange }: ProductDetailCli
     ? Math.max(selectedVariant.stock_quantity, product.quantity)
     : product.quantity
 
-  // Calculate dynamic price based on selected variant
-  const currentPrice = selectedVariant 
+  // Calculate dynamic price based on selected variant and quantity
+  const basePrice = selectedVariant 
     ? product.price + (selectedVariant.price_adjustment || 0)
     : product.price
+  const currentPrice = basePrice * quantity
   
   // Check if price is different from base price
   const hasPriceAdjustment = selectedVariant && selectedVariant.price_adjustment !== 0
@@ -65,13 +68,14 @@ export function ProductDetailClient({ product, onPriceChange }: ProductDetailCli
     if (onPriceChange) {
       onPriceChange(currentPrice)
     }
-  }, [currentPrice, onPriceChange])
+  }, [currentPrice, onPriceChange, quantity, selectedSize, selectedAge, selectedColor])
 
   // Debug logging
   console.log('ProductDetailClient Debug:', {
     selectedSize,
     selectedAge,
     selectedColor,
+    quantity,
     availableSizes,
     availableAges,
     availableColors,
@@ -91,7 +95,8 @@ export function ProductDetailClient({ product, onPriceChange }: ProductDetailCli
       price_adjustment: selectedVariant.price_adjustment,
       stock_quantity: selectedVariant.stock_quantity
     } : null,
-    basePrice: product.price,
+    baseProductPrice: product.price,
+    basePrice,
     currentPrice,
     hasPriceAdjustment
   })
@@ -120,8 +125,8 @@ export function ProductDetailClient({ product, onPriceChange }: ProductDetailCli
     try {
       const sizeOrAge = selectedSize || selectedAge
       if (sizeOrAge && selectedColor) {
-        // Add to wishlist with quantity of 1 (like Add to Cart but fixed quantity)
-        await addItem(product, sizeOrAge, selectedColor, 1)
+        // Add to wishlist (toggle behavior)
+        addToWishlist(product, sizeOrAge, selectedColor, quantity)
       }
     } catch (error) {
       console.error('Failed to add to wishlist:', error)
@@ -307,8 +312,10 @@ export function ProductDetailClient({ product, onPriceChange }: ProductDetailCli
           disabled={!isInStock || isAddingToWishlist}
           className="w-full h-8 text-xs font-medium border-border hover:border-text-muted hover:bg-background-subtle text-text-primary transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <Heart className="mr-1 h-3 w-3" />
-          {isAddingToWishlist ? "Adding..." : isInStock ? "Add to Wishlist" : "Out of Stock"}
+          <Heart className={`mr-1 h-3 w-3 ${isInWishlist(product.id, selectedSize || selectedAge, selectedColor) ? 'fill-red-500 text-red-500' : ''}`} />
+          {isAddingToWishlist ? "Adding..." : isInStock ? 
+            (isInWishlist(product.id, selectedSize || selectedAge, selectedColor) ? "Remove from Wishlist" : "Add to Wishlist") : 
+            "Out of Stock"}
         </Button>
       </div>
 
@@ -329,13 +336,13 @@ export function ProductDetailClient({ product, onPriceChange }: ProductDetailCli
             <div className={`flex justify-between items-center py-0.5 px-0.5 rounded-md transition-colors duration-200 ${
               hasPriceAdjustment ? 'bg-primary/5 border border-primary/20' : 'bg-background-subtle'
             }`}>
-              <span className="text-text-muted font-medium">Price:</span>
+              <span className="text-text-muted font-medium">Unit Price:</span>
               <div className="flex items-center gap-1">
                 {hasPriceAdjustment ? (
                   <>
                     <span className="text-text-muted line-through text-xs">${product.price.toFixed(2)}</span>
                     <span className="font-medium text-primary">
-                      ${currentPrice.toFixed(2)}
+                      ${basePrice.toFixed(2)}
                     </span>
                     <span className="text-xs text-text-muted">
                       ({selectedVariant.price_adjustment > 0 ? '+' : ''}${selectedVariant.price_adjustment.toFixed(2)})
@@ -343,10 +350,16 @@ export function ProductDetailClient({ product, onPriceChange }: ProductDetailCli
                   </>
                 ) : (
                   <span className="font-medium text-text-primary">
-                    ${currentPrice.toFixed(2)}
+                    ${basePrice.toFixed(2)}
                   </span>
                 )}
               </div>
+            </div>
+            <div className="flex justify-between items-center py-0.5 px-0.5 bg-primary/5 border border-primary/20 rounded-md">
+              <span className="text-text-muted font-medium">Total Price:</span>
+              <span className="font-bold text-primary text-sm">
+                ${currentPrice.toFixed(2)}
+              </span>
             </div>
             <div className="flex justify-between items-center py-0.5 px-0.5 bg-background-subtle rounded-md">
               <span className="text-text-muted font-medium">Season:</span>

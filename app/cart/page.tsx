@@ -15,8 +15,7 @@ export default function CartPage() {
   const totalItems = getTotalItems()
   const totalPrice = getTotalPrice()
   const shipping = totalPrice > 50 ? 0 : 9.99
-  const tax = totalPrice * 0.08
-  const finalTotal = totalPrice + shipping + tax
+  const finalTotal = totalPrice + shipping
 
   if (items.length === 0) {
     return (
@@ -25,7 +24,7 @@ export default function CartPage() {
           <ShoppingCart className="h-24 w-24 text-muted-foreground mx-auto mb-6" />
           <h1 className="text-3xl font-bold mb-4">Your cart is empty</h1>
           <p className="text-muted-foreground mb-8">Looks like you haven't added any items to your cart yet.</p>
-          <Link href="/products">
+          <Link href="/">
             <Button size="lg">
               <ArrowLeft className="h-4 w-4 mr-2" />
               Continue Shopping
@@ -40,7 +39,7 @@ export default function CartPage() {
     <div className="container mx-auto px-4 py-8">
       <div className="max-w-6xl mx-auto">
         <div className="flex items-center gap-4 mb-8">
-          <Link href="/products">
+          <Link href="/">
             <Button variant="ghost" size="icon">
               <ArrowLeft className="h-4 w-4" />
             </Button>
@@ -58,35 +57,42 @@ export default function CartPage() {
               </Button>
             </div>
 
-            {items.map((item, index) => (
-              <Card key={`${item.product.id}-${item.selectedSize}-${item.selectedColor}`}>
-                <CardContent className="p-6">
-                  <div className="flex gap-4">
-                    <div className="relative w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
-                      <Image
-                        src={item.product.image_url || "/placeholder.svg"}
-                        alt={item.product.name}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <h3 className="font-semibold text-lg">{item.product.name}</h3>
-                          <p className="text-muted-foreground text-sm">{item.product.description}</p>
-                        </div>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          onClick={() => removeItem(item.product.id, item.selectedSize, item.selectedColor)}
-                        >
-                          <X className="h-4 w-4" />
-                        </Button>
+            {items.map((item, index) => {
+              const sizeOrAge = item.variant?.size || item.variant?.age_range || 'One Size'
+              const color = item.variant?.color || 'Default'
+              return (
+                <Card key={`${item.product?.id}-${sizeOrAge}-${color}`}>
+                  <CardContent className="p-6">
+                    <div className="flex gap-4">
+                      <div className="relative w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
+                        <Image
+                          src={item.product?.images?.[0] || "/placeholder.svg"}
+                          alt={item.product?.name || 'Product'}
+                          fill
+                          className="object-cover"
+                        />
                       </div>
+                      <div className="flex-1">
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <h3 className="font-semibold text-lg">{item.product?.name}</h3>
+                            <p className="text-muted-foreground text-sm">{item.product?.description}</p>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            onClick={() => removeItem(item.product?.id || '', sizeOrAge, color)}
+                          >
+                            <X className="h-4 w-4" />
+                          </Button>
+                        </div>
                       <div className="flex items-center gap-4 mb-3">
-                        <Badge variant="outline">Size: {item.selectedSize}</Badge>
-                        <Badge variant="outline">Color: {item.selectedColor}</Badge>
+                        <Badge variant="outline">
+                          {item.variant?.size ? `Size: ${item.variant.size}` : 
+                           item.variant?.age_range ? `Age: ${item.variant.age_range} years` : 
+                           'One Size'}
+                        </Badge>
+                        <Badge variant="outline">Color: {item.variant?.color || 'Default'}</Badge>
                       </div>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
@@ -94,7 +100,7 @@ export default function CartPage() {
                             variant="outline"
                             size="icon"
                             onClick={() =>
-                              updateQuantity(item.product.id, item.selectedSize, item.selectedColor, item.quantity - 1)
+                              updateQuantity(item.product?.id || '', sizeOrAge, color, item.quantity - 1)
                             }
                             disabled={item.quantity <= 1}
                           >
@@ -105,22 +111,27 @@ export default function CartPage() {
                             variant="outline"
                             size="icon"
                             onClick={() =>
-                              updateQuantity(item.product.id, item.selectedSize, item.selectedColor, item.quantity + 1)
+                              updateQuantity(item.product?.id || '', sizeOrAge, color, item.quantity + 1)
                             }
                           >
                             <Plus className="h-4 w-4" />
                           </Button>
                         </div>
                         <div className="text-right">
-                          <div className="text-lg font-bold">${(item.product.price * item.quantity).toFixed(2)}</div>
-                          <div className="text-sm text-muted-foreground">${item.product.price} each</div>
+                          <div className="text-lg font-bold">
+                            ${(((item.product?.price || 0) + (item.variant?.price_adjustment || 0)) * item.quantity).toFixed(2)}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            ${((item.product?.price || 0) + (item.variant?.price_adjustment || 0)).toFixed(2)} each
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
-            ))}
+              )
+            })}
           </div>
 
           {/* Order Summary */}
@@ -138,10 +149,6 @@ export default function CartPage() {
                     <span>{shipping === 0 ? "FREE" : `$${shipping.toFixed(2)}`}</span>
                   </div>
                   {shipping === 0 && <p className="text-sm text-green-600">🎉 Free shipping on orders over $50!</p>}
-                  <div className="flex justify-between">
-                    <span>Tax</span>
-                    <span>${tax.toFixed(2)}</span>
-                  </div>
                   <Separator />
                   <div className="flex justify-between text-lg font-bold">
                     <span>Total</span>
@@ -154,7 +161,7 @@ export default function CartPage() {
                       Proceed to Checkout
                     </Button>
                   </Link>
-                  <Link href="/products">
+                  <Link href="/">
                     <Button variant="outline" className="w-full bg-transparent">
                       Continue Shopping
                     </Button>

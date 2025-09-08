@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { ShoppingCart, Heart, Eye, Star } from "lucide-react"
 import { useCart } from "@/contexts/cart-context"
+import { useWishlist } from "@/contexts/wishlist-context"
 import { useState } from "react"
 
 interface ProductCardProps {
@@ -19,6 +20,7 @@ interface ProductCardProps {
 
 export function ProductCard({ product }: ProductCardProps) {
   const { addItem } = useCart()
+  const { addItem: addToWishlist, isInWishlist } = useWishlist()
   
   // Get available sizes/ages and colors from variants
   const availableSizes = [...new Set(product.variants?.map(v => v.size).filter(Boolean) || [])]
@@ -29,7 +31,10 @@ export function ProductCard({ product }: ProductCardProps) {
   const [selectedAge, setSelectedAge] = useState(availableAges[0] || '')
   const [selectedColor, setSelectedColor] = useState(availableColors[0] || '')
   const [isHovered, setIsHovered] = useState(false)
-  const [isLiked, setIsLiked] = useState(false)
+  
+  // Check if product is in wishlist
+  const sizeOrAge = selectedSize || selectedAge
+  const isLiked = isInWishlist(product.id, sizeOrAge, selectedColor)
 
   const handleAddToCart = async (e: React.MouseEvent) => {
     e.preventDefault()
@@ -37,6 +42,13 @@ export function ProductCard({ product }: ProductCardProps) {
     if (sizeOrAge && selectedColor) {
       await addItem(product, sizeOrAge, selectedColor)
     }
+  }
+
+  const handleToggleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault()
+    e.stopPropagation()
+    const sizeOrAge = selectedSize || selectedAge
+    addToWishlist(product, sizeOrAge, selectedColor)
   }
 
   const discountPercentage = product.compare_at_price > 0
@@ -91,12 +103,9 @@ export function ProductCard({ product }: ProductCardProps) {
                   size="icon"
                   variant="secondary"
                   className="h-8 w-8 bg-background border border-border hover:border-primary rounded-none"
-                  onClick={(e) => {
-                    e.preventDefault()
-                    setIsLiked(!isLiked)
-                  }}
+                  onClick={handleToggleWishlist}
                 >
-                  <Heart className={`h-3 w-3 ${isLiked ? 'fill-primary text-primary' : 'text-text-muted'}`} />
+                  <Heart className={`h-3 w-3 ${isLiked ? 'fill-red-500 text-red-500' : 'text-text-muted'}`} />
                 </Button>
                 
                 <Button

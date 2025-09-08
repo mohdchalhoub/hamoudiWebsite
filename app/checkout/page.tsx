@@ -36,8 +36,7 @@ export default function CheckoutPage() {
 
   const totalPrice = getTotalPrice()
   const shipping = totalPrice > 50 ? 0 : 9.99
-  const tax = totalPrice * 0.08
-  const finalTotal = totalPrice + shipping + tax
+  const finalTotal = totalPrice + shipping
 
   if (items.length === 0) {
     return (
@@ -56,17 +55,77 @@ export default function CheckoutPage() {
     )
   }
 
+  const validateForm = (): string | null => {
+    // Validate required fields
+    if (!formData.name.trim()) return 'Name is required'
+    if (!formData.email.trim()) return 'Email is required'
+    if (!formData.phone.trim()) return 'Phone number is required'
+    if (!formData.address.trim()) return 'Delivery address is required'
+
+    // Validate email format
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(formData.email)) return 'Please enter a valid email address'
+
+    // Validate phone number (basic validation)
+    const phoneRegex = /^[\+]?[\d\s\-\(\)]{10,}$/
+    if (!phoneRegex.test(formData.phone)) return 'Please enter a valid phone number'
+
+    return null
+  }
+
+  const sanitizeInput = (input: string): string => {
+    return input.trim().replace(/[<>]/g, '')
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    
+    // Validate form
+    const validationError = validateForm()
+    if (validationError) {
+      toast({
+        title: "Validation Error",
+        description: validationError,
+        variant: "destructive"
+      })
+      return
+    }
+
     setIsSubmitting(true)
 
     try {
-      // Create order
+      // Transform CartItemWithProduct to CartItem format for Order
+      const transformedItems = items.map(item => ({
+        product: {
+          id: item.product?.id || '',
+          name: item.product?.name || '',
+          description: item.product?.description || '',
+          price: (item.product?.price || 0) + (item.variant?.price_adjustment || 0),
+          originalPrice: item.product?.compare_at_price || undefined,
+          images: item.product?.images || [],
+          category: item.product?.gender === 'boys' ? 'boys' as const : 'girls' as const,
+          season: item.product?.season === 'summer' ? 'summer' as const : 'winter' as const,
+          sizes: item.variant?.size ? [item.variant.size] : [],
+          colors: item.variant?.color ? [item.variant.color] : [],
+          inStock: true,
+          featured: item.product?.is_featured || false,
+        },
+        quantity: item.quantity,
+        selectedSize: item.variant?.size || item.variant?.age_range || 'One Size',
+        selectedColor: item.variant?.color || 'Default',
+      }))
+
+      // Create order with sanitized customer info
       const order: Order = {
         id: `order-${Date.now()}`,
-        items,
+        items: transformedItems,
         total: finalTotal,
-        customerInfo: formData,
+        customerInfo: {
+          name: sanitizeInput(formData.name),
+          email: sanitizeInput(formData.email),
+          phone: sanitizeInput(formData.phone),
+          address: sanitizeInput(formData.address),
+        },
         status: "pending",
         createdAt: new Date(),
       }
@@ -81,7 +140,7 @@ export default function CheckoutPage() {
         if (confirmationSent) {
           toast({
             title: "Order confirmed!",
-            description: "Confirmation email sent to " + formData.email,
+            description: "Email client opened to send order details to mohammad.hamad@hotmail.com",
           })
         }
       } else {
@@ -89,7 +148,7 @@ export default function CheckoutPage() {
         if (confirmationSent) {
           toast({
             title: "Order confirmed!",
-            description: "WhatsApp confirmation sent to " + formData.phone,
+            description: "WhatsApp opened to send order details to store owner",
           })
         }
       }
@@ -239,33 +298,39 @@ export default function CheckoutPage() {
                 <CardTitle>Order Summary</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
-                {items.map((item) => (
-                  <div key={`${item.product.id}-${item.selectedSize}-${item.selectedColor}`} className="flex gap-3">
-                    <div className="relative w-16 h-16 rounded-md overflow-hidden flex-shrink-0">
-                      <Image
-                        src={item.product.image_url || "/placeholder.svg"}
-                        alt={item.product.name}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="flex-1">
-                      <h4 className="font-medium text-sm">{item.product.name}</h4>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
-                        <Badge variant="outline" className="text-xs px-1 py-0">
-                          {item.selectedSize}
-                        </Badge>
-                        <Badge variant="outline" className="text-xs px-1 py-0">
-                          {item.selectedColor}
-                        </Badge>
-                        <span>Qty: {item.quantity}</span>
+                {items.map((item) => {
+                  const sizeOrAge = item.variant?.size || item.variant?.age_range || 'One Size'
+                  const color = item.variant?.color || 'Default'
+                  return (
+                    <div key={`${item.product?.id}-${sizeOrAge}-${color}`} className="flex gap-3">
+                      <div className="relative w-16 h-16 rounded-md overflow-hidden flex-shrink-0">
+                        <Image
+                          src={item.product?.images?.[0] || "/placeholder.svg"}
+                          alt={item.product?.name || 'Product'}
+                          fill
+                          className="object-cover"
+                        />
                       </div>
-                      <div className="text-sm font-semibold mt-1">
-                        ${(item.product.price * item.quantity).toFixed(2)}
+                      <div className="flex-1">
+                        <h4 className="font-medium text-sm">{item.product?.name}</h4>
+                        <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+                          <Badge variant="outline" className="text-xs px-1 py-0">
+                            {item.variant?.size ? item.variant.size : 
+                             item.variant?.age_range ? `${item.variant.age_range} years` : 
+                             'One Size'}
+                          </Badge>
+                          <Badge variant="outline" className="text-xs px-1 py-0">
+                            {item.variant?.color || 'Default'}
+                          </Badge>
+                          <span>Qty: {item.quantity}</span>
+                        </div>
+                        <div className="text-sm font-semibold mt-1">
+                          ${(((item.product?.price || 0) + (item.variant?.price_adjustment || 0)) * item.quantity).toFixed(2)}
+                        </div>
                       </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
                 <Separator />
                 <div className="space-y-2">
                   <div className="flex justify-between text-sm">
@@ -275,10 +340,6 @@ export default function CheckoutPage() {
                   <div className="flex justify-between text-sm">
                     <span>Shipping</span>
                     <span>{shipping === 0 ? "FREE" : `$${shipping.toFixed(2)}`}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span>Tax</span>
-                    <span>${tax.toFixed(2)}</span>
                   </div>
                   <Separator />
                   <div className="flex justify-between text-lg font-bold">

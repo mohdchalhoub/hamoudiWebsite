@@ -17,6 +17,24 @@ export function CartDrawer() {
   const totalItems = getTotalItems()
   const totalPrice = getTotalPrice()
 
+  // Debug logging
+  console.log('CartDrawer Debug:', {
+    itemsCount: items.length,
+    totalItems,
+    totalPrice,
+    items: items.map(item => ({
+      id: item.id,
+      productId: item.product_id,
+      quantity: item.quantity,
+      variant: item.variant ? {
+        size: item.variant.size,
+        age_range: item.variant.age_range,
+        color: item.variant.color,
+        price_adjustment: item.variant.price_adjustment
+      } : null
+    }))
+  })
+
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
       <SheetTrigger asChild>
@@ -45,76 +63,130 @@ export function CartDrawer() {
             </div>
           ) : (
             <div className="space-y-4">
-              {items.map((item, index) => (
-                <div key={`${item.product.id}-${item.selectedSize}-${item.selectedColor}`} className="space-y-3">
-                  <div className="flex gap-3">
-                    <div className="relative w-16 h-16 rounded-md overflow-hidden flex-shrink-0">
-                      <Image
-                        src={item.product.image_url || "/placeholder.svg"}
-                        alt={item.product.name}
-                        fill
-                        className="object-cover"
-                      />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h4 className="font-medium text-sm line-clamp-2">{item.product.name}</h4>
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
-                        <span>Size: {item.selectedSize}</span>
-                        <span>•</span>
-                        <span>Color: {item.selectedColor}</span>
+              {items.map((item, index) => {
+                const sizeOrAge = item.variant?.size || item.variant?.age_range || 'One Size'
+                const color = item.variant?.color || 'Default'
+                const unitPrice = (item.product?.price || 0) + (item.variant?.price_adjustment || 0)
+                const totalPrice = unitPrice * item.quantity
+                
+                return (
+                  <div key={`${item.product?.id}-${sizeOrAge}-${color}`} className="space-y-3">
+                    <div className="flex gap-3">
+                      <div className="relative w-16 h-16 rounded-md overflow-hidden flex-shrink-0">
+                        <Image
+                          src={item.product?.images?.[0] || "/placeholder.svg"}
+                          alt={item.product?.name || 'Product'}
+                          fill
+                          className="object-cover"
+                        />
                       </div>
-                      <div className="flex items-center justify-between mt-2">
-                        <span className="font-semibold text-sm">${item.product.price}</span>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1 min-w-0">
+                            <h4 className="font-medium text-sm line-clamp-2">{item.product?.name}</h4>
+                            <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
+                              <Badge variant="outline" className="text-xs px-1 py-0">
+                                {item.variant?.size ? item.variant.size : 
+                                 item.variant?.age_range ? `${item.variant.age_range} years` : 
+                                 'One Size'}
+                              </Badge>
+                              <Badge variant="outline" className="text-xs px-1 py-0">
+                                {item.variant?.color || 'Default'}
+                              </Badge>
+                            </div>
+                            <div className="mt-2">
+                              <span className="font-semibold text-sm">${unitPrice.toFixed(2)} each</span>
+                            </div>
+                          </div>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-6 w-6 text-muted-foreground hover:text-destructive"
+                            onClick={() => {
+                              console.log('Remove item clicked:', {
+                                productId: item.product?.id || '',
+                                sizeOrAge,
+                                color,
+                                itemId: item.id
+                              })
+                              removeItem(item.product?.id || '', sizeOrAge, color)
+                            }}
+                          >
+                            <X className="h-3 w-3" />
+                          </Button>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
                         <Button
-                          variant="ghost"
+                          variant="outline"
                           size="icon"
-                          className="h-6 w-6"
-                          onClick={() => removeItem(item.product.id, item.selectedSize, item.selectedColor)}
+                          className="h-7 w-7 bg-transparent hover:bg-muted"
+                          onClick={() => {
+                            console.log('Decrement clicked:', {
+                              productId: item.product?.id || '',
+                              sizeOrAge,
+                              color,
+                              currentQuantity: item.quantity,
+                              newQuantity: item.quantity - 1,
+                              itemId: item.id
+                            })
+                            updateQuantity(item.product?.id || '', sizeOrAge, color, item.quantity - 1)
+                          }}
+                          disabled={item.quantity <= 1}
                         >
-                          <X className="h-3 w-3" />
+                          <Minus className="h-3 w-3" />
+                        </Button>
+                        <span className="text-sm font-medium min-w-[2rem] text-center">{item.quantity}</span>
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          className="h-7 w-7 bg-transparent hover:bg-muted"
+                          onClick={() => {
+                            console.log('Increment clicked:', {
+                              productId: item.product?.id || '',
+                              sizeOrAge,
+                              color,
+                              currentQuantity: item.quantity,
+                              newQuantity: item.quantity + 1,
+                              itemId: item.id
+                            })
+                            updateQuantity(item.product?.id || '', sizeOrAge, color, item.quantity + 1)
+                          }}
+                        >
+                          <Plus className="h-3 w-3" />
                         </Button>
                       </div>
+                      <span className="font-semibold text-sm">${totalPrice.toFixed(2)}</span>
                     </div>
+                    {index < items.length - 1 && <Separator />}
                   </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-7 w-7 bg-transparent"
-                        onClick={() =>
-                          updateQuantity(item.product.id, item.selectedSize, item.selectedColor, item.quantity - 1)
-                        }
-                        disabled={item.quantity <= 1}
-                      >
-                        <Minus className="h-3 w-3" />
-                      </Button>
-                      <span className="text-sm font-medium min-w-[2rem] text-center">{item.quantity}</span>
-                      <Button
-                        variant="outline"
-                        size="icon"
-                        className="h-7 w-7 bg-transparent"
-                        onClick={() =>
-                          updateQuantity(item.product.id, item.selectedSize, item.selectedColor, item.quantity + 1)
-                        }
-                      >
-                        <Plus className="h-3 w-3" />
-                      </Button>
-                    </div>
-                    <span className="font-semibold text-sm">${(item.product.price * item.quantity).toFixed(2)}</span>
-                  </div>
-                  {index < items.length - 1 && <Separator />}
-                </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </div>
 
         {items.length > 0 && (
           <div className="border-t pt-4 space-y-4">
-            <div className="flex justify-between items-center">
-              <span className="text-lg font-semibold">Total</span>
-              <span className="text-lg font-bold">${totalPrice.toFixed(2)}</span>
+            <div className="space-y-2">
+              <div className="flex justify-between items-center text-sm">
+                <span>Subtotal ({totalItems} items)</span>
+                <span>${totalPrice.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between items-center text-sm">
+                <span>Shipping</span>
+                <span>{totalPrice > 50 ? "FREE" : "$9.99"}</span>
+              </div>
+              {totalPrice > 50 && (
+                <p className="text-xs text-green-600">🎉 Free shipping on orders over $50!</p>
+              )}
+              <Separator />
+              <div className="flex justify-between items-center">
+                <span className="text-lg font-semibold">Total</span>
+                <span className="text-lg font-bold">${(totalPrice + (totalPrice > 50 ? 0 : 9.99)).toFixed(2)}</span>
+              </div>
             </div>
             <div className="space-y-2">
               <Link href="/cart" onClick={() => setIsOpen(false)}>

@@ -7,23 +7,34 @@ export interface EmailTemplate {
 }
 
 export class EmailService {
-  // Mock email service - in production, this would use SendGrid, Nodemailer, etc.
   static async sendOrderConfirmation(order: Order): Promise<boolean> {
     try {
-      const template = this.generateOrderConfirmationTemplate(order)
+      console.log("Opening email client for order to mohammad.hamad@hotmail.com")
 
-      // Mock API call - replace with actual email service
-      console.log("[v0] Sending email confirmation to:", order.customerInfo.email)
-      console.log("[v0] Email subject:", template.subject)
-      console.log("[v0] Email content:", template.text)
+      // Generate the same message format as WhatsApp
+      const message = this.generateOrderConfirmationMessage(order)
+      
+      // Create mailto link
+      const subject = `New Order - Order #${order.id}`
+      const encodedSubject = encodeURIComponent(subject)
+      const encodedBody = encodeURIComponent(message)
+      
+      const mailtoUrl = `mailto:mohammad.hamad@hotmail.com?subject=${encodedSubject}&body=${encodedBody}`
+      
+      console.log("Opening email client with mailto link:", {
+        recipient: "mohammad.hamad@hotmail.com",
+        subject: subject,
+        url: mailtoUrl
+      })
 
-      // Simulate API delay
-      await new Promise((resolve) => setTimeout(resolve, 1000))
+      // Open email client
+      if (typeof window !== 'undefined') {
+        window.open(mailtoUrl, '_self')
+      }
 
-      // Mock success response
       return true
     } catch (error) {
-      console.error("[v0] Email service error:", error)
+      console.error("Email service error:", error)
       return false
     }
   }
@@ -220,5 +231,61 @@ The KidsCorner Team
     `.trim()
 
     return { subject, html, text }
+  }
+
+  private static generateOrderConfirmationMessage(order: Order): string {
+    // Sanitize customer inputs (same as WhatsApp)
+    const customerName = this.sanitizeInput(order.customerInfo.name)
+    const customerPhone = this.sanitizeInput(order.customerInfo.phone)
+    const customerEmail = this.sanitizeInput(order.customerInfo.email)
+    const customerAddress = this.sanitizeInput(order.customerInfo.address)
+
+    const itemsList = order.items
+      .map((item) => {
+        const productName = this.sanitizeInput(item.product.name)
+        const selectedSize = this.sanitizeInput(item.selectedSize)
+        const selectedColor = this.sanitizeInput(item.selectedColor)
+        const unitPrice = item.product.price.toFixed(2)
+        const lineTotal = (item.product.price * item.quantity).toFixed(2)
+        
+        return `• ${item.quantity}x ${productName} (${selectedSize}, ${selectedColor}) - Unit: $${unitPrice} - Total: $${lineTotal}`
+      })
+      .join("\n")
+
+    return `
+🛍️ NEW ORDER - KidsCorner
+
+📋 Order Reference: ${order.id}
+📅 Date: ${new Date(order.createdAt).toLocaleDateString()}
+
+👤 Customer Details:
+Name: ${customerName}
+Phone: ${customerPhone}
+Email: ${customerEmail}
+Address: ${customerAddress}
+
+🛒 Order Items:
+${itemsList}
+
+💰 Order Summary:
+Subtotal: $${order.total.toFixed(2)}
+Total: $${order.total.toFixed(2)}
+
+Please process this order and contact the customer for delivery arrangements.
+
+KidsCorner Order Management 👶👧👦
+    `.trim()
+  }
+
+  private static sanitizeInput(input: string): string {
+    if (!input || typeof input !== 'string') return ''
+    
+    // Remove potentially harmful characters and scripts
+    return input
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '') // Remove script tags
+      .replace(/[<>]/g, '') // Remove < and >
+      .replace(/javascript:/gi, '') // Remove javascript: protocol
+      .replace(/on\w+\s*=/gi, '') // Remove event handlers
+      .trim()
   }
 }

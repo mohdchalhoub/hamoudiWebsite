@@ -5,6 +5,7 @@ import { useState, useEffect } from "react"
 // Removed framer-motion imports to use CSS animations instead
 import { Button } from "@/components/ui/button"
 import { CartDrawer } from "./cart-drawer"
+import { WishlistDrawer } from "./wishlist-drawer"
 import { SearchBar } from "./search-bar"
 import { Menu, Heart, X } from "lucide-react"
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
@@ -77,16 +78,6 @@ export function Header({ hasSaleProducts = false }: HeaderProps) {
 
           {/* Actions */}
           <div className="flex items-center space-x-2 animate-fade-in-right" style={{ animationDelay: '0.5s' }}>
-            <div className="hover:scale-110 hover:rotate-5 transition-all duration-500">
-              <Button
-                variant="ghost"
-                size="icon"
-                className="hidden sm:flex hover:text-primary text-text-muted"
-              >
-                <Heart className="h-4 w-4" />
-              </Button>
-            </div>
-            
             {/* On Sale Button */}
             {hasSaleProducts && (
               <div className="hover:scale-105 transition-transform duration-500">
@@ -107,8 +98,13 @@ export function Header({ hasSaleProducts = false }: HeaderProps) {
               <SearchBar />
             </div>
             
-            <div className="hover:scale-105 transition-transform duration-500">
-              <CartDrawer />
+            <div className="flex items-center gap-2">
+              <div className="hover:scale-105 transition-transform duration-500">
+                <WishlistDrawer />
+              </div>
+              <div className="hover:scale-105 transition-transform duration-500">
+                <CartDrawer />
+              </div>
             </div>
 
             {/* Mobile Menu */}

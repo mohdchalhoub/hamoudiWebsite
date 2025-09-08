@@ -100,7 +100,7 @@ export function OrderConfirmationClient({ orderId }: OrderConfirmationClientProp
             <div key={`${item.product.id}-${item.selectedSize}-${item.selectedColor}`} className="flex gap-3">
               <div className="relative w-16 h-16 rounded-md overflow-hidden flex-shrink-0">
                 <Image
-                  src={item.product.image_url || "/placeholder.svg"}
+                  src={item.product.images?.[0] || "/placeholder.svg"}
                   alt={item.product.name}
                   fill
                   className="object-cover"

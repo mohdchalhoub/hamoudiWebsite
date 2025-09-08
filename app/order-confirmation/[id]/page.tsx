@@ -26,7 +26,7 @@ export default function OrderConfirmationPage({ params }: OrderConfirmationPageP
             We'll send you updates about your order via your selected confirmation method.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Link href="/products">
+            <Link href="/">
               <Button variant="outline">Continue Shopping</Button>
             </Link>
             <Link href="/">
