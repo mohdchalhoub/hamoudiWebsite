@@ -7,6 +7,7 @@ import { MobileProductPagination } from "@/components/mobile-product-pagination"
 import { ProductFilters } from "@/components/product-filters"
 import { AnimatedSection } from "@/components/animated-section"
 import { SectionHeader } from "@/components/section-header"
+import { PageLoading, ProductGridSkeleton } from "@/components/page-loading"
 import { getProducts } from "@/lib/database"
 import type { ProductWithDetails } from "@/lib/database.types"
 
@@ -43,11 +44,7 @@ export default function BoysPage() {
     return (
       <div className="min-h-screen">
         <ServerHeader />
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center">
-            <p className="text-text-muted">Loading products...</p>
-          </div>
-        </div>
+        <PageLoading message="Loading Boys Collection..." />
         <Footer />
       </div>
     )

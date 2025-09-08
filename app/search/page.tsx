@@ -6,6 +6,7 @@ import { ServerHeader } from "@/components/server-header"
 import { Footer } from "@/components/footer"
 import { MobileProductPagination } from "@/components/mobile-product-pagination"
 import { AnimatedSection } from "@/components/animated-section"
+import { PageLoading } from "@/components/page-loading"
 import { getProducts, getAllCategories } from "@/lib/database"
 import type { ProductWithDetails } from "@/lib/database.types"
 import { Search, AlertTriangle } from "lucide-react"
@@ -162,12 +163,7 @@ export default function SearchPage() {
     return (
       <div className="min-h-screen">
         <ServerHeader />
-        <div className="container mx-auto px-4 py-8">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
-            <p className="text-text-muted">Searching...</p>
-          </div>
-        </div>
+        <PageLoading message="Searching Products..." />
         <Footer />
       </div>
     )
