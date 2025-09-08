@@ -1,0 +1,5 @@
+[33m170a634[m[33m ([m[1;36mHEAD -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m fix: Correct nodemailer method name from createTransporter to createTransport
+[33md6189d1[m fix: Update pnpm-lock.yaml for nodemailer dependency
+[33m9d2d6d1[m feat: Add complete Wishlist/Favorites feature with cart integration
+[33mb380579[m Fix compare at price display to hide when value is 0
+[33m5961078[m Add crossed-out original price display in product details
