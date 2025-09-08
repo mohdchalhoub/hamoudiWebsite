@@ -42,6 +42,7 @@ export function ProductCard({ product }: ProductCardProps) {
     const sizeOrAge = selectedSize || selectedAge
     if (sizeOrAge && selectedColor) {
       await addItem(product, sizeOrAge, selectedColor)
+    }
   }
 
   const handleToggleWishlist = (e: React.MouseEvent) => {
