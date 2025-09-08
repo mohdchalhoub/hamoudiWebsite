@@ -17,15 +17,42 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 export default async function HomePage() {
-  // Fetch products from database with cache busting - using sequential queries to avoid connection issues
+  // Fetch products from database with error handling and fallbacks
   const cacheBust = Date.now()
   
-  // Use sequential queries instead of Promise.all to avoid connection issues
-  const featuredProducts = await getProducts({ featured: true, active: true, limit: 8, _cacheBust: cacheBust })
-  const boysProducts = await getProducts({ gender: 'boys', active: true, limit: 6, _cacheBust: cacheBust })
-  const girlsProducts = await getProducts({ gender: 'girls', active: true, limit: 6, _cacheBust: cacheBust })
-  const onSaleProducts = await getProducts({ on_sale: true, active: true, limit: 8, _cacheBust: cacheBust })
+  // Helper function to safely fetch products with retry logic
+  const safeGetProducts = async (filters: any, retries = 3): Promise<any[]> => {
+    for (let i = 0; i < retries; i++) {
+      try {
+        const products = await getProducts(filters)
+        return products || []
+      } catch (error) {
+        console.warn(`Attempt ${i + 1} failed for products:`, error)
+        if (i === retries - 1) {
+          console.error('All retry attempts failed, returning empty array')
+          return []
+        }
+        // Wait before retrying
+        await new Promise(resolve => setTimeout(resolve, 1000 * (i + 1)))
+      }
+    }
+    return []
+  }
   
+  // Fetch products with error handling and small delays between requests
+  const featuredProducts = await safeGetProducts({ featured: true, active: true, limit: 8, _cacheBust: cacheBust })
+  await new Promise(resolve => setTimeout(resolve, 100)) // Small delay
+  
+  const boysProducts = await safeGetProducts({ gender: 'boys', active: true, limit: 6, _cacheBust: cacheBust })
+  await new Promise(resolve => setTimeout(resolve, 100)) // Small delay
+  
+  const girlsProducts = await safeGetProducts({ gender: 'girls', active: true, limit: 6, _cacheBust: cacheBust })
+  await new Promise(resolve => setTimeout(resolve, 100)) // Small delay
+  
+  const onSaleProducts = await safeGetProducts({ on_sale: true, active: true, limit: 8, _cacheBust: cacheBust })
+  
+  // Check if we have any products at all
+  const hasAnyProducts = featuredProducts.length > 0 || boysProducts.length > 0 || girlsProducts.length > 0 || onSaleProducts.length > 0
 
   return (
     <PageTransition>
@@ -106,7 +133,14 @@ export default async function HomePage() {
               />
             </EnhancedAnimatedSection>
             
-            <Enhanced3DCarousel products={featuredProducts} title="Featured Products" />
+            {hasAnyProducts ? (
+              <Enhanced3DCarousel products={featuredProducts} title="Featured Products" />
+            ) : (
+              <div className="text-center py-12">
+                <h3 className="text-lg font-semibold mb-2">Loading Products...</h3>
+                <p className="text-text-muted">Please wait while we load our amazing collection for you.</p>
+              </div>
+            )}
           </div>
         </EnhancedAnimatedSection>
 
@@ -144,7 +178,13 @@ export default async function HomePage() {
                 </Button>
               </Link>
             </div>
-            <Enhanced3DCarousel products={boysProducts} />
+            {boysProducts.length > 0 ? (
+              <Enhanced3DCarousel products={boysProducts} />
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-text-muted">Boys collection coming soon...</p>
+              </div>
+            )}
           </div>
         </EnhancedAnimatedSection>
 
@@ -165,7 +205,13 @@ export default async function HomePage() {
                 </Button>
               </Link>
             </div>
-            <Enhanced3DCarousel products={girlsProducts} />
+            {girlsProducts.length > 0 ? (
+              <Enhanced3DCarousel products={girlsProducts} />
+            ) : (
+              <div className="text-center py-8">
+                <p className="text-text-muted">Girls collection coming soon...</p>
+              </div>
+            )}
           </div>
         </EnhancedAnimatedSection>
 
