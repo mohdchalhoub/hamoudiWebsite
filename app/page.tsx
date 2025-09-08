@@ -7,9 +7,7 @@ import { ServerHeader } from "@/components/server-header"
 import { Footer } from "@/components/footer"
 import { EnhancedAnimatedSection } from "@/components/enhanced-animated-section"
 import { PageTransition } from "@/components/page-transition"
-import { Product3DCarousel } from "@/components/product-3d-carousel"
-import { DesktopProductGrid } from "@/components/desktop-product-grid"
-import { MobileProductCarousel } from "@/components/mobile-product-carousel"
+import { Enhanced3DCarousel } from "@/components/enhanced-3d-carousel"
 import { SectionHeader } from "@/components/section-header"
 import { getProducts } from "@/lib/database"
 import { ArrowRight, Shield, Truck, Heart, Sparkles, Star, Zap } from "lucide-react"
@@ -19,13 +17,13 @@ export const dynamic = 'force-dynamic'
 export const revalidate = 0
 
 export default async function HomePage() {
-  // Fetch products from database with cache busting
+  // Fetch products from database with cache busting - increased limits for carousel demo
   const cacheBust = Date.now()
   const [featuredProducts, boysProducts, girlsProducts, onSaleProducts] = await Promise.all([
-    getProducts({ featured: true, active: true, limit: 4, _cacheBust: cacheBust }),
-    getProducts({ gender: 'boys', active: true, limit: 2, _cacheBust: cacheBust }),
-    getProducts({ gender: 'girls', active: true, limit: 2, _cacheBust: cacheBust }),
-    getProducts({ on_sale: true, active: true, limit: 4, _cacheBust: cacheBust })
+    getProducts({ featured: true, active: true, limit: 8, _cacheBust: cacheBust }),
+    getProducts({ gender: 'boys', active: true, limit: 6, _cacheBust: cacheBust }),
+    getProducts({ gender: 'girls', active: true, limit: 6, _cacheBust: cacheBust }),
+    getProducts({ on_sale: true, active: true, limit: 8, _cacheBust: cacheBust })
   ])
   
 
@@ -108,7 +106,7 @@ export default async function HomePage() {
               />
             </EnhancedAnimatedSection>
             
-            <MobileProductCarousel products={featuredProducts} title="Featured Products" />
+            <Enhanced3DCarousel products={featuredProducts} title="Featured Products" />
           </div>
         </EnhancedAnimatedSection>
 
@@ -124,7 +122,7 @@ export default async function HomePage() {
                 />
               </EnhancedAnimatedSection>
               
-              <MobileProductCarousel products={onSaleProducts} title="On Sale Products" />
+              <Enhanced3DCarousel products={onSaleProducts} title="On Sale Products" />
             </div>
           </EnhancedAnimatedSection>
         )}
@@ -146,7 +144,7 @@ export default async function HomePage() {
                 </Button>
               </Link>
             </div>
-            <MobileProductCarousel products={boysProducts} />
+            <Enhanced3DCarousel products={boysProducts} />
           </div>
         </EnhancedAnimatedSection>
 
@@ -167,7 +165,7 @@ export default async function HomePage() {
                 </Button>
               </Link>
             </div>
-            <MobileProductCarousel products={girlsProducts} />
+            <Enhanced3DCarousel products={girlsProducts} />
           </div>
         </EnhancedAnimatedSection>
 
