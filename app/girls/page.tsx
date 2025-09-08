@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { ServerHeader } from "@/components/server-header"
 import { Footer } from "@/components/footer"
-import { MobileProductPagination } from "@/components/mobile-product-pagination"
+import { DesktopPaginatedGrid } from "@/components/desktop-paginated-grid"
 import { ProductFilters } from "@/components/product-filters"
 import { AnimatedSection } from "@/components/animated-section"
 import { SectionHeader } from "@/components/section-header"
@@ -82,7 +82,7 @@ export default function GirlsPage() {
           <p className="text-text-muted">Discover beautiful clothes designed for stylish girls</p>
         </AnimatedSection>
 
-        <MobileProductPagination products={filteredProducts} />
+        <DesktopPaginatedGrid products={filteredProducts} />
       </div>
 
       <Footer />
