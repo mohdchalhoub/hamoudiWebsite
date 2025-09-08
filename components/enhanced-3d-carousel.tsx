@@ -124,10 +124,8 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
         target.closest('button') || 
         target.closest('a') ||
         target.closest('[role="button"]')) {
-      console.log('Carousel: Ignoring mouse down on interactive element')
       return
     }
-    console.log('Carousel: Starting drag')
     setIsDragging(true)
     setStartX(e.clientX)
   }

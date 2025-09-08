@@ -41,20 +41,7 @@ export function ProductCard({ product }: ProductCardProps) {
     e.stopPropagation() // Prevent the Link from navigating
     const sizeOrAge = selectedSize || selectedAge
     if (sizeOrAge && selectedColor) {
-      console.log('Adding to cart:', { 
-        productId: product.id, 
-        productName: product.name, 
-        sizeOrAge, 
-        color: selectedColor 
-      })
       await addItem(product, sizeOrAge, selectedColor)
-    } else {
-      console.warn('Cannot add to cart: missing size/age or color', { 
-        selectedSize, 
-        selectedAge, 
-        selectedColor 
-      })
-    }
   }
 
   const handleToggleWishlist = (e: React.MouseEvent) => {
@@ -70,10 +57,8 @@ export function ProductCard({ product }: ProductCardProps) {
     if (target.closest('button') || target.closest('[data-product-card] button')) {
       e.preventDefault()
       e.stopPropagation()
-      console.log('Button click detected, preventing navigation')
       return
     }
-    console.log('Card click detected, allowing navigation to:', `/products/${product.id}`)
     // Allow the Link to handle navigation
   }
 

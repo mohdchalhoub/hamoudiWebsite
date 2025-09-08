@@ -17,23 +17,6 @@ export function CartDrawer() {
   const totalItems = getTotalItems()
   const totalPrice = getTotalPrice()
 
-  // Debug logging
-  console.log('CartDrawer Debug:', {
-    itemsCount: items.length,
-    totalItems,
-    totalPrice,
-    items: items.map(item => ({
-      id: item.id,
-      productId: item.product_id,
-      quantity: item.quantity,
-      variant: item.variant ? {
-        size: item.variant.size,
-        age_range: item.variant.age_range,
-        color: item.variant.color,
-        price_adjustment: item.variant.price_adjustment
-      } : null
-    }))
-  })
 
   return (
     <Sheet open={isOpen} onOpenChange={setIsOpen}>
