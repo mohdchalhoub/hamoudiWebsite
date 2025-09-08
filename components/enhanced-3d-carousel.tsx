@@ -81,6 +81,11 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
   }
 
   const handleTouchStart = (e: React.TouchEvent) => {
+    // Only start dragging if it's not a touch on a product card
+    const target = e.target as HTMLElement
+    if (target.closest('[data-product-card]')) {
+      return
+    }
     setIsDragging(true)
     setStartX(e.touches[0].clientX)
   }
@@ -110,6 +115,11 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
   }
 
   const handleMouseDown = (e: React.MouseEvent) => {
+    // Only start dragging if it's not a click on a product card
+    const target = e.target as HTMLElement
+    if (target.closest('[data-product-card]')) {
+      return
+    }
     setIsDragging(true)
     setStartX(e.clientX)
   }

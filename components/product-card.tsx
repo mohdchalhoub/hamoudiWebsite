@@ -64,6 +64,7 @@ export function ProductCard({ product }: ProductCardProps) {
     <div className="h-full animate-fade-in-up hover:-translate-y-3 transition-transform duration-500">
       <Link href={`/products/${product.id}`}>
         <Card 
+          data-product-card
           className="group cursor-pointer h-full border border-border overflow-hidden hover:border-primary transition-all duration-200 bg-background shadow-card rounded-card"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={() => setIsHovered(false)}
