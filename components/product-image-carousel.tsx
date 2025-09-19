@@ -6,14 +6,17 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ZoomIn, X, ChevronLeft, ChevronRight } from "lucide-react"
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { Navigation } from 'swiper/modules'
+import { Navigation, Pagination, Autoplay } from 'swiper/modules'
+import type { Swiper as SwiperType } from 'swiper'
 import Lightbox from "yet-another-react-lightbox"
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails"
 import Zoom from "yet-another-react-lightbox/plugins/zoom"
+import { useIsMobile } from "@/hooks/use-mobile"
 
 // Import Swiper styles
 import 'swiper/css'
 import 'swiper/css/navigation'
+import 'swiper/css/pagination'
 
 interface ProductImageCarouselProps {
   images: string[]
@@ -32,7 +35,9 @@ export function ProductImageCarousel({
 }: ProductImageCarouselProps) {
   const [isLightboxOpen, setIsLightboxOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
-  const swiperRef = useRef<any>(null)
+  const [isHovered, setIsHovered] = useState(false)
+  const swiperRef = useRef<SwiperType | null>(null)
+  const isMobile = useIsMobile()
 
   if (!images || images.length === 0) {
     return (
@@ -64,6 +69,28 @@ export function ProductImageCarousel({
     }
   }
 
+  const goToPrevious = () => {
+    if (swiperRef.current) {
+      swiperRef.current.slidePrev()
+    }
+  }
+
+  const goToNext = () => {
+    if (swiperRef.current) {
+      swiperRef.current.slideNext()
+    }
+  }
+
+  const handleImageClick = (index: number) => {
+    if (!isMobile) {
+      // On desktop, clicking the image advances to next image
+      goToNext()
+    } else {
+      // On mobile, clicking opens lightbox
+      openLightbox(index)
+    }
+  }
+
   // Prepare slides for lightbox
   const slides = images.map((image, index) => ({
     src: image,
@@ -73,20 +100,41 @@ export function ProductImageCarousel({
   return (
     <div className={`space-y-4 ${className}`}>
       {/* Main Image Carousel */}
-      <div className="relative">
+      <div 
+        className="relative group"
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+      >
         <Swiper
           ref={swiperRef}
-          modules={[Navigation]}
+          modules={[Navigation, Pagination]}
           navigation={{
             nextEl: '.swiper-button-next-custom',
             prevEl: '.swiper-button-prev-custom',
           }}
-          onSlideChange={(swiper) => setActiveIndex(swiper.activeIndex)}
+          pagination={{
+            clickable: true,
+            bulletClass: 'swiper-pagination-bullet-custom',
+            bulletActiveClass: 'swiper-pagination-bullet-active-custom',
+          }}
+          loop={images.length > 1}
+          spaceBetween={0}
+          slidesPerView={1}
+          centeredSlides={true}
+          onSlideChange={(swiper) => setActiveIndex(swiper.realIndex)}
+          onSwiper={(swiper) => {
+            swiperRef.current = swiper
+          }}
+          touchRatio={1}
+          threshold={5}
           className="rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-shadow duration-300"
         >
           {images.map((image, index) => (
             <SwiperSlide key={index}>
-              <div className="relative aspect-[3/4] cursor-pointer group" onClick={() => openLightbox(index)}>
+              <div 
+                className="relative aspect-[3/4] cursor-pointer group" 
+                onClick={() => handleImageClick(index)}
+              >
                 <Image
                   src={image}
                   alt={`${productName} - Image ${index + 1}`}
@@ -136,18 +184,43 @@ export function ProductImageCarousel({
             <Button
               variant="ghost"
               size="icon"
-              className="swiper-button-prev-custom absolute left-4 top-1/2 -translate-y-1/2 h-10 w-10 bg-white/90 hover:bg-white shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10"
+              className={`swiper-button-prev-custom absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 h-8 w-8 sm:h-10 sm:w-10 bg-white/90 hover:bg-white shadow-lg z-10 transition-all duration-300 ${
+                isMobile 
+                  ? 'opacity-100' 
+                  : isHovered 
+                    ? 'opacity-100' 
+                    : 'opacity-0'
+              }`}
+              onClick={(e) => {
+                e.stopPropagation()
+                goToPrevious()
+              }}
             >
-              <ChevronLeft className="h-5 w-5" />
+              <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
             <Button
               variant="ghost"
               size="icon"
-              className="swiper-button-next-custom absolute right-4 top-1/2 -translate-y-1/2 h-10 w-10 bg-white/90 hover:bg-white shadow-lg opacity-0 group-hover:opacity-100 transition-opacity z-10"
+              className={`swiper-button-next-custom absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 h-8 w-8 sm:h-10 sm:w-10 bg-white/90 hover:bg-white shadow-lg z-10 transition-all duration-300 ${
+                isMobile 
+                  ? 'opacity-100' 
+                  : isHovered 
+                    ? 'opacity-100' 
+                    : 'opacity-0'
+              }`}
+              onClick={(e) => {
+                e.stopPropagation()
+                goToNext()
+              }}
             >
-              <ChevronRight className="h-5 w-5" />
+              <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
           </>
+        )}
+
+        {/* Mobile Pagination Dots */}
+        {images.length > 1 && isMobile && (
+          <div className="swiper-pagination-custom absolute bottom-4 left-1/2 -translate-x-1/2 z-10"></div>
         )}
       </div>
 

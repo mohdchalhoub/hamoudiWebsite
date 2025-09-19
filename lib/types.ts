@@ -11,6 +11,7 @@ export interface Product {
   colors: string[]
   inStock: boolean
   featured?: boolean
+  product_code?: string
 }
 
 export interface CartItem {
@@ -18,6 +19,12 @@ export interface CartItem {
   quantity: number
   selectedSize: string
   selectedColor: string
+  productId?: string
+  variantId?: string
+  sku?: string
+  productCode?: string // The actual product code (6-digit)
+  variantCode?: string // The actual variant code (3-digit)
+  addedAt: number // Timestamp when item was added to cart
 }
 
 export interface Order {
@@ -26,7 +33,6 @@ export interface Order {
   total: number
   customerInfo: {
     name: string
-    email: string
     phone: string
     address: string
   }

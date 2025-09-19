@@ -8,6 +8,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { ShoppingCart, Plus, Minus, X, ArrowLeft } from "lucide-react"
+import { formatProductCode } from "@/lib/utils"
 
 export default function CartPage() {
   const { items, updateQuantity, removeItem, getTotalItems, getTotalPrice, clearCart } = useCart()
@@ -58,16 +59,16 @@ export default function CartPage() {
             </div>
 
             {items.map((item, index) => {
-              const sizeOrAge = item.variant?.size || item.variant?.age_range || 'One Size'
-              const color = item.variant?.color || 'Default'
+              const sizeOrAge = item.selectedSize
+              const color = item.selectedColor
               return (
-                <Card key={`${item.product?.id}-${sizeOrAge}-${color}`}>
+                <Card key={`${item.productId}-${sizeOrAge}-${color}`}>
                   <CardContent className="p-6">
                     <div className="flex gap-4">
                       <div className="relative w-24 h-24 rounded-lg overflow-hidden flex-shrink-0">
                         <Image
-                          src={item.product?.images?.[0] || "/placeholder.svg"}
-                          alt={item.product?.name || 'Product'}
+                          src={item.product.images?.[0] || "/placeholder.svg"}
+                          alt={item.product.name}
                           fill
                           className="object-cover"
                         />
@@ -75,24 +76,25 @@ export default function CartPage() {
                       <div className="flex-1">
                         <div className="flex justify-between items-start mb-2">
                           <div>
-                            <h3 className="font-semibold text-lg">{item.product?.name}</h3>
-                            <p className="text-muted-foreground text-sm">{item.product?.description}</p>
+                            <h3 className="font-semibold text-lg">{item.product.name}</h3>
+                            <p className="text-muted-foreground text-sm">{item.product.description}</p>
                           </div>
                           <Button
                             variant="ghost"
                             size="icon"
-                            onClick={() => removeItem(item.product?.id || '', sizeOrAge, color)}
+                            onClick={() => removeItem(item.productId || '', sizeOrAge, color)}
                           >
                             <X className="h-4 w-4" />
                           </Button>
                         </div>
                       <div className="flex items-center gap-4 mb-3">
                         <Badge variant="outline">
-                          {item.variant?.size ? `Size: ${item.variant.size}` : 
-                           item.variant?.age_range ? `Age: ${item.variant.age_range} years` : 
-                           'One Size'}
+                          Size: {sizeOrAge}
                         </Badge>
-                        <Badge variant="outline">Color: {item.variant?.color || 'Default'}</Badge>
+                        <Badge variant="outline">Color: {color}</Badge>
+                        <Badge variant="secondary" className="text-xs">
+                          Code: {formatProductCode(item.productCode || item.product.product_code, item.variantCode)}
+                        </Badge>
                       </div>
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
@@ -100,7 +102,7 @@ export default function CartPage() {
                             variant="outline"
                             size="icon"
                             onClick={() =>
-                              updateQuantity(item.product?.id || '', sizeOrAge, color, item.quantity - 1)
+                              updateQuantity(item.productId || '', sizeOrAge, color, item.quantity - 1)
                             }
                             disabled={item.quantity <= 1}
                           >
@@ -111,7 +113,7 @@ export default function CartPage() {
                             variant="outline"
                             size="icon"
                             onClick={() =>
-                              updateQuantity(item.product?.id || '', sizeOrAge, color, item.quantity + 1)
+                              updateQuantity(item.productId || '', sizeOrAge, color, item.quantity + 1)
                             }
                           >
                             <Plus className="h-4 w-4" />
@@ -119,10 +121,10 @@ export default function CartPage() {
                         </div>
                         <div className="text-right">
                           <div className="text-lg font-bold">
-                            ${(((item.product?.price || 0) + (item.variant?.price_adjustment || 0)) * item.quantity).toFixed(2)}
+                            ${(item.product.price * item.quantity).toFixed(2)}
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            ${((item.product?.price || 0) + (item.variant?.price_adjustment || 0)).toFixed(2)} each
+                            ${item.product.price.toFixed(2)} each
                           </div>
                         </div>
                       </div>

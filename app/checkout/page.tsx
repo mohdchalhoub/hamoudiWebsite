@@ -10,16 +10,78 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, CreditCard, Mail, MessageCircle } from "lucide-react"
+import { ArrowLeft, CreditCard } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import { orderStorage } from "@/lib/local-storage"
-import type { Order } from "@/lib/types"
-import { EmailService } from "@/lib/email-service"
+import type { Order, CartItem } from "@/lib/types"
 import { WhatsAppService } from "@/lib/whatsapp-service"
 import { useToast } from "@/hooks/use-toast"
+import { formatProductCode } from "@/lib/utils"
+
+// Country codes data
+const countryCodes = [
+  { code: "+961", country: "Lebanon", flag: "🇱🇧" },
+  { code: "+1", country: "United States", flag: "🇺🇸" },
+  { code: "+44", country: "United Kingdom", flag: "🇬🇧" },
+  { code: "+33", country: "France", flag: "🇫🇷" },
+  { code: "+49", country: "Germany", flag: "🇩🇪" },
+  { code: "+39", country: "Italy", flag: "🇮🇹" },
+  { code: "+34", country: "Spain", flag: "🇪🇸" },
+  { code: "+31", country: "Netherlands", flag: "🇳🇱" },
+  { code: "+32", country: "Belgium", flag: "🇧🇪" },
+  { code: "+41", country: "Switzerland", flag: "🇨🇭" },
+  { code: "+43", country: "Austria", flag: "🇦🇹" },
+  { code: "+45", country: "Denmark", flag: "🇩🇰" },
+  { code: "+46", country: "Sweden", flag: "🇸🇪" },
+  { code: "+47", country: "Norway", flag: "🇳🇴" },
+  { code: "+358", country: "Finland", flag: "🇫🇮" },
+  { code: "+351", country: "Portugal", flag: "🇵🇹" },
+  { code: "+30", country: "Greece", flag: "🇬🇷" },
+  { code: "+90", country: "Turkey", flag: "🇹🇷" },
+  { code: "+20", country: "Egypt", flag: "🇪🇬" },
+  { code: "+966", country: "Saudi Arabia", flag: "🇸🇦" },
+  { code: "+971", country: "UAE", flag: "🇦🇪" },
+  { code: "+965", country: "Kuwait", flag: "🇰🇼" },
+  { code: "+973", country: "Bahrain", flag: "🇧🇭" },
+  { code: "+974", country: "Qatar", flag: "🇶🇦" },
+  { code: "+968", country: "Oman", flag: "🇴🇲" },
+  { code: "+962", country: "Jordan", flag: "🇯🇴" },
+  { code: "+963", country: "Syria", flag: "🇸🇾" },
+  { code: "+964", country: "Iraq", flag: "🇮🇶" },
+  { code: "+93", country: "Afghanistan", flag: "🇦🇫" },
+  { code: "+98", country: "Iran", flag: "🇮🇷" },
+  { code: "+92", country: "Pakistan", flag: "🇵🇰" },
+  { code: "+91", country: "India", flag: "🇮🇳" },
+  { code: "+86", country: "China", flag: "🇨🇳" },
+  { code: "+81", country: "Japan", flag: "🇯🇵" },
+  { code: "+82", country: "South Korea", flag: "🇰🇷" },
+  { code: "+65", country: "Singapore", flag: "🇸🇬" },
+  { code: "+60", country: "Malaysia", flag: "🇲🇾" },
+  { code: "+66", country: "Thailand", flag: "🇹🇭" },
+  { code: "+63", country: "Philippines", flag: "🇵🇭" },
+  { code: "+61", country: "Australia", flag: "🇦🇺" },
+  { code: "+64", country: "New Zealand", flag: "🇳🇿" },
+  { code: "+55", country: "Brazil", flag: "🇧🇷" },
+  { code: "+54", country: "Argentina", flag: "🇦🇷" },
+  { code: "+56", country: "Chile", flag: "🇨🇱" },
+  { code: "+57", country: "Colombia", flag: "🇨🇴" },
+  { code: "+52", country: "Mexico", flag: "🇲🇽" },
+  { code: "+1", country: "Canada", flag: "🇨🇦" },
+  { code: "+27", country: "South Africa", flag: "🇿🇦" },
+  { code: "+234", country: "Nigeria", flag: "🇳🇬" },
+  { code: "+254", country: "Kenya", flag: "🇰🇪" },
+  { code: "+212", country: "Morocco", flag: "🇲🇦" },
+  { code: "+213", country: "Algeria", flag: "🇩🇿" },
+  { code: "+216", country: "Tunisia", flag: "🇹🇳" },
+  { code: "+218", country: "Libya", flag: "🇱🇾" },
+  { code: "+249", country: "Sudan", flag: "🇸🇩" },
+  { code: "+251", country: "Ethiopia", flag: "🇪🇹" },
+  { code: "+20", country: "Egypt", flag: "🇪🇬" },
+]
 
 export default function CheckoutPage() {
   const { items, getTotalPrice, clearCart } = useCart()
@@ -28,10 +90,9 @@ export default function CheckoutPage() {
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [formData, setFormData] = useState({
     name: "",
-    email: "",
-    phone: "",
+    countryCode: "+961",
+    mobileNumber: "",
     address: "",
-    paymentMethod: "email" as "email" | "whatsapp",
   })
 
   const totalPrice = getTotalPrice()
@@ -58,17 +119,14 @@ export default function CheckoutPage() {
   const validateForm = (): string | null => {
     // Validate required fields
     if (!formData.name.trim()) return 'Name is required'
-    if (!formData.email.trim()) return 'Email is required'
-    if (!formData.phone.trim()) return 'Phone number is required'
+    if (!formData.mobileNumber.trim()) return 'Mobile number is required'
     if (!formData.address.trim()) return 'Delivery address is required'
 
-    // Validate email format
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailRegex.test(formData.email)) return 'Please enter a valid email address'
-
-    // Validate phone number (basic validation)
-    const phoneRegex = /^[\+]?[\d\s\-\(\)]{10,}$/
-    if (!phoneRegex.test(formData.phone)) return 'Please enter a valid phone number'
+    // Validate Lebanese mobile number format (8 digits starting with 70, 71, 76, 78, 79, 81, 83, 84, 85, 86, 87, 88, 89)
+    const lebaneseMobileRegex = /^(7[016789]|8[1-9])\d{6}$/
+    if (!lebaneseMobileRegex.test(formData.mobileNumber)) {
+      return 'Please enter a valid Lebanese mobile number (8 digits starting with 70, 71, 76, 78, 79, 81, 83, 84, 85, 86, 87, 88, or 89)'
+    }
 
     return null
   }
@@ -94,25 +152,10 @@ export default function CheckoutPage() {
     setIsSubmitting(true)
 
     try {
-      // Transform CartItemWithProduct to CartItem format for Order
-      const transformedItems = items.map(item => ({
-        product: {
-          id: item.product?.id || '',
-          name: item.product?.name || '',
-          description: item.product?.description || '',
-          price: (item.product?.price || 0) + (item.variant?.price_adjustment || 0),
-          originalPrice: item.product?.compare_at_price || undefined,
-          images: item.product?.images || [],
-          category: item.product?.gender === 'boys' ? 'boys' as const : 'girls' as const,
-          season: item.product?.season === 'summer' ? 'summer' as const : 'winter' as const,
-          sizes: item.variant?.size ? [item.variant.size] : [],
-          colors: item.variant?.color ? [item.variant.color] : [],
-          inStock: true,
-          featured: item.product?.is_featured || false,
-        },
-        quantity: item.quantity,
-        selectedSize: item.variant?.size || item.variant?.age_range || 'One Size',
-        selectedColor: item.variant?.color || 'Default',
+      // Items are already in the correct CartItem format from local storage
+      const transformedItems: CartItem[] = items.map(item => ({
+        ...item,
+        addedAt: item.addedAt || Date.now() // Ensure timestamp exists
       }))
 
       // Create order with sanitized customer info
@@ -122,8 +165,7 @@ export default function CheckoutPage() {
         total: finalTotal,
         customerInfo: {
           name: sanitizeInput(formData.name),
-          email: sanitizeInput(formData.email),
-          phone: sanitizeInput(formData.phone),
+          phone: `${formData.countryCode}${sanitizeInput(formData.mobileNumber)}`,
           address: sanitizeInput(formData.address),
         },
         status: "pending",
@@ -133,30 +175,18 @@ export default function CheckoutPage() {
       // Save order
       orderStorage.add(order)
 
-      let confirmationSent = false
+      // Send order details via WhatsApp
+      const whatsappSent = await WhatsAppService.sendOrderConfirmation(order)
 
-      if (formData.paymentMethod === "email") {
-        confirmationSent = await EmailService.sendOrderConfirmation(order)
-        if (confirmationSent) {
-          toast({
-            title: "Order confirmed!",
-            description: "Email client opened to send order details to mohammad.hamad@hotmail.com",
-          })
-        }
+      if (whatsappSent) {
+        toast({
+          title: "Order confirmed!",
+          description: "Order details sent to WhatsApp. You'll be redirected to WhatsApp shortly.",
+        })
       } else {
-        confirmationSent = await WhatsAppService.sendOrderConfirmation(order)
-        if (confirmationSent) {
-          toast({
-            title: "Order confirmed!",
-            description: "WhatsApp opened to send order details to store owner",
-          })
-        }
-      }
-
-      if (!confirmationSent) {
         toast({
           title: "Order placed",
-          description: "Order saved but confirmation failed to send. We'll contact you soon.",
+          description: "Order saved but WhatsApp failed to open. We'll contact you soon.",
           variant: "destructive",
         })
       }
@@ -179,7 +209,28 @@ export default function CheckoutPage() {
   }
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value })
+    const { name, value } = e.target
+    
+    if (name === 'mobileNumber') {
+      // Remove any non-digit characters
+      let digitsOnly = value.replace(/\D/g, '')
+      
+      // Remove leading zero if present
+      if (digitsOnly.startsWith('0')) {
+        digitsOnly = digitsOnly.substring(1)
+      }
+      
+      // Limit to 8 digits (Lebanese mobile format)
+      digitsOnly = digitsOnly.slice(0, 8)
+      
+      setFormData({ ...formData, [name]: digitsOnly })
+    } else {
+      setFormData({ ...formData, [name]: value })
+    }
+  }
+
+  const handleCountryCodeChange = (value: string) => {
+    setFormData({ ...formData, countryCode: value })
   }
 
   return (
@@ -214,30 +265,39 @@ export default function CheckoutPage() {
                       placeholder="Enter your full name"
                     />
                   </div>
-                  <div>
-                    <Label htmlFor="phone">Phone Number *</Label>
-                    <Input
-                      id="phone"
-                      name="phone"
-                      type="tel"
-                      value={formData.phone}
-                      onChange={handleInputChange}
-                      required
-                      placeholder="Enter your phone number"
-                    />
+                  <div className="space-y-2">
+                    <Label>Phone Number *</Label>
+                    <div className="flex gap-2">
+                      <div className="w-32">
+                        <Select value={formData.countryCode} onValueChange={handleCountryCodeChange}>
+                          <SelectTrigger>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent className="max-h-60">
+                            {countryCodes.map((country) => (
+                              <SelectItem key={country.code} value={country.code}>
+                                <div className="flex items-center gap-2">
+                                  <span>{country.flag}</span>
+                                  <span>{country.code}</span>
+                                </div>
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="flex-1">
+                        <Input
+                          id="mobileNumber"
+                          name="mobileNumber"
+                          type="tel"
+                          value={formData.mobileNumber}
+                          onChange={handleInputChange}
+                          required
+                          placeholder="70 123 456"
+                        />
+                      </div>
+                    </div>
                   </div>
-                </div>
-                <div>
-                  <Label htmlFor="email">Email Address *</Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    required
-                    placeholder="Enter your email address"
-                  />
                 </div>
                 <div>
                   <Label htmlFor="address">Delivery Address *</Label>
@@ -254,41 +314,6 @@ export default function CheckoutPage() {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Order Confirmation Method</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  <button
-                    type="button"
-                    onClick={() => setFormData({ ...formData, paymentMethod: "email" })}
-                    className={`p-4 border-2 rounded-lg transition-colors ${
-                      formData.paymentMethod === "email"
-                        ? "border-primary bg-primary/10"
-                        : "border-border hover:border-primary/50"
-                    }`}
-                  >
-                    <Mail className="h-6 w-6 mx-auto mb-2" />
-                    <div className="text-sm font-medium">Email Confirmation</div>
-                    <div className="text-xs text-muted-foreground">Receive order details via email</div>
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setFormData({ ...formData, paymentMethod: "whatsapp" })}
-                    className={`p-4 border-2 rounded-lg transition-colors ${
-                      formData.paymentMethod === "whatsapp"
-                        ? "border-primary bg-primary/10"
-                        : "border-border hover:border-primary/50"
-                    }`}
-                  >
-                    <MessageCircle className="h-6 w-6 mx-auto mb-2" />
-                    <div className="text-sm font-medium">WhatsApp Confirmation</div>
-                    <div className="text-xs text-muted-foreground">Receive order details via WhatsApp</div>
-                  </button>
-                </div>
-              </CardContent>
-            </Card>
           </div>
 
           {/* Order Summary */}
@@ -299,33 +324,34 @@ export default function CheckoutPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {items.map((item) => {
-                  const sizeOrAge = item.variant?.size || item.variant?.age_range || 'One Size'
-                  const color = item.variant?.color || 'Default'
+                  const sizeOrAge = item.selectedSize
+                  const color = item.selectedColor
                   return (
-                    <div key={`${item.product?.id}-${sizeOrAge}-${color}`} className="flex gap-3">
+                    <div key={`${item.productId}-${sizeOrAge}-${color}`} className="flex gap-3">
                       <div className="relative w-16 h-16 rounded-md overflow-hidden flex-shrink-0">
                         <Image
-                          src={item.product?.images?.[0] || "/placeholder.svg"}
-                          alt={item.product?.name || 'Product'}
+                          src={item.product.images?.[0] || "/placeholder.svg"}
+                          alt={item.product.name}
                           fill
                           className="object-cover"
                         />
                       </div>
                       <div className="flex-1">
-                        <h4 className="font-medium text-sm">{item.product?.name}</h4>
+                        <h4 className="font-medium text-sm">{item.product.name}</h4>
                         <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
                           <Badge variant="outline" className="text-xs px-1 py-0">
-                            {item.variant?.size ? item.variant.size : 
-                             item.variant?.age_range ? `${item.variant.age_range} years` : 
-                             'One Size'}
+                            {sizeOrAge}
                           </Badge>
                           <Badge variant="outline" className="text-xs px-1 py-0">
-                            {item.variant?.color || 'Default'}
+                            {color}
                           </Badge>
                           <span>Qty: {item.quantity}</span>
                         </div>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          Code: {formatProductCode(item.productCode || item.product.product_code, item.variantCode)}
+                        </div>
                         <div className="text-sm font-semibold mt-1">
-                          ${(((item.product?.price || 0) + (item.variant?.price_adjustment || 0)) * item.quantity).toFixed(2)}
+                          ${(item.product.price * item.quantity).toFixed(2)}
                         </div>
                       </div>
                     </div>
@@ -355,15 +381,15 @@ export default function CheckoutPage() {
                 type="submit"
                 className="w-full"
                 size="lg"
-                disabled={isSubmitting || !formData.name || !formData.email || !formData.phone || !formData.address}
+                disabled={isSubmitting || !formData.name || !formData.mobileNumber || !formData.address}
               >
                 <CreditCard className="h-4 w-4 mr-2" />
-                {isSubmitting ? "Processing..." : "Place Order"}
+                {isSubmitting ? "Opening WhatsApp..." : "Place Order"}
               </Button>
             </form>
 
             <p className="text-xs text-muted-foreground text-center">
-              By placing your order, you agree to our terms and conditions. Payment will be collected upon delivery.
+              By placing your order, you agree to our terms and conditions. You'll be redirected to WhatsApp to complete your order. Payment will be collected upon delivery.
             </p>
           </div>
         </div>

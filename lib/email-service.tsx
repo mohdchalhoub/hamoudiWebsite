@@ -15,7 +15,7 @@ export class EmailService {
       const message = this.generateOrderConfirmationMessage(order)
       
       // Create mailto link
-      const subject = `New Order - Order #${order.id}`
+      const subject = `New Order - ${order.customerInfo.name}`
       const encodedSubject = encodeURIComponent(subject)
       const encodedBody = encodeURIComponent(message)
       

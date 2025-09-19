@@ -8,6 +8,7 @@ import { Separator } from "@/components/ui/separator"
 import { Mail, MessageCircle } from "lucide-react"
 import { orderStorage } from "@/lib/local-storage"
 import type { Order } from "@/lib/types"
+import { formatProductCode } from "@/lib/utils"
 
 interface OrderConfirmationClientProps {
   orderId: string
@@ -65,7 +66,6 @@ export function OrderConfirmationClient({ orderId }: OrderConfirmationClientProp
             <h4 className="font-semibold mb-2">Customer Information</h4>
             <div className="space-y-1 text-sm">
               <div>{order.customerInfo.name}</div>
-              <div>{order.customerInfo.email}</div>
               <div>{order.customerInfo.phone}</div>
               <div className="text-muted-foreground">{order.customerInfo.address}</div>
             </div>
@@ -74,17 +74,8 @@ export function OrderConfirmationClient({ orderId }: OrderConfirmationClientProp
           <div>
             <h4 className="font-semibold mb-2">Confirmation Method</h4>
             <div className="flex items-center gap-2">
-              {order.customerInfo.paymentMethod === "email" ? (
-                <>
-                  <Mail className="h-4 w-4" />
-                  <span className="text-sm">Email Confirmation</span>
-                </>
-              ) : (
-                <>
-                  <MessageCircle className="h-4 w-4" />
-                  <span className="text-sm">WhatsApp Confirmation</span>
-                </>
-              )}
+              <MessageCircle className="h-4 w-4" />
+              <span className="text-sm">WhatsApp Confirmation</span>
             </div>
           </div>
         </CardContent>
@@ -116,6 +107,9 @@ export function OrderConfirmationClient({ orderId }: OrderConfirmationClientProp
                     {item.selectedColor}
                   </Badge>
                   <span>Qty: {item.quantity}</span>
+                </div>
+                <div className="text-xs text-muted-foreground mt-1">
+                  Code: {formatProductCode(item.productCode || item.product.product_code, item.variantCode)}
                 </div>
                 <div className="text-sm font-semibold mt-1">${(item.product.price * item.quantity).toFixed(2)}</div>
               </div>

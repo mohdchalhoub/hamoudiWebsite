@@ -28,6 +28,31 @@
   font-weight: bold !important;
 }
 
+/* Custom Pagination Styles */
+.swiper-pagination-bullet-custom {
+  width: 8px !important;
+  height: 8px !important;
+  background: rgba(255, 255, 255, 0.5) !important;
+  border-radius: 50% !important;
+  margin: 0 4px !important;
+  transition: all 0.3s ease !important;
+  cursor: pointer !important;
+}
+
+.swiper-pagination-bullet-active-custom {
+  background: rgba(255, 255, 255, 1) !important;
+  transform: scale(1.2) !important;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.5) !important;
+}
+
+.swiper-pagination-custom {
+  position: absolute !important;
+  bottom: 16px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  z-index: 10 !important;
+}
+
 .thumbnail-swiper .swiper-slide {
   width: auto !important;
 }

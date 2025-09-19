@@ -51,7 +51,6 @@ export class WhatsAppService {
     // Sanitize customer inputs
     const customerName = this.sanitizeInput(order.customerInfo.name)
     const customerPhone = this.sanitizeInput(order.customerInfo.phone)
-    const customerEmail = this.sanitizeInput(order.customerInfo.email)
     const customerAddress = this.sanitizeInput(order.customerInfo.address)
 
     const itemsList = order.items
@@ -62,7 +61,19 @@ export class WhatsAppService {
         const unitPrice = item.product.price.toFixed(2)
         const lineTotal = (item.product.price * item.quantity).toFixed(2)
         
-        return `• ${item.quantity}x ${productName} (${selectedSize}, ${selectedColor}) - Unit: $${unitPrice} - Total: $${lineTotal}`
+        // Use the actual product code + variation code format
+        const productCode = item.productCode || item.product.product_code
+        const variationCode = item.variantCode || item.variant_code
+        
+        // Format: 123456-101 (product code + variation code)
+        let fullCode = 'N/A'
+        if (productCode && variationCode) {
+          fullCode = `${productCode}-${variationCode}`
+        } else if (productCode) {
+          fullCode = productCode
+        }
+        
+        return `• ${item.quantity}x [${fullCode}] ${productName} (${selectedSize}, ${selectedColor}) - Unit: $${unitPrice} - Total: $${lineTotal}`
       })
       .join("\n")
 
@@ -75,7 +86,6 @@ export class WhatsAppService {
 👤 *Customer Details:*
 Name: ${customerName}
 Phone: ${customerPhone}
-Email: ${customerEmail}
 Address: ${customerAddress}
 
 🛒 *Order Items:*
@@ -133,8 +143,8 @@ Questions? Reply to this message or call us at +1 (555) 123-4567
   }
 
   private static getOwnerPhoneNumber(): string {
-    // Get owner phone from environment variable or use fallback
-    const ownerPhone = process.env.NEXT_PUBLIC_OWNER_WHATSAPP || '+96171567228'
+    // Always use the specified owner phone number
+    const ownerPhone = '+96171567228'
     return this.sanitizePhoneNumber(ownerPhone)
   }
 

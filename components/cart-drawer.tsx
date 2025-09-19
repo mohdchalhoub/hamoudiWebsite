@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { ShoppingCart, Plus, Minus, X } from "lucide-react"
 import { Separator } from "@/components/ui/separator"
+import { formatProductCode } from "@/lib/utils"
 
 export function CartDrawer() {
   const { items, updateQuantity, removeItem, getTotalItems, getTotalPrice } = useCart()
@@ -47,18 +48,18 @@ export function CartDrawer() {
           ) : (
             <div className="space-y-4">
               {items.map((item, index) => {
-                const sizeOrAge = item.variant?.size || item.variant?.age_range || 'One Size'
-                const color = item.variant?.color || 'Default'
-                const unitPrice = (item.product?.price || 0) + (item.variant?.price_adjustment || 0)
+                const sizeOrAge = item.selectedSize
+                const color = item.selectedColor
+                const unitPrice = item.product.price
                 const totalPrice = unitPrice * item.quantity
                 
                 return (
-                  <div key={`${item.product?.id}-${sizeOrAge}-${color}`} className="space-y-3">
+                  <div key={`${item.productId}-${sizeOrAge}-${color}`} className="space-y-3">
                     <div className="flex gap-3">
                       <div className="relative w-16 h-16 rounded-md overflow-hidden flex-shrink-0">
                         <Image
-                          src={item.product?.images?.[0] || "/placeholder.svg"}
-                          alt={item.product?.name || 'Product'}
+                          src={item.product.images?.[0] || "/placeholder.svg"}
+                          alt={item.product.name}
                           fill
                           className="object-cover"
                         />
@@ -66,16 +67,17 @@ export function CartDrawer() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between">
                           <div className="flex-1 min-w-0">
-                            <h4 className="font-medium text-sm line-clamp-2">{item.product?.name}</h4>
+                            <h4 className="font-medium text-sm line-clamp-2">{item.product.name}</h4>
                             <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
                               <Badge variant="outline" className="text-xs px-1 py-0">
-                                {item.variant?.size ? item.variant.size : 
-                                 item.variant?.age_range ? `${item.variant.age_range} years` : 
-                                 'One Size'}
+                                {sizeOrAge}
                               </Badge>
                               <Badge variant="outline" className="text-xs px-1 py-0">
-                                {item.variant?.color || 'Default'}
+                                {color}
                               </Badge>
+                            </div>
+                            <div className="text-xs text-muted-foreground mt-1">
+                              Code: {formatProductCode(item.productCode || item.product.product_code, item.variantCode)}
                             </div>
                             <div className="mt-2">
                               <span className="font-semibold text-sm">${unitPrice.toFixed(2)} each</span>
@@ -87,12 +89,11 @@ export function CartDrawer() {
                             className="h-6 w-6 text-muted-foreground hover:text-destructive"
                             onClick={() => {
                               console.log('Remove item clicked:', {
-                                productId: item.product?.id || '',
+                                productId: item.productId || '',
                                 sizeOrAge,
-                                color,
-                                itemId: item.id
+                                color
                               })
-                              removeItem(item.product?.id || '', sizeOrAge, color)
+                              removeItem(item.productId || '', sizeOrAge, color)
                             }}
                           >
                             <X className="h-3 w-3" />
@@ -108,14 +109,13 @@ export function CartDrawer() {
                           className="h-7 w-7 bg-transparent hover:bg-muted"
                           onClick={() => {
                             console.log('Decrement clicked:', {
-                              productId: item.product?.id || '',
+                              productId: item.productId || '',
                               sizeOrAge,
                               color,
                               currentQuantity: item.quantity,
-                              newQuantity: item.quantity - 1,
-                              itemId: item.id
+                              newQuantity: item.quantity - 1
                             })
-                            updateQuantity(item.product?.id || '', sizeOrAge, color, item.quantity - 1)
+                            updateQuantity(item.productId || '', sizeOrAge, color, item.quantity - 1)
                           }}
                           disabled={item.quantity <= 1}
                         >
@@ -128,14 +128,13 @@ export function CartDrawer() {
                           className="h-7 w-7 bg-transparent hover:bg-muted"
                           onClick={() => {
                             console.log('Increment clicked:', {
-                              productId: item.product?.id || '',
+                              productId: item.productId || '',
                               sizeOrAge,
                               color,
                               currentQuantity: item.quantity,
-                              newQuantity: item.quantity + 1,
-                              itemId: item.id
+                              newQuantity: item.quantity + 1
                             })
-                            updateQuantity(item.product?.id || '', sizeOrAge, color, item.quantity + 1)
+                            updateQuantity(item.productId || '', sizeOrAge, color, item.quantity + 1)
                           }}
                         >
                           <Plus className="h-3 w-3" />

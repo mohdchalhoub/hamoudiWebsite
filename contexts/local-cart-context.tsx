@@ -6,7 +6,7 @@ import type { CartItem } from "@/lib/types"
 import { cartStorage } from "@/lib/local-storage"
 import { useToast } from "@/hooks/use-toast"
 
-interface CartContextType {
+interface LocalCartContextType {
   items: CartItem[]
   loading: boolean
   addItem: (product: any, sizeOrAge: string, color: string, quantity?: number) => void
@@ -19,9 +19,9 @@ interface CartContextType {
   refreshCart: () => void
 }
 
-const CartContext = createContext<CartContextType | undefined>(undefined)
+const LocalCartContext = createContext<LocalCartContextType | undefined>(undefined)
 
-export function CartProvider({ children }: { children: React.ReactNode }) {
+export function LocalCartProvider({ children }: { children: React.ReactNode }) {
   const [items, setItems] = useState<CartItem[]>([])
   const [loading, setLoading] = useState(false)
   const { toast } = useToast()
@@ -68,7 +68,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           colors: product.colors || [],
           inStock: product.inStock !== false,
           featured: product.featured || false,
-          product_code: product.product_code,
         },
         quantity,
         selectedSize: sizeOrAge,
@@ -76,8 +75,6 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         productId: product.id,
         variantId: product.variantId,
         sku: product.sku || product.id,
-        productCode: product.product_code,
-        variantCode: product.variant_code,
       }
 
       cartStorage.addItem(newItem)
@@ -154,7 +151,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <CartContext.Provider
+    <LocalCartContext.Provider
       value={{
         items,
         loading,
@@ -169,14 +166,14 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       }}
     >
       {children}
-    </CartContext.Provider>
+    </LocalCartContext.Provider>
   )
 }
 
-export function useCart() {
-  const context = useContext(CartContext)
+export function useLocalCart() {
+  const context = useContext(LocalCartContext)
   if (context === undefined) {
-    throw new Error("useCart must be used within a CartProvider")
+    throw new Error("useLocalCart must be used within a LocalCartProvider")
   }
   return context
 }

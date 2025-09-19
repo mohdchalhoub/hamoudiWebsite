@@ -108,7 +108,14 @@ export function ProductDetailClient({ product, onPriceChange }: ProductDetailCli
     try {
       const sizeOrAge = selectedSize || selectedAge
       if (sizeOrAge && selectedColor) {
-        await addItem(product, sizeOrAge, selectedColor, quantity)
+        // Create product object with variant information
+        const productWithVariant = {
+          ...product,
+          variantId: selectedVariant?.id,
+          variant_code: selectedVariant?.variant_code,
+          sku: selectedVariant?.sku
+        }
+        await addItem(productWithVariant, sizeOrAge, selectedColor, quantity)
         setQuantity(1) // Reset quantity after adding
       }
     } catch (error) {
