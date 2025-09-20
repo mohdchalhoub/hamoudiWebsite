@@ -96,11 +96,59 @@ export async function POST(request: NextRequest) {
     const shippingAmount = subtotal > 50 ? 0 : 9.99
     const totalAmount = subtotal + shippingAmount
     
+    // Create or find customer record
+    let customerId = null
+    try {
+      // Parse name into first and last name
+      const nameParts = sanitizedCustomerInfo.name.trim().split(' ')
+      const firstName = nameParts[0] || 'Customer'
+      const lastName = nameParts.slice(1).join(' ') || ''
+      
+      // Generate email from name and phone if not provided
+      const email = `${firstName.toLowerCase()}.${lastName.toLowerCase()}.${sanitizedCustomerInfo.phone.replace(/\+/g, '').slice(-4)}@customer.placeholder`.replace(/\.\./g, '.')
+      
+      // Check if customer already exists by phone
+      const { data: existingCustomer, error: findError } = await supabase
+        .from('customers')
+        .select('id')
+        .eq('phone', sanitizedCustomerInfo.phone)
+        .single()
+      
+      if (existingCustomer) {
+        customerId = existingCustomer.id
+        console.log('Found existing customer:', customerId)
+      } else {
+        // Create new customer
+        const { data: newCustomer, error: customerError } = await supabase
+          .from('customers')
+          .insert({
+            first_name: firstName,
+            last_name: lastName,
+            email: email,
+            phone: sanitizedCustomerInfo.phone,
+          })
+          .select('id')
+          .single()
+        
+        if (customerError) {
+          console.error('Customer creation error (non-critical):', customerError)
+          // Continue without customer_id - this is non-critical for order placement
+        } else {
+          customerId = newCustomer.id
+          console.log('Created new customer:', customerId)
+        }
+      }
+    } catch (error) {
+      console.error('Customer handling error (non-critical):', error)
+      // Continue without customer_id - order placement should not fail due to customer creation issues
+    }
+    
     // Create order in database
     const { data: order, error: orderError } = await supabase
       .from('orders')
       .insert({
         order_number: orderNumber,
+        customer_id: customerId, // Link to customer record
         email: 'no-email@placeholder.com', // Required field, using placeholder
         status: 'pending',
         payment_method: 'whatsapp',
@@ -115,7 +163,7 @@ export async function POST(request: NextRequest) {
           phone: sanitizedCustomerInfo.phone,
           address: sanitizedCustomerInfo.address
         },
-        notes: `WhatsApp order - Phone: ${sanitizedCustomerInfo.phone}`
+        notes: `WhatsApp order - Phone: ${sanitizedCustomerInfo.phone}${customerId ? ` - Customer ID: ${customerId}` : ''}`
       })
       .select()
       .single()

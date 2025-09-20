@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useSearchParams } from "next/navigation"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -414,10 +415,15 @@ function EditOrderModal({ order, isOpen, onClose, onSave, isUpdating }: {
 
 export default function AdminOrdersPage() {
   const { toast } = useToast()
+  const searchParams = useSearchParams()
   const [orders, setOrders] = useState<SupabaseOrder[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [statusFilter, setStatusFilter] = useState<string>("all")
   const [loading, setLoading] = useState(true)
+  
+  // Customer filtering from URL params
+  const customerFilter = searchParams.get('customer')
+  const phoneFilter = searchParams.get('phone')
   const [viewingOrder, setViewingOrder] = useState<SupabaseOrder | null>(null)
   const [editingOrder, setEditingOrder] = useState<SupabaseOrder | null>(null)
   const [deletingOrder, setDeletingOrder] = useState<SupabaseOrder | null>(null)
@@ -455,8 +461,15 @@ export default function AdminOrdersPage() {
       order.shipping_address.phone.toLowerCase().includes(searchTerm.toLowerCase())
 
     const matchesStatus = statusFilter === "all" || order.status === statusFilter
+    
+    // Customer filtering from URL params
+    const matchesCustomer = !customerFilter || 
+      order.shipping_address.name.toLowerCase() === customerFilter.toLowerCase()
+    
+    const matchesPhone = !phoneFilter || 
+      order.shipping_address.phone === phoneFilter
 
-    return matchesSearch && matchesStatus
+    return matchesSearch && matchesStatus && matchesCustomer && matchesPhone
   })
 
   const handleBulkNotification = async (method: "whatsapp") => {
@@ -621,7 +634,24 @@ export default function AdminOrdersPage() {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">Orders</h1>
-          <p className="text-muted-foreground">Manage customer orders and fulfillment</p>
+          <div className="flex items-center gap-2">
+            <p className="text-muted-foreground">Manage customer orders and fulfillment</p>
+            {(customerFilter || phoneFilter) && (
+              <div className="flex items-center gap-2">
+                <Badge variant="secondary" className="text-xs">
+                  Filtered by: {customerFilter} {phoneFilter && `(${phoneFilter})`}
+                </Badge>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => window.history.pushState({}, '', '/admin/orders')}
+                  className="h-6 w-6 p-0"
+                >
+                  <X className="h-3 w-3" />
+                </Button>
+              </div>
+            )}
+          </div>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={() => handleBulkNotification("whatsapp")}>

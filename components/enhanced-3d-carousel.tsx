@@ -1,13 +1,27 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { ProductCard } from "./product-card"
 import { Button } from "@/components/ui/button"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import type { ProductWithDetails } from "@/lib/database.types"
+import { ProductCard } from "@/components/product-card"
+
+interface Product {
+  id: string
+  name: string
+  description: string
+  price: number
+  originalPrice?: number
+  images: string[]
+  category: "boys" | "girls"
+  season: "summer" | "winter"
+  sizes: string[]
+  colors: string[]
+  inStock: boolean
+  featured: boolean
+}
 
 interface Enhanced3DCarouselProps {
-  products: ProductWithDetails[]
+  products: Product[]
   title?: string
 }
 
@@ -80,9 +94,10 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
     setCurrentIndex((prev) => (prev < totalSlides - 1 ? prev + 1 : 0))
   }
 
+  // Enhanced touch handling for mobile
   const handleTouchStart = (e: React.TouchEvent) => {
-    // Only start dragging if it's not a touch on a product card or any interactive element
     const target = e.target as HTMLElement
+    // Only start dragging if it's not a touch on a product card or any interactive element
     if (target.closest('[data-product-card]') || 
         target.closest('button') || 
         target.closest('a') ||
@@ -91,11 +106,13 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
     }
     setIsDragging(true)
     setStartX(e.touches[0].clientX)
+    setTranslateX(0)
   }
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDragging) return
     
+    e.preventDefault() // Prevent scrolling while dragging
     const currentX = e.touches[0].clientX
     const diffX = startX - currentX
     setTranslateX(diffX)
@@ -106,7 +123,9 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
     
     setIsDragging(false)
     
-    if (Math.abs(translateX) > 50) {
+    // Determine swipe direction and threshold
+    const threshold = 50
+    if (Math.abs(translateX) > threshold) {
       if (translateX > 0) {
         handleNext()
       } else {
@@ -117,8 +136,8 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
     setTranslateX(0)
   }
 
+  // Mouse drag support for desktop
   const handleMouseDown = (e: React.MouseEvent) => {
-    // Only start dragging if it's not a click on a product card or any interactive element
     const target = e.target as HTMLElement
     if (target.closest('[data-product-card]') || 
         target.closest('button') || 
@@ -128,6 +147,7 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
     }
     setIsDragging(true)
     setStartX(e.clientX)
+    setTranslateX(0)
   }
 
   const handleMouseMove = (e: React.MouseEvent) => {
@@ -143,7 +163,8 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
     
     setIsDragging(false)
     
-    if (Math.abs(translateX) > 50) {
+    const threshold = 50
+    if (Math.abs(translateX) > threshold) {
       if (translateX > 0) {
         handleNext()
       } else {
@@ -168,10 +189,39 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
       )}
       
       <div className="relative">
+        {/* External Navigation Arrows - Positioned outside the carousel */}
+        <div className="flex items-center justify-between mb-6">
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={handlePrev}
+            className="flex items-center gap-2 bg-background/95 backdrop-blur-sm border-2 border-border hover:border-primary hover:text-primary shadow-lg hover:shadow-xl transition-all duration-300 min-w-[120px]"
+          >
+            <ChevronLeft className="h-5 w-5" />
+            <span className="hidden sm:inline">Previous</span>
+          </Button>
+          
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground">
+              {currentIndex + 1} of {totalSlides} • {products.length} products
+            </p>
+          </div>
+          
+          <Button
+            variant="outline"
+            size="lg"
+            onClick={handleNext}
+            className="flex items-center gap-2 bg-background/95 backdrop-blur-sm border-2 border-border hover:border-primary hover:text-primary shadow-lg hover:shadow-xl transition-all duration-300 min-w-[120px]"
+          >
+            <span className="hidden sm:inline">Next</span>
+            <ChevronRight className="h-5 w-5" />
+          </Button>
+        </div>
+
         {/* Carousel Container */}
         <div
           ref={carouselRef}
-          className="relative overflow-hidden"
+          className="relative overflow-hidden rounded-lg"
           style={{ pointerEvents: 'auto' }}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
@@ -239,7 +289,7 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
                             zIndex,
                             transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
                             transformStyle: 'preserve-3d',
-                            pointerEvents: 'auto', // Ensure clicks work
+                            pointerEvents: 'auto',
                           }}
                         >
                           <div 
@@ -248,7 +298,7 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
                               transform: isActive ? 'translateY(-8px)' : 'translateY(0px)',
                               filter: isActive ? 'brightness(1.05)' : 'brightness(1)',
                               transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
-                              pointerEvents: 'auto', // Ensure clicks work
+                              pointerEvents: 'auto',
                             }}
                           >
                             <ProductCard product={product} />
@@ -262,33 +312,6 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
             })}
           </div>
         </div>
-
-        {/* Navigation Buttons */}
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={handlePrev}
-          className={`absolute top-1/2 -translate-y-1/2 z-30 bg-background/95 backdrop-blur-sm border border-border hover:border-primary hover:text-primary shadow-xl hover:shadow-2xl transition-all duration-300 ${
-            screenSize === 'desktop' 
-              ? 'left-4 h-12 w-12' 
-              : 'left-2 h-10 w-10'
-          }`}
-        >
-          <ChevronLeft className={`${screenSize === 'desktop' ? 'h-5 w-5' : 'h-4 w-4'}`} />
-        </Button>
-        
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={handleNext}
-          className={`absolute top-1/2 -translate-y-1/2 z-30 bg-background/95 backdrop-blur-sm border border-border hover:border-primary hover:text-primary shadow-xl hover:shadow-2xl transition-all duration-300 ${
-            screenSize === 'desktop' 
-              ? 'right-4 h-12 w-12' 
-              : 'right-2 h-10 w-10'
-          }`}
-        >
-          <ChevronRight className={`${screenSize === 'desktop' ? 'h-5 w-5' : 'h-4 w-4'}`} />
-        </Button>
 
         {/* Enhanced Dots Indicator */}
         <div className="flex justify-center mt-8 space-x-3">
@@ -305,13 +328,6 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
               } rounded-full`}
             />
           ))}
-        </div>
-
-        {/* Product Counter */}
-        <div className="text-center mt-4">
-          <p className="text-sm text-text-muted">
-            {currentIndex + 1} of {totalSlides} • {products.length} products
-          </p>
         </div>
       </div>
     </div>

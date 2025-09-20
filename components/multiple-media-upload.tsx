@@ -115,6 +115,7 @@ export function MultipleMediaUpload({
   }
 
   const handleClick = () => {
+    if (disabled) return
     fileInputRef.current?.click()
   }
 
@@ -123,6 +124,8 @@ export function MultipleMediaUpload({
     if (files && files.length > 0) {
       handleFileSelect(files)
     }
+    // Reset the input so the same file can be selected again
+    e.target.value = ''
   }
 
   const removeMedia = (id: string) => {
@@ -218,18 +221,18 @@ export function MultipleMediaUpload({
         </div>
       )}
 
-      {/* Upload Area */}
+      {/* Upload Area - Enhanced for Mobile */}
       {value.length < maxItems && (
         <Card 
-          className={`border-2 border-dashed transition-colors cursor-pointer ${
+          className={`border-2 border-dashed transition-colors ${
             dragActive 
               ? 'border-primary bg-primary/5' 
               : 'border-muted-foreground/25 hover:border-primary/50'
-          } ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+          } ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
-          onClick={disabled ? undefined : handleClick}
+          onClick={handleClick}
         >
           <CardContent className="p-6 text-center">
             <div className="space-y-4">
@@ -245,18 +248,34 @@ export function MultipleMediaUpload({
                   {isUploading ? 'Uploading...' : 'Upload media files'}
                 </p>
                 <p className="text-xs text-muted-foreground">
-                  Drag and drop or click to select images and videos
+                  Drag and drop or tap to select images and videos
                 </p>
                 <p className="text-xs text-muted-foreground mt-1">
                   Images: JPG, PNG, GIF (max 10MB) • Videos: MP4, WebM (max 50MB)
                 </p>
               </div>
+              
+              {/* Mobile-friendly upload button */}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="mt-2 min-h-[44px] min-w-[120px]" // Minimum touch target size
+                onClick={(e) => {
+                  e.stopPropagation()
+                  handleClick()
+                }}
+                disabled={disabled || isUploading}
+              >
+                <Upload className="h-4 w-4 mr-2" />
+                Choose Files
+              </Button>
             </div>
           </CardContent>
         </Card>
       )}
 
-      {/* Hidden file input */}
+      {/* Hidden file input - Enhanced for mobile */}
       <Input
         ref={fileInputRef}
         type="file"
@@ -265,6 +284,14 @@ export function MultipleMediaUpload({
         onChange={handleFileInputChange}
         className="hidden"
         disabled={disabled}
+        // Mobile-specific attributes
+        capture="environment" // Use back camera on mobile
+        style={{ 
+          position: 'absolute',
+          left: '-9999px',
+          opacity: 0,
+          pointerEvents: 'none'
+        }}
       />
 
       {/* Manual URL inputs */}

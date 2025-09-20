@@ -4,16 +4,10 @@ import { useState, useRef, useEffect } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { ZoomIn, X, ChevronLeft, ChevronRight } from "lucide-react"
+import { ChevronLeft, ChevronRight, ZoomIn } from "lucide-react"
 import { Swiper, SwiperSlide } from 'swiper/react'
-import { Navigation, Pagination, Autoplay } from 'swiper/modules'
-import type { Swiper as SwiperType } from 'swiper'
-import Lightbox from "yet-another-react-lightbox"
-import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails"
-import Zoom from "yet-another-react-lightbox/plugins/zoom"
-import { useIsMobile } from "@/hooks/use-mobile"
-
-// Import Swiper styles
+import { Navigation, Pagination } from 'swiper/modules'
+import { Lightbox } from 'yet-another-react-lightbox'
 import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/pagination'
@@ -33,40 +27,25 @@ export function ProductImageCarousel({
   discountPercentage = 0,
   className = ""
 }: ProductImageCarouselProps) {
-  const [isLightboxOpen, setIsLightboxOpen] = useState(false)
   const [activeIndex, setActiveIndex] = useState(0)
   const [isHovered, setIsHovered] = useState(false)
-  const swiperRef = useRef<SwiperType | null>(null)
-  const isMobile = useIsMobile()
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
+  const swiperRef = useRef<any>(null)
 
-  if (!images || images.length === 0) {
-    return (
-      <div className={`relative aspect-[3/4] overflow-hidden rounded-2xl bg-gray-100 flex items-center justify-center ${className}`}>
-        <Image
-          src="/placeholder.svg"
-          alt={productName}
-          fill
-          className="object-cover"
-          priority
-        />
-      </div>
-    )
-  }
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768)
+    }
+    
+    checkMobile()
+    window.addEventListener('resize', checkMobile)
+    return () => window.removeEventListener('resize', checkMobile)
+  }, [])
 
   const openLightbox = (index: number) => {
     setActiveIndex(index)
     setIsLightboxOpen(true)
-  }
-
-  const closeLightbox = () => {
-    setIsLightboxOpen(false)
-  }
-
-  const goToImage = (index: number) => {
-    setActiveIndex(index)
-    if (swiperRef.current) {
-      swiperRef.current.slideTo(index)
-    }
   }
 
   const goToPrevious = () => {
@@ -99,6 +78,37 @@ export function ProductImageCarousel({
 
   return (
     <div className={`space-y-4 ${className}`}>
+      {/* External Navigation Controls */}
+      {images.length > 1 && (
+        <div className="flex items-center justify-between">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={goToPrevious}
+            className="flex items-center gap-2 bg-background/95 backdrop-blur-sm border-2 border-border hover:border-primary hover:text-primary shadow-lg hover:shadow-xl transition-all duration-300"
+          >
+            <ChevronLeft className="h-4 w-4" />
+            <span className="hidden sm:inline">Previous</span>
+          </Button>
+          
+          <div className="text-center">
+            <p className="text-sm text-muted-foreground">
+              {activeIndex + 1} of {images.length}
+            </p>
+          </div>
+          
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={goToNext}
+            className="flex items-center gap-2 bg-background/95 backdrop-blur-sm border-2 border-border hover:border-primary hover:text-primary shadow-lg hover:shadow-xl transition-all duration-300"
+          >
+            <span className="hidden sm:inline">Next</span>
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      )}
+
       {/* Main Image Carousel */}
       <div 
         className="relative group"
@@ -178,7 +188,7 @@ export function ProductImageCarousel({
           ))}
         </Swiper>
 
-        {/* Custom Navigation Buttons */}
+        {/* Custom Navigation Buttons - Only show on mobile or when hovering */}
         {images.length > 1 && (
           <>
             <Button
@@ -198,6 +208,7 @@ export function ProductImageCarousel({
             >
               <ChevronLeft className="h-4 w-4 sm:h-5 sm:w-5" />
             </Button>
+            
             <Button
               variant="ghost"
               size="icon"
@@ -217,68 +228,100 @@ export function ProductImageCarousel({
             </Button>
           </>
         )}
-
-        {/* Mobile Pagination Dots */}
-        {images.length > 1 && isMobile && (
-          <div className="swiper-pagination-custom absolute bottom-4 left-1/2 -translate-x-1/2 z-10"></div>
-        )}
       </div>
 
-      {/* Thumbnail Gallery */}
+      {/* Thumbnail Navigation */}
       {images.length > 1 && (
-        <div className="flex justify-center">
-          <div className="flex gap-3 overflow-x-auto pb-2 max-w-full">
-            {images.map((image, index) => (
-              <div
-                key={index}
-                className={`relative flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden cursor-pointer border-2 transition-all duration-300 hover:scale-105 ${
-                  index === activeIndex 
-                    ? 'border-primary-500 shadow-lg scale-105' 
-                    : 'border-gray-200 hover:border-gray-300 hover:shadow-md'
-                }`}
-                onClick={() => goToImage(index)}
-              >
-                <Image
-                  src={image}
-                  alt={`${productName} thumbnail ${index + 1}`}
-                  width={80}
-                  height={80}
-                  className="w-full h-full object-cover"
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = '/placeholder.svg';
-                  }}
-                />
-                {/* Active indicator */}
-                {index === activeIndex && (
-                  <div className="absolute inset-0 bg-primary-500/20 border-2 border-primary-500 rounded-lg" />
-                )}
-              </div>
-            ))}
-          </div>
+        <div className="flex space-x-2 overflow-x-auto pb-2">
+          {images.map((image, index) => (
+            <button
+              key={index}
+              onClick={() => {
+                if (swiperRef.current) {
+                  swiperRef.current.slideTo(index)
+                }
+              }}
+              className={`relative flex-shrink-0 w-16 h-16 sm:w-20 sm:h-20 rounded-lg overflow-hidden border-2 transition-all duration-300 ${
+                index === activeIndex
+                  ? 'border-primary shadow-lg scale-105'
+                  : 'border-border hover:border-primary/50'
+              }`}
+            >
+              <Image
+                src={image}
+                alt={`${productName} thumbnail ${index + 1}`}
+                fill
+                className="object-cover"
+                onError={(e) => {
+                  const target = e.target as HTMLImageElement;
+                  target.src = '/placeholder.svg';
+                }}
+              />
+            </button>
+          ))}
         </div>
       )}
 
-      {/* Lightbox Gallery */}
-      <Lightbox
-        open={isLightboxOpen}
-        close={closeLightbox}
-        slides={slides}
-        index={activeIndex}
-        plugins={[Thumbnails, Zoom]}
-        thumbnails={{
-          position: "bottom",
-          width: 120,
-          height: 80,
-        }}
-        zoom={{
-          maxZoomPixelRatio: 3,
-          scrollToZoom: true,
-        }}
-        styles={{
-          container: { backgroundColor: "rgba(0, 0, 0, 0.95)" },
-        }}
-      />
+      {/* Lightbox */}
+      {isLightboxOpen && (
+        <Lightbox
+          open={isLightboxOpen}
+          close={() => setIsLightboxOpen(false)}
+          index={activeIndex}
+          slides={slides}
+          on={{
+            view: ({ index }) => setActiveIndex(index),
+          }}
+        />
+      )}
+
+      {/* Custom Swiper Styles */}
+      <style jsx global>{`
+        .swiper-pagination-custom {
+          position: relative;
+          margin-top: 1rem;
+        }
+        
+        .swiper-pagination-bullet-custom {
+          width: 8px;
+          height: 8px;
+          background: #d1d5db;
+          opacity: 1;
+          margin: 0 4px;
+          transition: all 0.3s ease;
+        }
+        
+        .swiper-pagination-bullet-active-custom {
+          background: #3b82f6;
+          transform: scale(1.2);
+        }
+        
+        .swiper-button-prev-custom,
+        .swiper-button-next-custom {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          z-index: 10;
+          width: 40px;
+          height: 40px;
+          margin-top: 0;
+          background: rgba(255, 255, 255, 0.9);
+          border-radius: 50%;
+          box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+          transition: all 0.3s ease;
+        }
+        
+        .swiper-button-prev-custom:hover,
+        .swiper-button-next-custom:hover {
+          background: white;
+          box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .swiper-button-prev-custom:after,
+        .swiper-button-next-custom:after {
+          display: none;
+        }
+      `}</style>
     </div>
   )
 }
