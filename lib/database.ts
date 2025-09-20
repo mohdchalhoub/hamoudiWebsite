@@ -411,7 +411,7 @@ export async function createOrder(orderData: {
   return order
 }
 
-export async function getOrder(orderNumber: string): Promise<OrderWithItems | null> {
+export async function getOrder(orderId: string): Promise<OrderWithItems | null> {
   const { data, error } = await supabase
     .from('orders')
     .select(`
@@ -419,7 +419,7 @@ export async function getOrder(orderNumber: string): Promise<OrderWithItems | nu
       order_items(*),
       customer:customers(*)
     `)
-    .eq('order_number', orderNumber)
+    .eq('id', orderId)
     .single()
 
   if (error) {

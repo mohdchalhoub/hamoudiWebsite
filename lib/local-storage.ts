@@ -1,7 +1,6 @@
-import type { CartItem, Order } from "./types"
+import type { CartItem } from "./types"
 
 const CART_KEY = "kids-store-cart"
-const ORDERS_KEY = "kids-store-orders"
 const CART_EXPIRY_MINUTES = 15
 
 export const cartStorage = {
@@ -119,30 +118,3 @@ export const cartStorage = {
   }
 }
 
-export const orderStorage = {
-  get: (): Order[] => {
-    if (typeof window === "undefined") return []
-    try {
-      const orders = localStorage.getItem(ORDERS_KEY)
-      return orders ? JSON.parse(orders) : []
-    } catch {
-      return []
-    }
-  },
-
-  add: (order: Order): void => {
-    if (typeof window === "undefined") return
-    try {
-      const orders = orderStorage.get()
-      orders.push(order)
-      localStorage.setItem(ORDERS_KEY, JSON.stringify(orders))
-    } catch (error) {
-      console.error("Failed to save order:", error)
-    }
-  },
-
-  clear: (): void => {
-    if (typeof window === "undefined") return
-    localStorage.removeItem(ORDERS_KEY)
-  },
-}

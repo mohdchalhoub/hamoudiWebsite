@@ -16,8 +16,7 @@ import { Badge } from "@/components/ui/badge"
 import { ArrowLeft, CreditCard } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
-import { orderStorage } from "@/lib/local-storage"
-import type { Order, CartItem } from "@/lib/types"
+import type { CartItem } from "@/lib/types"
 import { WhatsAppService } from "@/lib/whatsapp-service"
 import { useToast } from "@/hooks/use-toast"
 import { formatProductCode } from "@/lib/utils"
@@ -152,31 +151,45 @@ export default function CheckoutPage() {
     setIsSubmitting(true)
 
     try {
-      // Items are already in the correct CartItem format from local storage
-      const transformedItems: CartItem[] = items.map(item => ({
-        ...item,
-        addedAt: item.addedAt || Date.now() // Ensure timestamp exists
-      }))
+      // Create order via API
+      const orderResponse = await fetch('/api/orders', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          customerInfo: {
+            name: sanitizeInput(formData.name),
+            phone: `${formData.countryCode}${sanitizeInput(formData.mobileNumber)}`,
+            address: sanitizeInput(formData.address),
+          },
+          items: items,
+          total: finalTotal
+        })
+      })
 
-      // Create order with sanitized customer info
-      const order: Order = {
-        id: `order-${Date.now()}`,
-        items: transformedItems,
-        total: finalTotal,
+      if (!orderResponse.ok) {
+        const errorData = await orderResponse.json()
+        throw new Error(errorData.error || 'Failed to create order')
+      }
+
+      const { order: createdOrder } = await orderResponse.json()
+
+      // Send WhatsApp order confirmation
+      const whatsappOrder = {
+        id: createdOrder.orderNumber,
+        items: items,
+        total: createdOrder.total,
         customerInfo: {
           name: sanitizeInput(formData.name),
           phone: `${formData.countryCode}${sanitizeInput(formData.mobileNumber)}`,
           address: sanitizeInput(formData.address),
         },
-        status: "pending",
-        createdAt: new Date(),
+        status: createdOrder.status,
+        createdAt: new Date(createdOrder.createdAt)
       }
 
-      // Save order
-      orderStorage.add(order)
-
-      // Send order details via WhatsApp
-      const whatsappSent = await WhatsAppService.sendOrderConfirmation(order)
+      const whatsappSent = await WhatsAppService.sendOrderConfirmation(whatsappOrder)
 
       if (whatsappSent) {
         toast({
@@ -194,8 +207,8 @@ export default function CheckoutPage() {
       // Clear cart
       clearCart()
 
-      // Redirect to confirmation
-      router.push(`/order-confirmation/${order.id}`)
+      // Redirect to confirmation using the real database order ID
+      router.push(`/order-confirmation/${createdOrder.id}`)
     } catch (error) {
       console.error("[v0] Order submission error:", error)
       toast({
