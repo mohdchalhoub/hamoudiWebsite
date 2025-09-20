@@ -93,10 +93,6 @@ export function Header({ hasSaleProducts = false }: HeaderProps) {
               </div>
             )}
             
-            {/* Mobile Search Bar */}
-            <div className="md:hidden flex-1 max-w-[200px] mx-2">
-              <SearchBar />
-            </div>
             
             <div className="flex items-center gap-2">
               <div className="hover:scale-105 transition-transform duration-500">
