@@ -114,8 +114,10 @@ export function MultipleMediaUpload({
     setDragActive(false)
   }
 
-  const handleClick = () => {
+  const handleClick = (e?: React.MouseEvent) => {
     if (disabled) return
+    e?.preventDefault()
+    e?.stopPropagation()
     fileInputRef.current?.click()
   }
 
@@ -260,12 +262,17 @@ export function MultipleMediaUpload({
                 type="button"
                 variant="outline"
                 size="sm"
-                className="mt-2 min-h-[44px] min-w-[120px]" // Minimum touch target size
+                className="mt-2 min-h-[44px] min-w-[120px] touch-manipulation" // Enhanced for mobile
                 onClick={(e) => {
+                  e.preventDefault()
                   e.stopPropagation()
-                  handleClick()
+                  handleClick(e)
                 }}
                 disabled={disabled || isUploading}
+                style={{ 
+                  WebkitTapHighlightColor: 'transparent',
+                  touchAction: 'manipulation'
+                }}
               >
                 <Upload className="h-4 w-4 mr-2" />
                 Choose Files
@@ -276,13 +283,12 @@ export function MultipleMediaUpload({
       )}
 
       {/* Hidden file input - Enhanced for mobile */}
-      <Input
+      <input
         ref={fileInputRef}
         type="file"
         accept="image/*,video/*"
         multiple
         onChange={handleFileInputChange}
-        className="hidden"
         disabled={disabled}
         // Mobile-specific attributes
         capture="environment" // Use back camera on mobile
@@ -290,8 +296,12 @@ export function MultipleMediaUpload({
           position: 'absolute',
           left: '-9999px',
           opacity: 0,
-          pointerEvents: 'none'
+          pointerEvents: 'none',
+          width: '1px',
+          height: '1px',
+          overflow: 'hidden'
         }}
+        tabIndex={-1}
       />
 
       {/* Manual URL inputs */}

@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
 import { ServerHeader } from "@/components/server-header"
+import { MobileSearchBar } from "@/components/mobile-search-bar"
 import { Footer } from "@/components/footer"
 import { MobileProductPagination } from "@/components/mobile-product-pagination"
 import { AnimatedSection } from "@/components/animated-section"
@@ -172,6 +173,7 @@ export default function SearchPage() {
   return (
     <div className="min-h-screen">
       <ServerHeader />
+      <MobileSearchBar />
 
       {/* Search Results Header */}
       <section className="bg-background">

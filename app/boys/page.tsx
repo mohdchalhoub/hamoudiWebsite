@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react"
 import { ServerHeader } from "@/components/server-header"
+import { MobileSearchBar } from "@/components/mobile-search-bar"
 import { Footer } from "@/components/footer"
 import { DesktopPaginatedGrid } from "@/components/desktop-paginated-grid"
 import { ProductFilters } from "@/components/product-filters"
@@ -53,6 +54,7 @@ export default function BoysPage() {
   return (
     <div className="min-h-screen">
       <ServerHeader />
+      <MobileSearchBar />
 
       {/* Hero Section */}
       <section className="bg-background">

@@ -101,7 +101,9 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
     if (target.closest('[data-product-card]') || 
         target.closest('button') || 
         target.closest('a') ||
-        target.closest('[role="button"]')) {
+        target.closest('[role="button"]') ||
+        target.closest('.swiper-button') ||
+        target.closest('.swiper-pagination')) {
       return
     }
     setIsDragging(true)
@@ -123,8 +125,8 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
     
     setIsDragging(false)
     
-    // Determine swipe direction and threshold
-    const threshold = 50
+    // Determine swipe direction and threshold - reduced for better mobile experience
+    const threshold = 30
     if (Math.abs(translateX) > threshold) {
       if (translateX > 0) {
         handleNext()
@@ -195,14 +197,14 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
             variant="outline"
             size="lg"
             onClick={handlePrev}
-            className="flex items-center gap-2 bg-background/95 backdrop-blur-sm border-2 border-border hover:border-primary hover:text-primary shadow-lg hover:shadow-xl transition-all duration-300 min-w-[120px]"
+            className="flex items-center gap-2 bg-background/95 backdrop-blur-sm border-2 border-primary/20 hover:border-primary hover:text-primary shadow-lg hover:shadow-xl transition-all duration-300 min-w-[120px] h-12 text-base font-medium"
           >
-            <ChevronLeft className="h-5 w-5" />
+            <ChevronLeft className="h-6 w-6" />
             <span className="hidden sm:inline">Previous</span>
           </Button>
           
           <div className="text-center">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground font-medium">
               {currentIndex + 1} of {totalSlides} • {products.length} products
             </p>
           </div>
@@ -211,10 +213,10 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
             variant="outline"
             size="lg"
             onClick={handleNext}
-            className="flex items-center gap-2 bg-background/95 backdrop-blur-sm border-2 border-border hover:border-primary hover:text-primary shadow-lg hover:shadow-xl transition-all duration-300 min-w-[120px]"
+            className="flex items-center gap-2 bg-background/95 backdrop-blur-sm border-2 border-primary/20 hover:border-primary hover:text-primary shadow-lg hover:shadow-xl transition-all duration-300 min-w-[120px] h-12 text-base font-medium"
           >
             <span className="hidden sm:inline">Next</span>
-            <ChevronRight className="h-5 w-5" />
+            <ChevronRight className="h-6 w-6" />
           </Button>
         </div>
 

@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation"
 import { getProductById, getProducts } from "@/lib/database"
 import { ServerHeader } from "@/components/server-header"
+import { MobileSearchBar } from "@/components/mobile-search-bar"
 import { Footer } from "@/components/footer"
 import { ProductPageClient } from "./product-page-client"
 
@@ -28,6 +29,7 @@ export default async function ProductPage({ params }: ProductPageProps) {
   return (
     <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50">
       <ServerHeader />
+      <MobileSearchBar />
       <ProductPageClient product={product} relatedProducts={relatedProducts} />
       <Footer />
     </div>

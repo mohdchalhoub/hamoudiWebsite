@@ -1,4 +1,5 @@
 import { ServerHeader } from "@/components/server-header"
+import { MobileSearchBar } from "@/components/mobile-search-bar"
 import { Footer } from "@/components/footer"
 import { Card, CardContent } from "@/components/ui/card"
 import { Heart, Shield, Sparkles, Users } from "lucide-react"
@@ -8,6 +9,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen">
       <ServerHeader />
+      <MobileSearchBar />
 
       {/* Hero Section */}
       <section className="bg-background">

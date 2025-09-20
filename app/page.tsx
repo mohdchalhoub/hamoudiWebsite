@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { ServerHeader } from "@/components/server-header"
+import { MobileSearchBar } from "@/components/mobile-search-bar"
 import { Footer } from "@/components/footer"
 import { EnhancedAnimatedSection } from "@/components/enhanced-animated-section"
 import { PageTransition } from "@/components/page-transition"
@@ -58,6 +59,7 @@ export default async function HomePage() {
     <PageTransition>
       <div className="min-h-screen">
         <ServerHeader />
+        <MobileSearchBar />
 
         {/* Hero Section */}
         <section className="relative overflow-hidden bg-background min-h-screen flex items-center">

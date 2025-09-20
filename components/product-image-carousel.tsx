@@ -80,31 +80,31 @@ export function ProductImageCarousel({
     <div className={`space-y-4 ${className}`}>
       {/* External Navigation Controls */}
       {images.length > 1 && (
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between mb-4">
           <Button
             variant="outline"
-            size="sm"
+            size="lg"
             onClick={goToPrevious}
-            className="flex items-center gap-2 bg-background/95 backdrop-blur-sm border-2 border-border hover:border-primary hover:text-primary shadow-lg hover:shadow-xl transition-all duration-300"
+            className="flex items-center gap-2 bg-background/95 backdrop-blur-sm border-2 border-primary/20 hover:border-primary hover:text-primary shadow-lg hover:shadow-xl transition-all duration-300 min-w-[100px] h-10 text-sm font-medium"
           >
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-5 w-5" />
             <span className="hidden sm:inline">Previous</span>
           </Button>
           
           <div className="text-center">
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-muted-foreground font-medium">
               {activeIndex + 1} of {images.length}
             </p>
           </div>
           
           <Button
             variant="outline"
-            size="sm"
+            size="lg"
             onClick={goToNext}
-            className="flex items-center gap-2 bg-background/95 backdrop-blur-sm border-2 border-border hover:border-primary hover:text-primary shadow-lg hover:shadow-xl transition-all duration-300"
+            className="flex items-center gap-2 bg-background/95 backdrop-blur-sm border-2 border-primary/20 hover:border-primary hover:text-primary shadow-lg hover:shadow-xl transition-all duration-300 min-w-[100px] h-10 text-sm font-medium"
           >
             <span className="hidden sm:inline">Next</span>
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-5 w-5" />
           </Button>
         </div>
       )}
@@ -135,8 +135,11 @@ export function ProductImageCarousel({
           onSwiper={(swiper) => {
             swiperRef.current = swiper
           }}
-          touchRatio={1}
-          threshold={5}
+          touchRatio={1.5}
+          threshold={10}
+          resistanceRatio={0.85}
+          allowTouchMove={true}
+          touchStartPreventDefault={false}
           className="rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-shadow duration-300"
         >
           {images.map((image, index) => (

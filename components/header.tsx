@@ -71,7 +71,7 @@ export function Header({ hasSaleProducts = false }: HeaderProps) {
             ))}
           </nav>
 
-          {/* Search Bar */}
+          {/* Search Bar - Desktop Only */}
           <div className="hidden md:block flex-1 max-w-md mx-8">
             <SearchBar />
           </div>
