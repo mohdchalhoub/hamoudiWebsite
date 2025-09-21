@@ -384,7 +384,7 @@ export function ProductDetailClient({ product, onPriceChange }: ProductDetailCli
                 <span className="font-semibold text-slate-800">{product.material}</span>
               </div>
             )}
-            {/* Display age range - prioritize product age_range, fallback to variants */}
+            {/* Display age range - STRICT: only if product.age_range exists and is not empty */}
             {product.age_range && product.age_range.trim() !== '' && (
               <div className="flex justify-between items-center py-0.5 px-1 bg-slate-100 rounded text-xs">
                 <span className="text-slate-600 font-medium">Age Range:</span>
@@ -393,20 +393,11 @@ export function ProductDetailClient({ product, onPriceChange }: ProductDetailCli
                 </span>
               </div>
             )}
-            {/* Display age range from variants only if product doesn't have age_range */}
-            {(!product.age_range || product.age_range.trim() === '') && availableAges.length > 0 && (
+            {/* Display size - STRICT: only if product.size exists and is not empty */}
+            {product.size && product.size.trim() !== '' && (
               <div className="flex justify-between items-center py-0.5 px-1 bg-slate-100 rounded text-xs">
-                <span className="text-slate-600 font-medium">Age Range:</span>
-                <span className="font-semibold text-slate-800">
-                  {availableAges.join(', ')} years
-                </span>
-              </div>
-            )}
-            {/* Display sizes from variants if available */}
-            {availableSizes.length > 0 && (
-              <div className="flex justify-between items-center py-0.5 px-1 bg-slate-100 rounded text-xs">
-                <span className="text-slate-600 font-medium">Sizes:</span>
-                <span className="font-semibold text-slate-800">{availableSizes.join(', ')}</span>
+                <span className="text-slate-600 font-medium">Size:</span>
+                <span className="font-semibold text-slate-800">{product.size}</span>
               </div>
             )}
             {product.gender && (

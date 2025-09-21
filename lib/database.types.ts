@@ -49,6 +49,7 @@ export interface Database {
           gender: 'boys' | 'girls' | 'unisex'
           season: 'summer' | 'winter' | 'all_season'
           age_range: string
+          size: string | null
           brand: string | null
           material: string | null
           care_instructions: string | null

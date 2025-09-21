@@ -93,13 +93,7 @@ export function ProductPageClient({ product, relatedProducts }: ProductPageClien
                   {product.season && (
                     <div className="flex items-center gap-3">
                       <span className="text-sm font-medium text-gray-600">Season:</span>
-                      <Badge className={`px-4 py-2 text-sm font-semibold rounded-full shadow-sm ${
-                        product.season === 'summer' 
-                          ? 'bg-gradient-to-r from-yellow-400 to-orange-500 text-white' 
-                          : product.season === 'winter'
-                          ? 'bg-gradient-to-r from-primary-400 to-primary-600 text-white'
-                          : 'bg-gradient-to-r from-green-400 to-emerald-500 text-white'
-                      }`}>
+                      <Badge className="px-4 py-2 text-sm font-semibold rounded-full shadow-sm bg-black text-white">
                         {product.season === 'summer' ? '☀️ Summer' : product.season === 'winter' ? '❄️ Winter' : '🌍 All Season'}
                       </Badge>
                     </div>
@@ -132,7 +126,7 @@ export function ProductPageClient({ product, relatedProducts }: ProductPageClien
                       )}
                     </div>
                     {discountPercentage > 0 && (
-                      <Badge className="bg-gradient-to-r from-red-500 to-red-600 text-white px-2 py-1 text-xs font-bold shadow-lg">
+                      <Badge className="bg-black text-white px-2 py-1 text-xs font-bold shadow-lg">
                         🔥 Save {discountPercentage}%
                       </Badge>
                     )}
