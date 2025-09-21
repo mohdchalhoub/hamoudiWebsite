@@ -199,7 +199,7 @@ export function HeroProductCarousel({ products }: HeroProductCarouselProps) {
                       src={product.images[0]}
                       alt={product.name}
                       fill
-                      className="object-cover transition-transform duration-300 group-hover:scale-105"
+                      className="object-contain transition-transform duration-300 group-hover:scale-105"
                       sizes="(max-width: 768px) 100vw, 50vw"
                       priority={index === 0}
                     />
