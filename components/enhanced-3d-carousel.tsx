@@ -51,33 +51,28 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
     return () => window.removeEventListener('resize', handleResize)
   }, [])
 
-  // Add passive touch event listeners for better mobile performance
+  // Simple touch event setup
   useEffect(() => {
     const carousel = carouselRef.current
     if (!carousel) return
 
-    const handleTouchStartPassive = (e: TouchEvent) => {
-      // Allow the React handler to manage this
-    }
-
-    const handleTouchMovePassive = (e: TouchEvent) => {
-      if (isDragging) {
-        e.preventDefault()
-      }
-    }
-
-    // Add passive listeners for better performance
-    carousel.addEventListener('touchstart', handleTouchStartPassive, { passive: true })
-    carousel.addEventListener('touchmove', handleTouchMovePassive, { passive: false })
+    console.log('🔥 Carousel ref attached, touch events should work now')
     
     return () => {
-      carousel.removeEventListener('touchstart', handleTouchStartPassive)
-      carousel.removeEventListener('touchmove', handleTouchMovePassive)
+      console.log('🔥 Carousel ref detached')
     }
-  }, [isDragging])
+  }, [])
 
   const currentProductsPerSlide = productsPerSlide[screenSize]
   const totalSlides = Math.ceil(products.length / currentProductsPerSlide)
+
+  console.log('🔥 Carousel Debug:', {
+    productsLength: products.length,
+    currentProductsPerSlide,
+    totalSlides,
+    screenSize,
+    currentIndex
+  })
 
   if (products.length === 0) {
     return (
@@ -99,29 +94,10 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
     setCurrentIndex((prev) => (prev < totalSlides - 1 ? prev + 1 : 0))
   }
 
-  // Enhanced touch handling for mobile with improved responsiveness
+  // Simple and reliable touch handling
   const handleTouchStart = (e: React.TouchEvent) => {
-    console.log('Touch start detected', e.touches[0].clientX)
-    const target = e.target as HTMLElement
-    
-    // Only start dragging if it's not a touch on a product card or any interactive element
-    if (target.closest('[data-product-card]') || 
-        target.closest('button') || 
-        target.closest('a') ||
-        target.closest('[role="button"]') ||
-        target.closest('.swiper-button') ||
-        target.closest('.swiper-pagination') ||
-        target.closest('input') ||
-        target.closest('select') ||
-        target.closest('textarea')) {
-      console.log('Touch blocked on interactive element')
-      return
-    }
-    
-    // Prevent default touch behaviors that might interfere
+    console.log('🔥 TOUCH START - X:', e.touches[0].clientX)
     e.preventDefault()
-    
-    console.log('Starting drag')
     setIsDragging(true)
     setStartX(e.touches[0].clientX)
     setTranslateX(0)
@@ -130,47 +106,28 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDragging) return
     
-    console.log('Touch move detected', e.touches[0].clientX)
-    
-    // Prevent scrolling and other touch behaviors while dragging
+    console.log('🔥 TOUCH MOVE - X:', e.touches[0].clientX)
     e.preventDefault()
     e.stopPropagation()
     
     const currentX = e.touches[0].clientX
     const diffX = startX - currentX
-    
-    // Add some resistance at the edges
-    const maxTranslate = 100
-    const resistance = 0.3
-    let adjustedDiff = diffX
-    
-    if (currentIndex === 0 && diffX < 0) {
-      // At first slide, add resistance when swiping right
-      adjustedDiff = diffX * resistance
-    } else if (currentIndex === totalSlides - 1 && diffX > 0) {
-      // At last slide, add resistance when swiping left
-      adjustedDiff = diffX * resistance
-    }
-    
-    setTranslateX(Math.max(-maxTranslate, Math.min(maxTranslate, adjustedDiff)))
+    setTranslateX(diffX)
   }
 
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (!isDragging) return
     
-    console.log('Touch end detected', translateX)
+    console.log('🔥 TOUCH END - translateX:', translateX)
     setIsDragging(false)
     
-    // Determine swipe direction and threshold - optimized for mobile
-    const threshold = 50
-    const velocity = Math.abs(translateX) / 100 // Simple velocity calculation
-    
-    if (Math.abs(translateX) > threshold || velocity > 0.5) {
+    const threshold = 30
+    if (Math.abs(translateX) > threshold) {
       if (translateX > 0) {
-        console.log('Swiping to next')
+        console.log('🔥 SWIPING NEXT')
         handleNext()
       } else {
-        console.log('Swiping to previous')
+        console.log('🔥 SWIPING PREV')
         handlePrev()
       }
     }
@@ -265,12 +222,12 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
         {/* Carousel Container */}
         <div
           ref={carouselRef}
-          className="relative overflow-hidden rounded-lg touch-pan-y"
+          className="relative overflow-hidden rounded-lg"
           style={{ 
-            pointerEvents: 'auto',
-            touchAction: 'pan-y pinch-zoom',
+            touchAction: 'none',
             userSelect: 'none',
-            WebkitUserSelect: 'none'
+            WebkitUserSelect: 'none',
+            WebkitTouchCallout: 'none'
           }}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
