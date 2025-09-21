@@ -141,7 +141,7 @@ export function HeroProductCarousel({ products }: HeroProductCarouselProps) {
   }
 
   return (
-    <div className="w-full max-w-lg mx-auto relative">
+    <div className="w-full max-w-md mx-auto relative">
       {/* External Navigation Arrows - Outside carousel */}
       {validProducts.length > 1 && (
         <>
@@ -170,7 +170,7 @@ export function HeroProductCarousel({ products }: HeroProductCarouselProps) {
         <div
           className="relative overflow-hidden rounded-lg bg-gray-100"
           style={{
-            aspectRatio: '16/10',
+            aspectRatio: '16/9',
             touchAction: 'pan-y',
             userSelect: 'none',
             WebkitUserSelect: 'none'

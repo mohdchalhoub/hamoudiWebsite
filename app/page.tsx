@@ -63,11 +63,11 @@ export default async function HomePage() {
         <MobileSearchBar />
 
         {/* Hero Section */}
-        <section className="relative overflow-hidden bg-background min-h-screen flex items-start pt-20 lg:pt-24">
+        <section className="relative overflow-hidden bg-background min-h-screen flex items-start pt-4 lg:pt-6">
 
-          <div className="container mx-auto px-4 py-8 lg:py-12 relative z-10">
-            <EnhancedAnimatedSection animation="fade-up" className="text-center space-y-6 max-w-4xl mx-auto">
-              <div className="space-y-4">
+          <div className="container mx-auto px-4 py-4 lg:py-6 relative z-10">
+            <EnhancedAnimatedSection animation="fade-up" className="text-center space-y-4 max-w-4xl mx-auto">
+              <div className="space-y-3">
                 <EnhancedAnimatedSection animation="bounce" delay={0.1}>
                   <div className="hover:scale-105 hover:rotate-1 transition-all duration-500">
                     <Badge className="bg-background text-text-primary border border-border px-6 py-2 text-sm font-semibold hover:border-primary hover:text-primary transition-all duration-300 rounded-none">
@@ -77,7 +77,7 @@ export default async function HomePage() {
                 </EnhancedAnimatedSection>
                 
                 <EnhancedAnimatedSection animation="fade-up" delay={0.2}>
-                  <h1 className="text-4xl lg:text-6xl font-light text-text-primary leading-tight">
+                  <h1 className="text-3xl lg:text-5xl font-light text-text-primary leading-tight">
                     Quality Fashion for
                     <br />
                     <span className="font-normal">
@@ -90,7 +90,7 @@ export default async function HomePage() {
               
               {/* Hero Product Carousel */}
               <EnhancedAnimatedSection animation="fade-up" delay={0.4}>
-                <div className="my-6">
+                <div className="my-4">
                   <HeroProductCarousel products={featuredProducts} />
                 </div>
               </EnhancedAnimatedSection>
