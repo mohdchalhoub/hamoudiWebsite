@@ -17,6 +17,13 @@ export function Product3DCarousel({ products, title }: Product3DCarouselProps) {
   const [startX, setStartX] = useState(0)
   const [translateX, setTranslateX] = useState(0)
   const carouselRef = useRef<HTMLDivElement>(null)
+  const [isInitialized, setIsInitialized] = useState(false)
+
+  useEffect(() => {
+    // Prevent initial render flicker
+    const timer = setTimeout(() => setIsInitialized(true), 100)
+    return () => clearTimeout(timer)
+  }, [])
 
   if (products.length === 0) {
     return (
@@ -119,7 +126,7 @@ export function Product3DCarousel({ products, title }: Product3DCarouselProps) {
 
       {/* Mobile/Tablet 3D Carousel View */}
       <div className="lg:hidden">
-        <div className="relative">
+        <div className={`relative ${isInitialized ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300`}>
           {/* Carousel Container */}
           <div
             ref={carouselRef}
@@ -134,9 +141,11 @@ export function Product3DCarousel({ products, title }: Product3DCarouselProps) {
           >
             {/* 3D Carousel Cards */}
             <div
-              className="flex transition-transform duration-300 ease-out"
+              className="flex transition-transform duration-300 ease-out will-change-transform"
               style={{
                 transform: `translateX(calc(-${currentIndex * 100}% + ${translateX}px))`,
+                backfaceVisibility: 'hidden',
+                WebkitBackfaceVisibility: 'hidden',
               }}
             >
               {products.map((product, index) => {
@@ -159,6 +168,9 @@ export function Product3DCarousel({ products, title }: Product3DCarouselProps) {
                       opacity: isActive ? 1 : 0.6,
                       zIndex: isActive ? 10 : 1,
                       transition: 'all 0.3s ease-out',
+                      backfaceVisibility: 'hidden',
+                      WebkitBackfaceVisibility: 'hidden',
+                      willChange: 'transform, opacity',
                     }}
                   >
                     <div className="w-full max-w-xs">

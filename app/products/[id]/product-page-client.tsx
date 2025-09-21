@@ -19,7 +19,7 @@ interface ProductPageClientProps {
 export function ProductPageClient({ product, relatedProducts }: ProductPageClientProps) {
   const [currentPrice, setCurrentPrice] = useState(product.price)
 
-  const discountPercentage = product.compare_at_price > 0
+  const discountPercentage = product.compare_at_price && product.compare_at_price > 0
     ? Math.round(((product.compare_at_price - product.price) / product.compare_at_price) * 100)
     : 0
 
@@ -50,18 +50,19 @@ export function ProductPageClient({ product, relatedProducts }: ProductPageClien
                   className="w-full max-w-md"
                 />
                 
-                {/* Additional product info below image */}
+                {/* Stock status below image */}
                 <div className="mt-4 text-center lg:text-left">
-                  <div className="flex items-center justify-center lg:justify-start gap-3 text-sm text-gray-600">
-                    <div className="flex items-center gap-2 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200">
+                  {product.quantity > 0 ? (
+                    <div className="flex items-center justify-center lg:justify-start gap-2 bg-emerald-50 px-3 py-1.5 rounded-full border border-emerald-200">
                       <div className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse"></div>
-                      <span className="font-medium">In Stock</span>
+                      <span className="font-medium text-emerald-700">In Stock</span>
                     </div>
-                    <div className="flex items-center gap-2 bg-primary-50 px-3 py-1.5 rounded-full border border-primary-200">
-                      <div className="w-2 h-2 bg-primary-500 rounded-full"></div>
-                      <span className="font-medium">Free Shipping</span>
+                  ) : (
+                    <div className="flex items-center justify-center lg:justify-start gap-2 bg-red-50 px-3 py-1.5 rounded-full border border-red-200">
+                      <div className="w-2 h-2 bg-red-500 rounded-full"></div>
+                      <span className="font-medium text-red-700">Out of Stock</span>
                     </div>
-                  </div>
+                  )}
                 </div>
               </div>
 
@@ -73,16 +74,16 @@ export function ProductPageClient({ product, relatedProducts }: ProductPageClien
                     {product.name}
                   </h1>
                   
-                  {/* Product Code Display - Styled */}
+                  {/* Product Code Display - Compact */}
                   {product.product_code && (
-                    <div className="bg-gray-100 rounded-xl p-4 border border-gray-200">
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 bg-primary-100 rounded-full flex items-center justify-center">
-                          <span className="text-primary-600 font-bold text-sm">#</span>
+                    <div className="bg-gray-100 rounded-xl p-2 border border-gray-200">
+                      <div className="flex items-center gap-2">
+                        <div className="w-6 h-6 bg-primary-100 rounded-full flex items-center justify-center">
+                          <span className="text-primary-600 font-bold text-xs">#</span>
                         </div>
                         <div>
-                          <p className="text-sm font-medium text-gray-600">Product Code</p>
-                          <p className="font-mono font-bold text-lg text-gray-900">{product.product_code}</p>
+                          <p className="text-xs font-medium text-gray-600">Product Code</p>
+                          <p className="font-mono font-semibold text-sm text-gray-900">{product.product_code}</p>
                         </div>
                       </div>
                     </div>
@@ -110,28 +111,28 @@ export function ProductPageClient({ product, relatedProducts }: ProductPageClien
                   </div>
                 </div>
 
-                {/* Price Section - Enhanced with Dynamic Price */}
-                <div className="bg-gradient-to-r from-primary-50 to-primary-100 rounded-2xl p-6 border border-primary-200 shadow-sm">
+                {/* Price Section - Compact with Dynamic Price */}
+                <div className="bg-gradient-to-r from-primary-50 to-primary-100 rounded-xl p-3 border border-primary-200 shadow-sm">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3">
                       {currentPrice !== product.price ? (
                         <>
-                          <span className="text-2xl text-gray-400 line-through">${product.price.toFixed(2)}</span>
-                          <span className="text-3xl lg:text-4xl font-display font-bold text-gray-900 transition-colors duration-200">
+                          <span className="text-sm text-gray-400 line-through">${product.price.toFixed(2)}</span>
+                          <span className="text-xl lg:text-2xl font-display font-bold text-gray-900 transition-colors duration-200">
                             ${currentPrice.toFixed(2)}
                           </span>
                         </>
                       ) : (
-                        <span className="text-3xl lg:text-4xl font-display font-bold text-gray-900 transition-colors duration-200">
+                        <span className="text-xl lg:text-2xl font-display font-bold text-gray-900 transition-colors duration-200">
                           ${currentPrice.toFixed(2)}
                         </span>
                       )}
-                      {product.compare_at_price > 0 && (
-                        <span className="text-xl text-gray-400 line-through">${product.compare_at_price}</span>
+                      {product.compare_at_price && product.compare_at_price > 0 && (
+                        <span className="text-sm text-gray-400 line-through">${product.compare_at_price}</span>
                       )}
                     </div>
                     {discountPercentage > 0 && (
-                      <Badge className="bg-gradient-to-r from-red-500 to-red-600 text-white px-4 py-2 text-sm font-bold shadow-lg">
+                      <Badge className="bg-gradient-to-r from-red-500 to-red-600 text-white px-2 py-1 text-xs font-bold shadow-lg">
                         🔥 Save {discountPercentage}%
                       </Badge>
                     )}

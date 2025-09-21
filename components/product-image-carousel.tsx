@@ -165,8 +165,8 @@ export function ProductImageCarousel({
                 
                 {/* Product badges */}
                 {isFeatured && index === 0 && (
-                  <Badge className="absolute top-4 left-4 bg-gradient-to-r from-secondary-500 to-secondary-600 text-white text-sm px-3 py-1.5 shadow-lg">
-                    ⭐ Featured
+                  <Badge className="absolute top-4 left-4 bg-gradient-to-r from-amber-500 to-orange-600 text-white text-sm font-bold px-4 py-2 shadow-xl border-2 border-white/20 backdrop-blur-sm">
+                    ⭐ FEATURED
                   </Badge>
                 )}
                 {discountPercentage > 0 && index === 0 && (

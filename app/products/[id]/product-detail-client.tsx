@@ -20,9 +20,9 @@ export function ProductDetailClient({ product, onPriceChange }: ProductDetailCli
   const { addItem: addToWishlist, isInWishlist } = useWishlist()
   
   // Get available sizes/ages and colors from variants
-  const availableSizes = [...new Set(product.variants?.map(v => v.size).filter(Boolean) || [])]
-  const availableAges = [...new Set(product.variants?.map(v => v.age_range).filter(Boolean) || [])]
-  const availableColors = [...new Set(product.variants?.map(v => v.color) || [])]
+  const availableSizes = [...new Set(product.variants?.map(v => v.size).filter(size => size && size.trim() !== '') || [])]
+  const availableAges = [...new Set(product.variants?.map(v => v.age_range).filter(age => age && age.trim() !== '') || [])]
+  const availableColors = [...new Set(product.variants?.map(v => v.color).filter(color => color && color.trim() !== '') || [])]
   
   const [selectedSize, setSelectedSize] = useState(availableSizes[0] || '')
   const [selectedAge, setSelectedAge] = useState(availableAges[0] || '')
@@ -335,71 +335,90 @@ export function ProductDetailClient({ product, onPriceChange }: ProductDetailCli
           <h3 className="text-xs font-medium text-text-primary mb-0.5">Product Details</h3>
           <div className="space-y-0.5 text-xs">
             {product.product_code && (
-              <div className="flex justify-between items-center py-0.5 px-0.5 bg-background-subtle rounded-md">
-                <span className="text-text-muted font-medium">Code:</span>
-                <span className="font-medium text-text-primary">{product.product_code}</span>
+              <div className="flex justify-between items-center py-0.5 px-1 bg-slate-100 rounded text-xs">
+                <span className="text-slate-600 font-medium">Code:</span>
+                <span className="font-mono font-semibold text-slate-800">{product.product_code}</span>
               </div>
             )}
-            <div className={`flex justify-between items-center py-0.5 px-0.5 rounded-md transition-colors duration-200 ${
-              hasPriceAdjustment ? 'bg-primary/5 border border-primary/20' : 'bg-background-subtle'
+            <div className={`flex justify-between items-center py-0.5 px-1 rounded text-xs ${
+              hasPriceAdjustment ? 'bg-blue-50 border border-blue-200' : 'bg-slate-100'
             }`}>
-              <span className="text-text-muted font-medium">Unit Price:</span>
+              <span className="text-slate-600 font-medium">Unit Price:</span>
               <div className="flex items-center gap-1">
                 {hasPriceAdjustment ? (
                   <>
-                    <span className="text-text-muted line-through text-xs">${product.price.toFixed(2)}</span>
-                    <span className="font-medium text-primary">
+                    <span className="text-slate-400 line-through">${product.price.toFixed(2)}</span>
+                    <span className="font-semibold text-blue-700">
                       ${basePrice.toFixed(2)}
                     </span>
-                    <span className="text-xs text-text-muted">
+                    <span className="text-xs text-slate-500">
                       ({selectedVariant.price_adjustment > 0 ? '+' : ''}${selectedVariant.price_adjustment.toFixed(2)})
                     </span>
                   </>
                 ) : (
-                  <span className="font-medium text-text-primary">
+                  <span className="font-semibold text-slate-800">
                     ${basePrice.toFixed(2)}
                   </span>
                 )}
               </div>
             </div>
-            <div className="flex justify-between items-center py-0.5 px-0.5 bg-primary/5 border border-primary/20 rounded-md">
-              <span className="text-text-muted font-medium">Total Price:</span>
-              <span className="font-bold text-primary text-sm">
+            <div className="flex justify-between items-center py-0.5 px-1 bg-green-50 border border-green-200 rounded text-xs">
+              <span className="text-slate-600 font-medium">Total Price:</span>
+              <span className="font-bold text-green-700">
                 ${currentPrice.toFixed(2)}
               </span>
             </div>
-            <div className="flex justify-between items-center py-0.5 px-0.5 bg-background-subtle rounded-md">
-              <span className="text-text-muted font-medium">Season:</span>
-              <span className="font-medium text-text-primary capitalize">{product.season}</span>
+            <div className="flex justify-between items-center py-0.5 px-1 bg-slate-100 rounded text-xs">
+              <span className="text-slate-600 font-medium">Season:</span>
+              <span className="font-semibold text-slate-800 capitalize">{product.season}</span>
             </div>
             {product.brand && (
-              <div className="flex justify-between items-center py-0.5 px-0.5 bg-background-subtle rounded-md">
-                <span className="text-text-muted font-medium">Brand:</span>
-                <span className="font-medium text-text-primary">{product.brand}</span>
+              <div className="flex justify-between items-center py-0.5 px-1 bg-slate-100 rounded text-xs">
+                <span className="text-slate-600 font-medium">Brand:</span>
+                <span className="font-semibold text-slate-800">{product.brand}</span>
               </div>
             )}
             {product.material && (
-              <div className="flex justify-between items-center py-0.5 px-0.5 bg-background-subtle rounded-md">
-                <span className="text-text-muted font-medium">Material:</span>
-                <span className="font-medium text-text-primary">{product.material}</span>
+              <div className="flex justify-between items-center py-0.5 px-1 bg-slate-100 rounded text-xs">
+                <span className="text-slate-600 font-medium">Material:</span>
+                <span className="font-semibold text-slate-800">{product.material}</span>
               </div>
             )}
-            {product.age_range && (
-              <div className="flex justify-between items-center py-0.5 px-0.5 bg-background-subtle rounded-md">
-                <span className="text-text-muted font-medium">Age Range:</span>
-                <span className="font-medium text-text-primary">{product.age_range} years</span>
+            {/* Display age range - prioritize product age_range, fallback to variants */}
+            {product.age_range && product.age_range.trim() !== '' && (
+              <div className="flex justify-between items-center py-0.5 px-1 bg-slate-100 rounded text-xs">
+                <span className="text-slate-600 font-medium">Age Range:</span>
+                <span className="font-semibold text-slate-800">
+                  {product.age_range} years
+                </span>
+              </div>
+            )}
+            {/* Display age range from variants only if product doesn't have age_range */}
+            {(!product.age_range || product.age_range.trim() === '') && availableAges.length > 0 && (
+              <div className="flex justify-between items-center py-0.5 px-1 bg-slate-100 rounded text-xs">
+                <span className="text-slate-600 font-medium">Age Range:</span>
+                <span className="font-semibold text-slate-800">
+                  {availableAges.join(', ')} years
+                </span>
+              </div>
+            )}
+            {/* Display sizes from variants if available */}
+            {availableSizes.length > 0 && (
+              <div className="flex justify-between items-center py-0.5 px-1 bg-slate-100 rounded text-xs">
+                <span className="text-slate-600 font-medium">Sizes:</span>
+                <span className="font-semibold text-slate-800">{availableSizes.join(', ')}</span>
               </div>
             )}
             {product.gender && (
-              <div className="flex justify-between items-center py-0.5 px-0.5 bg-background-subtle rounded-md">
-                <span className="text-text-muted font-medium">Gender:</span>
-                <span className="font-medium text-text-primary capitalize">{product.gender}</span>
+              <div className="flex justify-between items-center py-0.5 px-1 bg-slate-100 rounded text-xs">
+                <span className="text-slate-600 font-medium">Gender:</span>
+                <span className="font-semibold text-slate-800 capitalize">{product.gender}</span>
               </div>
             )}
             {product.weight_grams && (
-              <div className="flex justify-between items-center py-0.5 px-0.5 bg-background-subtle rounded-md">
-                <span className="text-text-muted font-medium">Weight:</span>
-                <span className="font-medium text-text-primary">{product.weight_grams}g</span>
+              <div className="flex justify-between items-center py-0.5 px-1 bg-slate-100 rounded text-xs">
+                <span className="text-slate-600 font-medium">Weight:</span>
+                <span className="font-semibold text-slate-800">{product.weight_grams}g</span>
               </div>
             )}
           </div>
