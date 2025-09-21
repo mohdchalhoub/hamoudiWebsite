@@ -384,20 +384,24 @@ export function ProductDetailClient({ product, onPriceChange }: ProductDetailCli
                 <span className="font-semibold text-slate-800">{product.material}</span>
               </div>
             )}
-            {/* Display age range - STRICT: only if product.age_range exists and is not empty */}
-            {product.age_range && product.age_range.trim() !== '' && (
+            {/* Age Range */}
+            {product.age_range && typeof product.age_range === 'string' && product.age_range.trim() !== '' ? (
               <div className="flex justify-between items-center py-0.5 px-1 bg-slate-100 rounded text-xs">
                 <span className="text-slate-600 font-medium">Age Range:</span>
-                <span className="font-semibold text-slate-800">
-                  {product.age_range} years
-                </span>
+                <span className="font-semibold text-slate-800">{product.age_range.trim()}</span>
               </div>
-            )}
-            {/* Display size - STRICT: only if product.size exists and is not empty */}
-            {product.size && product.size.trim() !== '' && (
+            ) : (availableAges && availableAges.length > 0) ? (
               <div className="flex justify-between items-center py-0.5 px-1 bg-slate-100 rounded text-xs">
-                <span className="text-slate-600 font-medium">Size:</span>
-                <span className="font-semibold text-slate-800">{product.size}</span>
+                <span className="text-slate-600 font-medium">Age Range:</span>
+                <span className="font-semibold text-slate-800">{availableAges.join(', ')}</span>
+              </div>
+            ) : null}
+
+            {/* Sizes (only if sizes exist) */}
+            {availableSizes && availableSizes.length > 0 && (
+              <div className="flex justify-between items-center py-0.5 px-1 bg-slate-100 rounded text-xs">
+                <span className="text-slate-600 font-medium">Sizes:</span>
+                <span className="font-semibold text-slate-800">{availableSizes.join(', ')}</span>
               </div>
             )}
             {product.gender && (
