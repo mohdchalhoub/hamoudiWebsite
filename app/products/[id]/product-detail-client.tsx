@@ -385,7 +385,7 @@ export function ProductDetailClient({ product, onPriceChange }: ProductDetailCli
               </div>
             )}
             {/* Age Range */}
-            {product.age_range && typeof product.age_range === 'string' && product.age_range.trim() !== '' ? (
+            {product.age_range && product.age_range.trim() !== "" ? (
               <div className="flex justify-between items-center py-0.5 px-1 bg-slate-100 rounded text-xs">
                 <span className="text-slate-600 font-medium">Age Range:</span>
                 <span className="font-semibold text-slate-800">{product.age_range.trim()}</span>
@@ -393,7 +393,7 @@ export function ProductDetailClient({ product, onPriceChange }: ProductDetailCli
             ) : (availableAges && availableAges.length > 0) ? (
               <div className="flex justify-between items-center py-0.5 px-1 bg-slate-100 rounded text-xs">
                 <span className="text-slate-600 font-medium">Age Range:</span>
-                <span className="font-semibold text-slate-800">{availableAges.join(', ')}</span>
+                <span className="font-semibold text-slate-800">{availableAges.join(", ")}</span>
               </div>
             ) : null}
 
