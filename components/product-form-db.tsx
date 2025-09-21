@@ -196,6 +196,13 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
 
   const addVariant = () => {
     const sizeOrAge = variantType === 'size' ? newVariant.size : newVariant.age_range
+    
+    // Validate age range format if it's an age variant
+    if (variantType === 'age' && newVariant.age_range && !/^\d{1,2}-\d{1,2}$/.test(newVariant.age_range)) {
+      alert('Please enter a valid age range format like 3-12')
+      return
+    }
+    
     if (sizeOrAge && newVariant.color) {
       const variant = {
         size: variantType === 'size' ? newVariant.size : null,
@@ -555,21 +562,21 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
                 ) : (
                   <div className="space-y-1">
                     <Input
-                      type="number"
-                      placeholder="Age (e.g., 5, 8, 12)"
+                      type="text"
+                      placeholder="Age range (e.g., 3-12, 6-8)"
                       value={newVariant.age_range}
                       onChange={(e) => {
                         const value = e.target.value
-                        // Only allow positive numbers
-                        if (value === '' || (Number(value) > 0 && Number(value) <= 18)) {
+                        // Allow empty string or valid age range format
+                        if (value === '' || /^\d{1,2}-\d{1,2}$/.test(value)) {
                           setNewVariant(prev => ({ ...prev, age_range: value }))
                         }
                       }}
-                      min="1"
-                      max="18"
+                      pattern="^\d{1,2}-\d{1,2}$"
+                      title="Enter age range like 3-12"
                       className="transition-all duration-200"
                     />
-                    <p className="text-xs text-muted-foreground">Enter age (1-18 years)</p>
+                    <p className="text-xs text-muted-foreground">Enter age range like 3-12</p>
                   </div>
                 )}
                 <Input
