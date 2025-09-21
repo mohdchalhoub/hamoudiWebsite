@@ -67,6 +67,7 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
     stock_quantity: 0,
     price_adjustment: 0
   })
+  const [ageRangeError, setAgeRangeError] = useState("")
 
   // Generate product code function
   const generateCode = async () => {
@@ -199,7 +200,7 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
     
     // Validate age range format if it's an age variant
     if (variantType === 'age' && newVariant.age_range && !/^\d{1,2}-\d{1,2}$/.test(newVariant.age_range)) {
-      alert('Please enter a valid age range format like 3-12')
+      setAgeRangeError("Please enter format like 3-12")
       return
     }
     
@@ -225,6 +226,7 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
         stock_quantity: 0,
         price_adjustment: 0
       })
+      setAgeRangeError("") // Clear any error when successfully adding variant
     }
   }
 
@@ -530,6 +532,7 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
                     onClick={() => {
                       setVariantType('size')
                       setNewVariant(prev => ({ ...prev, age_range: '' }))
+                      setAgeRangeError("")
                     }}
                   >
                     Size
@@ -541,6 +544,7 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
                     onClick={() => {
                       setVariantType('age')
                       setNewVariant(prev => ({ ...prev, size: '' }))
+                      setAgeRangeError("")
                     }}
                   >
                     Age
@@ -567,16 +571,26 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
                       value={newVariant.age_range}
                       onChange={(e) => {
                         const value = e.target.value
-                        // Allow empty string or valid age range format
-                        if (value === '' || /^\d{1,2}-\d{1,2}$/.test(value)) {
-                          setNewVariant(prev => ({ ...prev, age_range: value }))
+                        setNewVariant(prev => ({ ...prev, age_range: value }))
+                        
+                        // Validate age range format
+                        if (value === '') {
+                          setAgeRangeError("")
+                        } else if (!/^\d{1,2}-\d{1,2}$/.test(value)) {
+                          setAgeRangeError("Please enter format like 3-12")
+                        } else {
+                          setAgeRangeError("")
                         }
                       }}
                       pattern="^\d{1,2}-\d{1,2}$"
                       title="Enter age range like 3-12"
-                      className="transition-all duration-200"
+                      className={`transition-all duration-200 ${ageRangeError ? 'border-red-500' : ''}`}
                     />
-                    <p className="text-xs text-muted-foreground">Enter age range like 3-12</p>
+                    {ageRangeError ? (
+                      <p className="text-xs text-red-500">{ageRangeError}</p>
+                    ) : (
+                      <p className="text-xs text-muted-foreground">Enter age range like 3-12</p>
+                    )}
                   </div>
                 )}
                 <Input
