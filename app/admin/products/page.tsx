@@ -132,11 +132,11 @@ export default async function AdminProductsPage() {
                     <AdminProductActions productId={product.id} />
                   </div>
                 </div>
-                {product.variants && product.variants.length > 0 && (
+                {product.variants && product.variants.length > 0 ? (
                   <div className="space-y-2">
                     <div className="text-xs text-muted-foreground">
                       {product.variants.length} variant{product.variants.length !== 1 ? 's' : ''} • 
-                      Stock: {product.variants.reduce((sum, v) => sum + (v.stock_quantity || 0), 0)} units
+                      Total Stock: {product.variants.reduce((sum, v) => sum + (v.stock_quantity || 0), 0) + (product.quantity || 0)} units
                     </div>
                     <div className="space-y-1">
                       <div className="text-xs font-medium text-slate-700">Variant Codes:</div>
@@ -153,6 +153,10 @@ export default async function AdminProductsPage() {
                         ))}
                       </div>
                     </div>
+                  </div>
+                ) : (
+                  <div className="text-xs text-muted-foreground">
+                    Base product • Stock: {product.quantity || 0} units
                   </div>
                 )}
               </div>

@@ -635,6 +635,95 @@ export async function getAllOrders(): Promise<OrderWithItems[]> {
   return data || []
 }
 
+// Count functions for dashboard statistics
+export async function getProductsCount(filters?: {
+  active?: boolean
+  featured?: boolean
+  on_sale?: boolean
+  gender?: 'boys' | 'girls' | 'unisex'
+}): Promise<number> {
+  let query = supabaseAdmin
+    .from('products')
+    .select('id', { count: 'exact', head: true })
+
+  if (filters?.active !== undefined) {
+    query = query.eq('is_active', filters.active)
+  }
+  if (filters?.featured !== undefined) {
+    query = query.eq('is_featured', filters.featured)
+  }
+  if (filters?.on_sale !== undefined) {
+    query = query.eq('on_sale', filters.on_sale)
+  }
+  if (filters?.gender) {
+    query = query.eq('gender', filters.gender)
+  }
+
+  const { count, error } = await query
+
+  if (error) throw error
+  return count || 0
+}
+
+export async function getOrdersCount(filters?: {
+  status?: string
+  date_from?: string
+  date_to?: string
+}): Promise<number> {
+  let query = supabaseAdmin
+    .from('orders')
+    .select('id', { count: 'exact', head: true })
+
+  if (filters?.status) {
+    query = query.eq('status', filters.status)
+  }
+  if (filters?.date_from) {
+    query = query.gte('created_at', filters.date_from)
+  }
+  if (filters?.date_to) {
+    query = query.lte('created_at', filters.date_to)
+  }
+
+  const { count, error } = await query
+
+  if (error) throw error
+  return count || 0
+}
+
+export async function getCustomersCount(): Promise<number> {
+  const { count, error } = await supabaseAdmin
+    .from('customers')
+    .select('id', { count: 'exact', head: true })
+
+  if (error) throw error
+  return count || 0
+}
+
+export async function getTotalRevenue(filters?: {
+  status?: string
+  date_from?: string
+  date_to?: string
+}): Promise<number> {
+  let query = supabaseAdmin
+    .from('orders')
+    .select('total_amount')
+
+  if (filters?.status) {
+    query = query.eq('status', filters.status)
+  }
+  if (filters?.date_from) {
+    query = query.gte('created_at', filters.date_from)
+  }
+  if (filters?.date_to) {
+    query = query.lte('created_at', filters.date_to)
+  }
+
+  const { data, error } = await query
+
+  if (error) throw error
+  return data?.reduce((sum, order) => sum + order.total_amount, 0) || 0
+}
+
 export async function updateOrderStatus(orderId: string, status: string): Promise<Order> {
   const { data, error } = await supabaseAdmin
     .from('orders')

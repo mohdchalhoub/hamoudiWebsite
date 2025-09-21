@@ -84,6 +84,20 @@ export async function PUT(
       )
     }
     
+    // Get current order to check previous status
+    const { data: currentOrder, error: currentOrderError } = await supabase
+      .from('orders')
+      .select('status, order_items(*)')
+      .eq('id', orderId)
+      .single()
+    
+    if (currentOrderError || !currentOrder) {
+      return NextResponse.json(
+        { error: 'Order not found' },
+        { status: 404 }
+      )
+    }
+    
     // Update order
     const updateData: any = {
       updated_at: new Date().toISOString()
@@ -149,6 +163,72 @@ export async function PUT(
         { error: 'Failed to update order' },
         { status: 500 }
       )
+    }
+    
+    // Handle stock updates based on status changes
+    if (status && status !== currentOrder.status) {
+      try {
+        // If order is being confirmed, reduce stock
+        if (status === 'confirmed' && currentOrder.status !== 'confirmed') {
+          const orderItems = order_items || currentOrder.order_items || []
+          const stockUpdateItems = orderItems
+            .filter((item: any) => item.product_id) // Only items with valid product_id
+            .map((item: any) => ({
+              productId: item.product_id,
+              quantity: item.quantity
+            }))
+          
+          if (stockUpdateItems.length > 0) {
+            const stockResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/products/stock`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                orderItems: stockUpdateItems,
+                operation: 'subtract'
+              })
+            })
+            
+            if (!stockResponse.ok) {
+              console.error('Failed to update stock:', await stockResponse.text())
+              // Don't fail the order update, just log the error
+            }
+          }
+        }
+        
+        // If order is being cancelled and was previously confirmed, restore stock
+        if (status === 'cancelled' && currentOrder.status === 'confirmed') {
+          const orderItems = order_items || currentOrder.order_items || []
+          const stockUpdateItems = orderItems
+            .filter((item: any) => item.product_id) // Only items with valid product_id
+            .map((item: any) => ({
+              productId: item.product_id,
+              quantity: item.quantity
+            }))
+          
+          if (stockUpdateItems.length > 0) {
+            const stockResponse = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'}/api/products/stock`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                orderItems: stockUpdateItems,
+                operation: 'add'
+              })
+            })
+            
+            if (!stockResponse.ok) {
+              console.error('Failed to restore stock:', await stockResponse.text())
+              // Don't fail the order update, just log the error
+            }
+          }
+        }
+      } catch (stockError) {
+        console.error('Stock update error:', stockError)
+        // Don't fail the order update, just log the error
+      }
     }
     
     return NextResponse.json({ order })

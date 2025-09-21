@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { TrendingUp, TrendingDown, DollarSign, ShoppingCart, Users, Package } from "lucide-react"
-import { getAllOrders, getProducts } from "@/lib/database"
+import { getAllOrders, getProducts, getProductsCount, getOrdersCount, getCustomersCount, getTotalRevenue } from "@/lib/database"
 import type { OrderWithItems, ProductWithDetails } from "@/lib/database.types"
 
 interface AnalyticsData {
@@ -34,14 +34,15 @@ export default function AnalyticsPage() {
   useEffect(() => {
     const fetchAnalytics = async () => {
       try {
-        const [orders, products] = await Promise.all([
+        const [orders, products, totalRevenue, totalOrders, totalCustomers] = await Promise.all([
           getAllOrders(),
-          getProducts({ active: true })
+          getProducts({ active: true }),
+          getTotalRevenue(),
+          getOrdersCount(),
+          getCustomersCount()
         ])
 
-        // Calculate analytics
-        const totalRevenue = orders.reduce((sum, order) => sum + order.total_amount, 0)
-        const totalOrders = orders.length
+        // Calculate analytics using accurate counts
         const uniqueCustomers = new Set(orders.map((order) => order.email)).size
         const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0
 
@@ -74,7 +75,7 @@ export default function AnalyticsPage() {
         setAnalytics({
           totalRevenue,
           totalOrders,
-          totalCustomers: uniqueCustomers,
+          totalCustomers: totalCustomers, // Use accurate count from database
           averageOrderValue,
           revenueGrowth,
           ordersGrowth,

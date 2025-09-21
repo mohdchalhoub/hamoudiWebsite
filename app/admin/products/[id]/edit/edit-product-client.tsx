@@ -52,6 +52,7 @@ export function EditProductClient({ product }: EditProductClientProps) {
     category_id: product.category_id || "",
     gender: product.gender || "boys",
     season: product.season || "summer",
+    quantity: product.quantity || 0,
     images: product.images || [],
     videos: product.videos || [],
     is_active: product.is_active,

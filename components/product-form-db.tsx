@@ -326,14 +326,14 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
                   min="0"
                   value={formData.quantity}
                   onChange={(e) => {
-                    const value = Number.parseInt(e.target.value) || 0
+                    const value = Math.max(0, Number.parseInt(e.target.value) || 0)
                     setFormData((prev) => ({ ...prev, quantity: value }))
                   }}
                   placeholder="Base quantity (optional)"
                   className="h-8 text-xs"
                 />
                 <p className="text-xs text-text-muted mt-0.5">
-                  Base quantity for products without variants (optional)
+                  Base quantity for products without variants (minimum: 0)
                 </p>
               </div>
 
@@ -586,7 +586,7 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
                   type="number"
                   placeholder="Stock Qty"
                   value={newVariant.stock_quantity}
-                  onChange={(e) => setNewVariant(prev => ({ ...prev, stock_quantity: Number(e.target.value) }))}
+                  onChange={(e) => setNewVariant(prev => ({ ...prev, stock_quantity: Math.max(0, Number(e.target.value) || 0) }))}
                 />
                 <Input
                   type="number"
@@ -622,7 +622,7 @@ export function ProductFormDb({ onSubmit, onCancel, isSubmitting = false, initia
                           min="0"
                           value={variant.stock_quantity}
                           onChange={(e) => {
-                            const value = Number.parseInt(e.target.value) || 0
+                            const value = Math.max(0, Number.parseInt(e.target.value) || 0)
                             setFormData((prev) => ({
                               ...prev,
                               variants: prev.variants.map((v, i) => 

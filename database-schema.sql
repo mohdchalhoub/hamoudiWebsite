@@ -37,6 +37,7 @@ CREATE TABLE products (
   is_featured BOOLEAN DEFAULT false,
   is_active BOOLEAN DEFAULT true,
   is_digital BOOLEAN DEFAULT false,
+  quantity INTEGER DEFAULT 0 CHECK (quantity >= 0),
   weight_grams INTEGER,
   dimensions_cm JSONB, -- {length, width, height}
   seo_title VARCHAR(200),

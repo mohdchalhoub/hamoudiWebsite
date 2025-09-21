@@ -1,22 +1,30 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
-import { getProducts, getAllOrders } from "@/lib/database"
+import { getProductsCount, getOrdersCount, getCustomersCount, getTotalRevenue, getAllOrders } from "@/lib/database"
 import { Package, ShoppingCart, DollarSign, TrendingUp, Users, Eye } from "lucide-react"
 
 export default async function AdminDashboard() {
-  // Fetch data from database
-  const [products, orders] = await Promise.all([
-    getProducts({ active: true }),
-    getAllOrders()
+  // Fetch accurate counts from database using count queries
+  const [
+    totalProducts,
+    totalOrders,
+    totalCustomers,
+    totalRevenue,
+    pendingOrders,
+    recentOrders
+  ] = await Promise.all([
+    getProductsCount({ active: true }),
+    getOrdersCount(),
+    getCustomersCount(),
+    getTotalRevenue(),
+    getOrdersCount({ status: 'pending' }),
+    getAllOrders().then(orders => orders.slice(0, 5))
   ])
 
-  const totalRevenue = orders.reduce((sum, order) => sum + order.total_amount, 0)
-  const pendingOrders = orders.filter((order) => order.status === "pending").length
-  const recentOrders = orders.slice(0, 5)
-
   const stats = {
-    totalProducts: products.length,
-    totalOrders: orders.length,
+    totalProducts,
+    totalOrders,
+    totalCustomers,
     totalRevenue,
     pendingOrders,
   }
@@ -62,12 +70,12 @@ export default async function AdminDashboard() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Growth</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium">Total Customers</CardTitle>
+            <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+12%</div>
-            <p className="text-xs text-muted-foreground">From last month</p>
+            <div className="text-2xl font-bold">{stats.totalCustomers}</div>
+            <p className="text-xs text-muted-foreground">Registered customers</p>
           </CardContent>
         </Card>
       </div>
