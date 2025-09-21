@@ -88,28 +88,8 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
     )
   }
 
-  // If products fit in one slide, show static grid
-  if (products.length <= currentProductsPerSlide) {
-    return (
-      <div className="space-y-6">
-        {title && (
-          <div className="text-center">
-            <h2 className="text-2xl font-semibold text-text-primary">{title}</h2>
-          </div>
-        )}
-        
-        <div className={`grid gap-6 max-w-7xl mx-auto ${
-          screenSize === 'desktop' ? 'grid-cols-4' : 'grid-cols-2'
-        }`}>
-          {products.map((product) => (
-            <div key={product.id} className="h-full">
-              <ProductCard product={product} />
-            </div>
-          ))}
-        </div>
-      </div>
-    )
-  }
+  // Always show carousel with touch support, even for few products
+  // This ensures touch events are always available
 
   const handlePrev = () => {
     setCurrentIndex((prev) => (prev > 0 ? prev - 1 : totalSlides - 1))
@@ -121,6 +101,7 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
 
   // Enhanced touch handling for mobile with improved responsiveness
   const handleTouchStart = (e: React.TouchEvent) => {
+    console.log('Touch start detected', e.touches[0].clientX)
     const target = e.target as HTMLElement
     
     // Only start dragging if it's not a touch on a product card or any interactive element
@@ -133,12 +114,14 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
         target.closest('input') ||
         target.closest('select') ||
         target.closest('textarea')) {
+      console.log('Touch blocked on interactive element')
       return
     }
     
     // Prevent default touch behaviors that might interfere
     e.preventDefault()
     
+    console.log('Starting drag')
     setIsDragging(true)
     setStartX(e.touches[0].clientX)
     setTranslateX(0)
@@ -146,6 +129,8 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
 
   const handleTouchMove = (e: React.TouchEvent) => {
     if (!isDragging) return
+    
+    console.log('Touch move detected', e.touches[0].clientX)
     
     // Prevent scrolling and other touch behaviors while dragging
     e.preventDefault()
@@ -173,6 +158,7 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
   const handleTouchEnd = (e: React.TouchEvent) => {
     if (!isDragging) return
     
+    console.log('Touch end detected', translateX)
     setIsDragging(false)
     
     // Determine swipe direction and threshold - optimized for mobile
@@ -181,8 +167,10 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
     
     if (Math.abs(translateX) > threshold || velocity > 0.5) {
       if (translateX > 0) {
+        console.log('Swiping to next')
         handleNext()
       } else {
+        console.log('Swiping to previous')
         handlePrev()
       }
     }
@@ -243,34 +231,36 @@ export function Enhanced3DCarousel({ products, title }: Enhanced3DCarouselProps)
       )}
       
       <div className="relative">
-        {/* External Navigation Arrows - Positioned outside the carousel */}
-        <div className="flex items-center justify-between mb-6">
-          <Button
-            variant="outline"
-            size="lg"
-            onClick={handlePrev}
-            className="flex items-center gap-2 bg-background/95 backdrop-blur-sm border-2 border-primary/20 hover:border-primary hover:text-primary shadow-lg hover:shadow-xl transition-all duration-300 min-w-[120px] h-12 text-base font-medium"
-          >
-            <ChevronLeft className="h-6 w-6" />
-            <span className="hidden sm:inline">Previous</span>
-          </Button>
-          
-          <div className="text-center">
-            <p className="text-sm text-muted-foreground font-medium">
-              {currentIndex + 1} of {totalSlides} • {products.length} products
-            </p>
+        {/* External Navigation Arrows - Only show if multiple slides */}
+        {totalSlides > 1 && (
+          <div className="flex items-center justify-between mb-6">
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={handlePrev}
+              className="flex items-center gap-2 bg-background/95 backdrop-blur-sm border-2 border-primary/20 hover:border-primary hover:text-primary shadow-lg hover:shadow-xl transition-all duration-300 min-w-[120px] h-12 text-base font-medium"
+            >
+              <ChevronLeft className="h-6 w-6" />
+              <span className="hidden sm:inline">Previous</span>
+            </Button>
+            
+            <div className="text-center">
+              <p className="text-sm text-muted-foreground font-medium">
+                {currentIndex + 1} of {totalSlides} • {products.length} products
+              </p>
+            </div>
+            
+            <Button
+              variant="outline"
+              size="lg"
+              onClick={handleNext}
+              className="flex items-center gap-2 bg-background/95 backdrop-blur-sm border-2 border-primary/20 hover:border-primary hover:text-primary shadow-lg hover:shadow-xl transition-all duration-300 min-w-[120px] h-12 text-base font-medium"
+            >
+              <span className="hidden sm:inline">Next</span>
+              <ChevronRight className="h-6 w-6" />
+            </Button>
           </div>
-          
-          <Button
-            variant="outline"
-            size="lg"
-            onClick={handleNext}
-            className="flex items-center gap-2 bg-background/95 backdrop-blur-sm border-2 border-primary/20 hover:border-primary hover:text-primary shadow-lg hover:shadow-xl transition-all duration-300 min-w-[120px] h-12 text-base font-medium"
-          >
-            <span className="hidden sm:inline">Next</span>
-            <ChevronRight className="h-6 w-6" />
-          </Button>
-        </div>
+        )}
 
         {/* Carousel Container */}
         <div

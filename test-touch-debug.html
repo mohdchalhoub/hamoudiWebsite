@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Touch Debug Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .carousel {
+            width: 100%;
+            height: 200px;
+            background: #f0f0f0;
+            border: 2px solid #333;
+            position: relative;
+            overflow: hidden;
+            touch-action: pan-y pinch-zoom;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .slide {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        .slide:nth-child(1) { background: #ff6b6b; }
+        .slide:nth-child(2) { background: #4ecdc4; }
+        .slide:nth-child(3) { background: #45b7d1; }
+        .slide:nth-child(4) { background: #96ceb4; }
+        .slides-container {
+            display: flex;
+            height: 100%;
+            transition: transform 0.5s ease;
+        }
+        .debug {
+            margin-top: 20px;
+            padding: 10px;
+            background: #000;
+            color: #0f0;
+            font-family: monospace;
+            font-size: 12px;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Touch Debug Test</h1>
+    <p>Try swiping left/right on the colored area below:</p>
+    
+    <div class="carousel" id="carousel">
+        <div class="slides-container" id="slidesContainer">
+            <div class="slide">Slide 1</div>
+            <div class="slide">Slide 2</div>
+            <div class="slide">Slide 3</div>
+            <div class="slide">Slide 4</div>
+        </div>
+    </div>
+    
+    <div class="debug" id="debug"></div>
+    
+    <script>
+        const carousel = document.getElementById('carousel');
+        const slidesContainer = document.getElementById('slidesContainer');
+        const debug = document.getElementById('debug');
+        
+        let currentIndex = 0;
+        let isDragging = false;
+        let startX = 0;
+        let translateX = 0;
+        
+        function log(message) {
+            const time = new Date().toLocaleTimeString();
+            debug.innerHTML += `[${time}] ${message}<br>`;
+            debug.scrollTop = debug.scrollHeight;
+        }
+        
+        function updateSlide() {
+            const translate = -currentIndex * 100 + translateX;
+            slidesContainer.style.transform = `translateX(${translate}%)`;
+        }
+        
+        function handleTouchStart(e) {
+            log('Touch start: ' + e.touches[0].clientX);
+            e.preventDefault();
+            isDragging = true;
+            startX = e.touches[0].clientX;
+            translateX = 0;
+        }
+        
+        function handleTouchMove(e) {
+            if (!isDragging) return;
+            
+            log('Touch move: ' + e.touches[0].clientX);
+            e.preventDefault();
+            e.stopPropagation();
+            
+            const currentX = e.touches[0].clientX;
+            const diffX = startX - currentX;
+            translateX = diffX;
+            updateSlide();
+        }
+        
+        function handleTouchEnd(e) {
+            if (!isDragging) return;
+            
+            log('Touch end: ' + translateX);
+            isDragging = false;
+            
+            const threshold = 50;
+            if (Math.abs(translateX) > threshold) {
+                if (translateX > 0) {
+                    currentIndex = Math.min(currentIndex + 1, 3);
+                    log('Swiped to next: ' + currentIndex);
+                } else {
+                    currentIndex = Math.max(currentIndex - 1, 0);
+                    log('Swiped to previous: ' + currentIndex);
+                }
+            }
+            
+            translateX = 0;
+            updateSlide();
+        }
+        
+        carousel.addEventListener('touchstart', handleTouchStart, { passive: false });
+        carousel.addEventListener('touchmove', handleTouchMove, { passive: false });
+        carousel.addEventListener('touchend', handleTouchEnd, { passive: false });
+        
+        log('Touch test initialized. Try swiping on the colored area.');
+    </script>
+</body>
+</html>
