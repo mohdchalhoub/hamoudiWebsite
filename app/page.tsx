@@ -9,6 +9,7 @@ import { Footer } from "@/components/footer"
 import { EnhancedAnimatedSection } from "@/components/enhanced-animated-section"
 import { PageTransition } from "@/components/page-transition"
 import { Enhanced3DCarousel } from "@/components/enhanced-3d-carousel"
+import { HeroProductCarousel } from "@/components/hero-product-carousel"
 import { SectionHeader } from "@/components/section-header"
 import { getProducts } from "@/lib/database"
 import { ArrowRight, Shield, Truck, Heart, Sparkles, Star, Zap } from "lucide-react"
@@ -85,13 +86,14 @@ export default async function HomePage() {
                   </h1>
                 </EnhancedAnimatedSection>
                 
-                <EnhancedAnimatedSection animation="fade-up" delay={0.4}>
-                  <p className="text-lg text-text-muted max-w-2xl mx-auto leading-relaxed">
-                    Discover our modern collection of kids' clothing. Quality fashion that sparks imagination and
-                    brings joy to every adventure.
-                  </p>
-                </EnhancedAnimatedSection>
               </div>
+              
+              {/* Hero Product Carousel */}
+              <EnhancedAnimatedSection animation="fade-up" delay={0.4}>
+                <div className="my-8">
+                  <HeroProductCarousel products={featuredProducts} />
+                </div>
+              </EnhancedAnimatedSection>
               
               <EnhancedAnimatedSection animation="bounce" delay={0.6}>
                 <div className="flex flex-col sm:flex-row gap-4 max-w-md mx-auto">
