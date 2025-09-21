@@ -141,7 +141,30 @@ export function HeroProductCarousel({ products }: HeroProductCarouselProps) {
   }
 
   return (
-    <div className="w-full max-w-lg mx-auto">
+    <div className="w-full max-w-lg mx-auto relative">
+      {/* External Navigation Arrows - Outside carousel */}
+      {validProducts.length > 1 && (
+        <>
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute left-[-60px] lg:left-[-80px] top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 shadow-lg backdrop-blur-sm h-10 w-10 lg:h-12 lg:w-12 z-10 rounded-full"
+            onClick={handlePrev}
+          >
+            <ChevronLeft className="h-5 w-5 lg:h-6 lg:w-6" />
+          </Button>
+          
+          <Button
+            variant="ghost"
+            size="icon"
+            className="absolute right-[-60px] lg:right-[-80px] top-1/2 -translate-y-1/2 bg-white/90 hover:bg-white text-gray-800 shadow-lg backdrop-blur-sm h-10 w-10 lg:h-12 lg:w-12 z-10 rounded-full"
+            onClick={handleNext}
+          >
+            <ChevronRight className="h-5 w-5 lg:h-6 lg:w-6" />
+          </Button>
+        </>
+      )}
+
       {/* Main Carousel Container */}
       <div className="relative">
         <div
@@ -201,28 +224,6 @@ export function HeroProductCarousel({ products }: HeroProductCarouselProps) {
             ))}
           </div>
 
-          {/* Navigation Arrows */}
-          {validProducts.length > 1 && (
-            <>
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 shadow-md backdrop-blur-sm h-8 w-8"
-                onClick={handlePrev}
-              >
-                <ChevronLeft className="h-4 w-4" />
-              </Button>
-              
-              <Button
-                variant="ghost"
-                size="icon"
-                className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 shadow-md backdrop-blur-sm h-8 w-8"
-                onClick={handleNext}
-              >
-                <ChevronRight className="h-4 w-4" />
-              </Button>
-            </>
-          )}
         </div>
 
         {/* Dots Indicator */}
