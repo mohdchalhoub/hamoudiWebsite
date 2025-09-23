@@ -39,11 +39,23 @@ export function OrderConfirmationClient({ orderId }: OrderConfirmationClientProp
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
   const [productImages, setProductImages] = useState<Record<string, string>>({})
+  const [storedItems, setStoredItems] = useState<any[]>([])
+  const [storedTotal, setStoredTotal] = useState<number | null>(null)
 
   useEffect(() => {
     const fetchOrder = async () => {
       try {
-        const response = await fetch(`/api/orders/${orderId}`)
+        // First, try to get stored items from localStorage
+        const storedData = localStorage.getItem(`order_${orderId}`)
+        if (storedData) {
+          const parsed = JSON.parse(storedData)
+          setStoredItems(parsed.items || [])
+          setStoredTotal(parsed.total || null)
+          // Clean up localStorage after use
+          localStorage.removeItem(`order_${orderId}`)
+        }
+
+        const response = await fetch(`/api/orders?id=${orderId}`)
         
         if (!response.ok) {
           throw new Error('Order not found')
@@ -53,9 +65,13 @@ export function OrderConfirmationClient({ orderId }: OrderConfirmationClientProp
         setOrder(data.order)
         
         // Fetch product images for items that have product IDs
-        const productIds = data.order.order_items
-          .map((item: any) => item.product_id)
-          .filter((id: string | null) => id && id !== 'null')
+        const productIds = [
+          ...(data.order.order_items || []).map((item: any) => item.product_id),
+          ...storedItems.map((item: any) => item.product?.id)
+        ].filter((id: string | null) => id && id !== 'null' && id !== undefined)
+        
+        console.log('Product IDs for images:', productIds)
+        console.log('Stored items:', storedItems)
         
         if (productIds.length > 0) {
           try {
@@ -67,7 +83,10 @@ export function OrderConfirmationClient({ orderId }: OrderConfirmationClientProp
             
             if (imagesResponse.ok) {
               const imagesData = await imagesResponse.json()
+              console.log('Fetched images:', imagesData.images)
               setProductImages(imagesData.images || {})
+            } else {
+              console.log('Images API failed:', imagesResponse.status)
             }
           } catch (imageError) {
             // Ignore image fetch errors - we'll use placeholders
@@ -129,7 +148,15 @@ export function OrderConfirmationClient({ orderId }: OrderConfirmationClientProp
             </div>
             <div>
               <span className="text-muted-foreground">Total:</span>
-              <div className="font-bold">${order.total_amount.toFixed(2)}</div>
+              <div className="font-bold">
+                ${storedTotal !== null 
+                  ? storedTotal.toFixed(2)
+                  : (storedItems.length > 0 
+                    ? storedItems.reduce((sum, item) => sum + (item.product?.price * item.quantity || 0), 0).toFixed(2)
+                    : order.total_amount.toFixed(2)
+                  )
+                }
+              </div>
             </div>
           </div>
           <Separator />
@@ -158,55 +185,102 @@ export function OrderConfirmationClient({ orderId }: OrderConfirmationClientProp
           <CardTitle>Items Ordered</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {order.order_items.map((item) => {
-            const productImage = item.product_id ? productImages[item.product_id] : null
+          {(storedItems.length > 0 || (order.order_items && order.order_items.length > 0)) ? (
+            (storedItems.length > 0 ? storedItems : order.order_items).map((item, index) => {
+            const productId = item.product_id || item.product?.id
+            const productName = item.product?.name || item.product_name
+            let productImage = productId ? productImages[productId] : null
+            
+            // If no image from API, try to use the product's images directly
+            if (!productImage && item.product?.images && item.product.images.length > 0) {
+              productImage = item.product.images[0]
+            }
+            
+            // If still no image, try to construct a path from the product name
+            if (!productImage && productName) {
+              // Try common image paths
+              const possiblePaths = [
+                `/products/${productName.toLowerCase().replace(/\s+/g, '-')}.jpg`,
+                `/products/${productName.toLowerCase().replace(/\s+/g, '-')}.png`,
+                `/products/${productName.toLowerCase().replace(/\s+/g, '-')}.webp`,
+                `/boys-${productName.toLowerCase().replace(/\s+/g, '-')}.png`,
+                `/girls-${productName.toLowerCase().replace(/\s+/g, '-')}.png`
+              ]
+              productImage = possiblePaths[0] // Use first possible path as fallback
+            }
+            
+            console.log(`Item ${index}:`, {
+              productId,
+              productImage,
+              productName,
+              hasImages: !!item.product?.images,
+              images: item.product?.images
+            })
+            const selectedSize = item.selectedSize || (item.variant_description?.split(', ')[0])
+            const selectedColor = item.selectedColor || (item.variant_description?.split(', ')[1])
+            const quantity = item.quantity
+            const unitPrice = item.product?.price || item.unit_price
+            const totalPrice = item.product?.price * item.quantity || item.total_price
+            const productCode = item.productCode || item.product_sku || 'N/A'
             
             return (
-              <div key={item.id} className="flex gap-3">
+              <div key={item.id || index} className="flex gap-3">
                 <div className="relative w-16 h-16 rounded-md overflow-hidden flex-shrink-0 border">
-                  {productImage ? (
+                  {productImage && productImage !== 'null' && productImage !== '' ? (
                     <Image
                       src={productImage}
-                      alt={item.product_name}
+                      alt={productName}
                       fill
                       className="object-cover"
                       sizes="64px"
-                      onError={() => {
+                      onError={(e) => {
                         // If image fails to load, we'll keep the placeholder
-                        console.log('Failed to load image for:', item.product_name)
+                        console.log('Failed to load image for:', productName, 'URL:', productImage)
+                        console.log('Image error:', e)
                       }}
                     />
                   ) : (
                     <div className="w-full h-full bg-gradient-to-br from-blue-100 to-purple-100 flex items-center justify-center">
                       <div className="text-center">
                         <div className="text-lg font-bold text-blue-600">
-                          {item.product_name.charAt(0).toUpperCase()}
+                          {productName.charAt(0).toUpperCase()}
                         </div>
                         <div className="text-xs text-blue-500 font-medium">
-                          {item.quantity}x
+                          {quantity}x
                         </div>
                       </div>
                     </div>
                   )}
                 </div>
                 <div className="flex-1">
-                  <h4 className="font-medium text-sm">{item.product_name}</h4>
+                  <h4 className="font-medium text-sm">{productName}</h4>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground mt-1">
-                    {item.variant_description && (
+                    {selectedSize && (
                       <Badge variant="outline" className="text-xs px-1 py-0">
-                        {item.variant_description}
+                        {selectedSize}
                       </Badge>
                     )}
-                    <span>Qty: {item.quantity}</span>
+                    {selectedColor && (
+                      <Badge variant="outline" className="text-xs px-1 py-0">
+                        {selectedColor}
+                      </Badge>
+                    )}
+                    <span>Qty: {quantity}</span>
                   </div>
                   <div className="text-xs text-muted-foreground mt-1">
-                    Code: {item.product_sku || 'N/A'}
+                    Code: {productCode}
                   </div>
-                  <div className="text-sm font-semibold mt-1">${item.total_price.toFixed(2)}</div>
+                  <div className="text-sm font-semibold mt-1">${totalPrice.toFixed(2)}</div>
                 </div>
               </div>
             )
-          })}
+          })
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              <p>Order items not available.</p>
+              <p className="text-sm mt-2">This order was placed successfully via WhatsApp.</p>
+            </div>
+          )}
         </CardContent>
       </Card>
     </div>

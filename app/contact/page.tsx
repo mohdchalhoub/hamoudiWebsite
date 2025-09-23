@@ -46,8 +46,7 @@ export default function ContactPage() {
 
   const handleWhatsAppContact = () => {
     const message = `Hi KidsCorner! I have a question about your products.`
-    const whatsappLink = WhatsAppService.generateWhatsAppLink("+15551234567", message)
-    window.open(whatsappLink, "_blank")
+    WhatsAppService.redirectToWhatsApp("+15551234567", message)
   }
 
   return (

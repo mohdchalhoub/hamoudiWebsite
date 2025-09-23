@@ -154,7 +154,7 @@ export function CartDrawer() {
           <div className="border-t pt-4 space-y-4">
             <div className="space-y-2">
               <div className="flex justify-between items-center">
-                <span className="text-lg font-semibold">Total</span>
+                <span className="text-lg font-semibold">Total ({totalItems} items)</span>
                 <span className="text-lg font-bold">${totalPrice.toFixed(2)}</span>
               </div>
             </div>

@@ -142,7 +142,7 @@ export default function CartPage() {
                 <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
                 <div className="space-y-3">
                   <div className="flex justify-between text-lg font-bold">
-                    <span>Total</span>
+                    <span>Total ({totalItems} items)</span>
                     <span>${finalTotal.toFixed(2)}</span>
                   </div>
                 </div>

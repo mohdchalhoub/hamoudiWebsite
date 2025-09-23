@@ -14,7 +14,7 @@ export class WhatsAppService {
       // Generate WhatsApp URL using owner's number
       const whatsappUrl = this.generateWhatsAppUrl(ownerPhoneNumber, message)
       
-      console.log("Opening WhatsApp for order confirmation:", {
+      console.log("Redirecting to WhatsApp for order confirmation:", {
         ownerPhone: ownerPhoneNumber,
         customerPhone: order.customerInfo.phone,
         url: whatsappUrl
@@ -147,8 +147,86 @@ Questions? Reply to this message or call us at +1 (555) 123-4567
   static generateWhatsAppLink(phone: string, message: string): string {
     // Generate WhatsApp link for direct messaging
     const encodedMessage = encodeURIComponent(message)
-    const cleanPhone = phone.replace(/\D/g, "") // Remove non-digits
+    const cleanPhone = this.sanitizePhoneNumber(phone)
     return `https://wa.me/${cleanPhone}?text=${encodedMessage}`
+  }
+
+  static redirectToWhatsApp(phone: string, message: string): void {
+    // iOS Safari-compatible WhatsApp opening
+    const encodedMessage = encodeURIComponent(message)
+    const cleanPhone = this.sanitizePhoneNumber(phone)
+    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodedMessage}`
+    
+    if (typeof window !== 'undefined') {
+      console.log('Attempting to open WhatsApp:', whatsappUrl)
+      
+      // Detect if we're on iOS Safari
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+      const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent)
+      
+      if (isIOS && isSafari) {
+        // For iOS Safari, show a button for user to click
+        console.log('iOS Safari detected, using user-triggered method')
+        
+        const button = document.createElement('button')
+        button.innerHTML = 'Open WhatsApp'
+        button.style.cssText = `
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          z-index: 9999;
+          background: #25D366;
+          color: white;
+          border: none;
+          padding: 15px 30px;
+          border-radius: 8px;
+          font-size: 16px;
+          font-weight: bold;
+          cursor: pointer;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        `
+        
+        button.onclick = () => {
+          window.location.href = whatsappUrl
+          document.body.removeChild(button)
+        }
+        
+        document.body.appendChild(button)
+        
+        setTimeout(() => {
+          if (document.body.contains(button)) {
+            document.body.removeChild(button)
+          }
+        }, 10000)
+        
+      } else {
+        // For other browsers, use the link method
+        console.log('Non-iOS Safari detected, using link method')
+        const link = document.createElement('a')
+        link.href = whatsappUrl
+        link.target = '_blank'
+        link.rel = 'noopener noreferrer'
+        link.style.position = 'fixed'
+        link.style.top = '0'
+        link.style.left = '0'
+        link.style.width = '1px'
+        link.style.height = '1px'
+        link.style.opacity = '0'
+        link.style.pointerEvents = 'none'
+        
+        document.body.appendChild(link)
+        link.click()
+        
+        setTimeout(() => {
+          if (document.body.contains(link)) {
+            document.body.removeChild(link)
+          }
+        }, 100)
+      }
+      
+      console.log('WhatsApp link triggered')
+    }
   }
 
   private static getOwnerPhoneNumber(): string {
@@ -160,10 +238,15 @@ Questions? Reply to this message or call us at +1 (555) 123-4567
   private static sanitizePhoneNumber(phone: string): string {
     if (!phone || typeof phone !== 'string') return ''
     
-    // Remove all non-digit characters except +
-    let cleanPhone = phone.replace(/[^\d+]/g, '')
+    // Remove all non-digit characters
+    let cleanPhone = phone.replace(/\D/g, '')
     
-    // Remove leading + if present
+    // Remove leading 00 if present (international format)
+    if (cleanPhone.startsWith('00')) {
+      cleanPhone = cleanPhone.substring(2)
+    }
+    
+    // Remove leading + if present (shouldn't happen after \D replacement, but just in case)
     if (cleanPhone.startsWith('+')) {
       cleanPhone = cleanPhone.substring(1)
     }
@@ -191,3 +274,4 @@ Questions? Reply to this message or call us at +1 (555) 123-4567
     return `https://wa.me/${phone}?text=${encodedMessage}`
   }
 }
+
