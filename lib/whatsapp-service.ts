@@ -20,40 +20,44 @@ export class WhatsAppService {
         url: whatsappUrl
       })
 
-      // Open WhatsApp in new tab - never navigate away from current page
+      // iOS-friendly WhatsApp opening - use direct navigation for better compatibility
       if (typeof window !== 'undefined') {
-        try {
-          const newWindow = window.open(whatsappUrl, '_blank', 'noopener,noreferrer')
+        console.log('Attempting to open WhatsApp:', whatsappUrl)
+        
+        // Detect if we're on iOS
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+        
+        if (isIOS) {
+          // For iOS, use direct navigation as fallback
+          console.log('iOS detected, using direct navigation')
+          setTimeout(() => {
+            window.location.href = whatsappUrl
+          }, 100)
+        } else {
+          // For other platforms, try the link method first
+          const link = document.createElement('a')
+          link.href = whatsappUrl
+          link.target = '_blank'
+          link.rel = 'noopener noreferrer'
+          link.style.position = 'fixed'
+          link.style.top = '0'
+          link.style.left = '0'
+          link.style.width = '1px'
+          link.style.height = '1px'
+          link.style.opacity = '0'
+          link.style.pointerEvents = 'none'
           
-          // Check if popup was blocked
-          if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
-            console.warn('Popup blocked, trying alternative method')
-            // Try creating a temporary link and clicking it
-            const link = document.createElement('a')
-            link.href = whatsappUrl
-            link.target = '_blank'
-            link.rel = 'noopener noreferrer'
-            link.style.display = 'none'
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
-          }
-        } catch (error) {
-          console.error('Error opening WhatsApp:', error)
-          // Last resort: try the link method
-          try {
-            const link = document.createElement('a')
-            link.href = whatsappUrl
-            link.target = '_blank'
-            link.rel = 'noopener noreferrer'
-            link.style.display = 'none'
-            document.body.appendChild(link)
-            link.click()
-            document.body.removeChild(link)
-          } catch (linkError) {
-            console.error('All WhatsApp opening methods failed:', linkError)
-          }
+          document.body.appendChild(link)
+          link.click()
+          
+          setTimeout(() => {
+            if (document.body.contains(link)) {
+              document.body.removeChild(link)
+            }
+          }, 100)
         }
+        
+        console.log('WhatsApp link triggered')
       }
 
       return true
@@ -174,44 +178,48 @@ Questions? Reply to this message or call us at +1 (555) 123-4567
   }
 
   static redirectToWhatsApp(phone: string, message: string): void {
-    // Open WhatsApp in new tab - never navigate away from current page
+    // iOS-friendly WhatsApp opening
     const encodedMessage = encodeURIComponent(message)
     const cleanPhone = this.sanitizePhoneNumber(phone)
     const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodedMessage}`
     
     if (typeof window !== 'undefined') {
-      try {
-        const newWindow = window.open(whatsappUrl, '_blank', 'noopener,noreferrer')
+      console.log('Attempting to open WhatsApp:', whatsappUrl)
+      
+      // Detect if we're on iOS
+      const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+      
+      if (isIOS) {
+        // For iOS, use direct navigation
+        console.log('iOS detected, using direct navigation')
+        setTimeout(() => {
+          window.location.href = whatsappUrl
+        }, 100)
+      } else {
+        // For other platforms, try the link method
+        const link = document.createElement('a')
+        link.href = whatsappUrl
+        link.target = '_blank'
+        link.rel = 'noopener noreferrer'
+        link.style.position = 'fixed'
+        link.style.top = '0'
+        link.style.left = '0'
+        link.style.width = '1px'
+        link.style.height = '1px'
+        link.style.opacity = '0'
+        link.style.pointerEvents = 'none'
         
-        // Check if popup was blocked
-        if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
-          console.warn('Popup blocked, trying alternative method')
-          // Try creating a temporary link and clicking it
-          const link = document.createElement('a')
-          link.href = whatsappUrl
-          link.target = '_blank'
-          link.rel = 'noopener noreferrer'
-          link.style.display = 'none'
-          document.body.appendChild(link)
-          link.click()
-          document.body.removeChild(link)
-        }
-      } catch (error) {
-        console.error('Error opening WhatsApp:', error)
-        // Last resort: try the link method
-        try {
-          const link = document.createElement('a')
-          link.href = whatsappUrl
-          link.target = '_blank'
-          link.rel = 'noopener noreferrer'
-          link.style.display = 'none'
-          document.body.appendChild(link)
-          link.click()
-          document.body.removeChild(link)
-        } catch (linkError) {
-          console.error('All WhatsApp opening methods failed:', linkError)
-        }
+        document.body.appendChild(link)
+        link.click()
+        
+        setTimeout(() => {
+          if (document.body.contains(link)) {
+            document.body.removeChild(link)
+          }
+        }, 100)
       }
+      
+      console.log('WhatsApp link triggered')
     }
   }
 
@@ -260,3 +268,4 @@ Questions? Reply to this message or call us at +1 (555) 123-4567
     return `https://wa.me/${phone}?text=${encodedMessage}`
   }
 }
+
