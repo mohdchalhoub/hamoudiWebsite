@@ -178,20 +178,47 @@ export default function CheckoutPage() {
     let whatsappWindow = null
     
     if (isIPhone) {
-      // Generate a basic order message for immediate WhatsApp opening
-      const basicMessage = encodeURIComponent(`🛍️ New Order from KidsCorner
+      // Generate the same detailed message as Android/Desktop
+      const itemsList = validItems.map((item) => {
+        const productName = item.product.name
+        const selectedSize = item.selectedSize
+        const selectedColor = item.selectedColor
+        const quantity = item.quantity
+        const unitPrice = item.product.price
+        const lineTotal = unitPrice * quantity
+        
+        // Get product codes
+        const productCode = item.productCode || item.product.product_code || 'N/A'
+        const variantCode = item.variantCode || 'N/A'
+        const fullCode = `${productCode}-${variantCode}`
+        
+        return `• ${quantity}x [${fullCode}] ${productName} (${selectedSize}, ${selectedColor}) - Unit: $${unitPrice.toFixed(2)} - Total: $${lineTotal.toFixed(2)}`
+      }).join("\n")
 
-👤 Customer: ${formData.name}
-📞 Phone: ${formData.countryCode}${formData.mobileNumber}
-📍 Address: ${formData.address}
+      const orderMessage = `🛍️ *NEW ORDER - KidsCorner*
 
-🛒 Items: ${items.length} item(s)
-💰 Total: $${finalTotal.toFixed(2)}
+📋 *Order Reference:* ${Date.now()}
+📅 *Date:* ${new Date().toLocaleDateString()}
 
-Processing order details...`)
-      
+👤 *Customer Details:*
+Name: ${formData.name}
+Phone: ${formData.countryCode}${formData.mobileNumber}
+Address: ${formData.address}
+
+🛒 *Order Items:*
+${itemsList}
+
+💰 *Order Summary:*
+Subtotal: $${validFinalTotal.toFixed(2)}
+Total: $${validFinalTotal.toFixed(2)}
+
+Please process this order and contact the customer for delivery arrangements.
+
+*KidsCorner Order Management* 👶👧👦`
+
+      const encodedMessage = encodeURIComponent(orderMessage)
       const ownerPhone = '96171567228'
-      const whatsappUrl = `https://wa.me/${ownerPhone}?text=${basicMessage}`
+      const whatsappUrl = `https://wa.me/${ownerPhone}?text=${encodedMessage}`
       
       // Open WhatsApp immediately while we have user action context
       window.location.href = whatsappUrl
