@@ -138,7 +138,7 @@ Questions? Reply to this message or call us at +1 (555) 123-4567
   static generateWhatsAppLink(phone: string, message: string): string {
     // Generate WhatsApp link for direct messaging
     const encodedMessage = encodeURIComponent(message)
-    const cleanPhone = phone.replace(/\D/g, "") // Remove non-digits
+    const cleanPhone = this.sanitizePhoneNumber(phone)
     return `https://wa.me/${cleanPhone}?text=${encodedMessage}`
   }
 
@@ -151,10 +151,15 @@ Questions? Reply to this message or call us at +1 (555) 123-4567
   private static sanitizePhoneNumber(phone: string): string {
     if (!phone || typeof phone !== 'string') return ''
     
-    // Remove all non-digit characters except +
-    let cleanPhone = phone.replace(/[^\d+]/g, '')
+    // Remove all non-digit characters
+    let cleanPhone = phone.replace(/\D/g, '')
     
-    // Remove leading + if present
+    // Remove leading 00 if present (international format)
+    if (cleanPhone.startsWith('00')) {
+      cleanPhone = cleanPhone.substring(2)
+    }
+    
+    // Remove leading + if present (shouldn't happen after \D replacement, but just in case)
     if (cleanPhone.startsWith('+')) {
       cleanPhone = cleanPhone.substring(1)
     }
