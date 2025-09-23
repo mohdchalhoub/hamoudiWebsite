@@ -20,21 +20,57 @@ export class WhatsAppService {
         url: whatsappUrl
       })
 
-      // iOS-friendly WhatsApp opening - use direct navigation for better compatibility
+      // iOS Safari-compatible WhatsApp opening
       if (typeof window !== 'undefined') {
         console.log('Attempting to open WhatsApp:', whatsappUrl)
         
-        // Detect if we're on iOS
+        // Detect if we're on iOS Safari
         const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+        const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent)
         
-        if (isIOS) {
-          // For iOS, use direct navigation as fallback
-          console.log('iOS detected, using direct navigation')
-          setTimeout(() => {
+        if (isIOS && isSafari) {
+          // For iOS Safari, we need to use a different approach
+          console.log('iOS Safari detected, using user-triggered method')
+          
+          // Create a visible button that the user can click
+          const button = document.createElement('button')
+          button.innerHTML = 'Open WhatsApp'
+          button.style.cssText = `
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 9999;
+            background: #25D366;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+          `
+          
+          // Add click handler
+          button.onclick = () => {
             window.location.href = whatsappUrl
-          }, 100)
+            document.body.removeChild(button)
+          }
+          
+          // Add to page
+          document.body.appendChild(button)
+          
+          // Auto-remove after 10 seconds
+          setTimeout(() => {
+            if (document.body.contains(button)) {
+              document.body.removeChild(button)
+            }
+          }, 10000)
+          
         } else {
-          // For other platforms, try the link method first
+          // For other browsers, use the link method
+          console.log('Non-iOS Safari detected, using link method')
           const link = document.createElement('a')
           link.href = whatsappUrl
           link.target = '_blank'
@@ -178,7 +214,7 @@ Questions? Reply to this message or call us at +1 (555) 123-4567
   }
 
   static redirectToWhatsApp(phone: string, message: string): void {
-    // iOS-friendly WhatsApp opening
+    // iOS Safari-compatible WhatsApp opening
     const encodedMessage = encodeURIComponent(message)
     const cleanPhone = this.sanitizePhoneNumber(phone)
     const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodedMessage}`
@@ -186,17 +222,49 @@ Questions? Reply to this message or call us at +1 (555) 123-4567
     if (typeof window !== 'undefined') {
       console.log('Attempting to open WhatsApp:', whatsappUrl)
       
-      // Detect if we're on iOS
+      // Detect if we're on iOS Safari
       const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent)
+      const isSafari = /Safari/.test(navigator.userAgent) && !/Chrome/.test(navigator.userAgent)
       
-      if (isIOS) {
-        // For iOS, use direct navigation
-        console.log('iOS detected, using direct navigation')
-        setTimeout(() => {
+      if (isIOS && isSafari) {
+        // For iOS Safari, show a button for user to click
+        console.log('iOS Safari detected, using user-triggered method')
+        
+        const button = document.createElement('button')
+        button.innerHTML = 'Open WhatsApp'
+        button.style.cssText = `
+          position: fixed;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+          z-index: 9999;
+          background: #25D366;
+          color: white;
+          border: none;
+          padding: 15px 30px;
+          border-radius: 8px;
+          font-size: 16px;
+          font-weight: bold;
+          cursor: pointer;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        `
+        
+        button.onclick = () => {
           window.location.href = whatsappUrl
-        }, 100)
+          document.body.removeChild(button)
+        }
+        
+        document.body.appendChild(button)
+        
+        setTimeout(() => {
+          if (document.body.contains(button)) {
+            document.body.removeChild(button)
+          }
+        }, 10000)
+        
       } else {
-        // For other platforms, try the link method
+        // For other browsers, use the link method
+        console.log('Non-iOS Safari detected, using link method')
         const link = document.createElement('a')
         link.href = whatsappUrl
         link.target = '_blank'
