@@ -136,7 +136,7 @@ export default function CheckoutPage() {
     // Validate Lebanese mobile number format (8 digits starting with 70, 71, 76, 78, 79, 81, 83, 84, 85, 86, 87, 88, 89)
     const lebaneseMobileRegex = /^(7[016789]|8[1-9])\d{6}$/
     if (!lebaneseMobileRegex.test(formData.mobileNumber)) {
-      return 'Please enter a valid Lebanese mobile number (8 digits starting with 70, 71, 76, 78, 79, 81, 83, 84, 85, 86, 87, 88, or 89)'
+      return 'Please enter a valid Lebanese mobile number (8 digits starting with 70, 71, 76, 78, 79, 81)'
     }
 
     // Validate cart items
