@@ -42,16 +42,18 @@ export default async function HomePage() {
   }
   
   // Fetch products with error handling and small delays between requests
-  const featuredProducts = await safeGetProducts({ featured: true, active: true, limit: 8, _cacheBust: cacheBust })
+  // Note: We fetch all products (active and inactive) to ensure carousel shows all products
+  // The product detail page will handle inactive products gracefully
+  const featuredProducts = await safeGetProducts({ featured: true, limit: 8, _cacheBust: cacheBust })
   await new Promise(resolve => setTimeout(resolve, 100)) // Small delay
   
-  const boysProducts = await safeGetProducts({ gender: 'boys', active: true, limit: 6, _cacheBust: cacheBust })
+  const boysProducts = await safeGetProducts({ gender: 'boys', limit: 6, _cacheBust: cacheBust })
   await new Promise(resolve => setTimeout(resolve, 100)) // Small delay
   
-  const girlsProducts = await safeGetProducts({ gender: 'girls', active: true, limit: 6, _cacheBust: cacheBust })
+  const girlsProducts = await safeGetProducts({ gender: 'girls', limit: 6, _cacheBust: cacheBust })
   await new Promise(resolve => setTimeout(resolve, 100)) // Small delay
   
-  const onSaleProducts = await safeGetProducts({ on_sale: true, active: true, limit: 8, _cacheBust: cacheBust })
+  const onSaleProducts = await safeGetProducts({ on_sale: true, limit: 8, _cacheBust: cacheBust })
   
   // Check if we have any products at all
   const hasAnyProducts = featuredProducts.length > 0 || boysProducts.length > 0 || girlsProducts.length > 0 || onSaleProducts.length > 0

@@ -12,11 +12,15 @@ interface ProductPageProps {
 }
 
 export default async function ProductPage({ params }: ProductPageProps) {
+  console.log('ProductPage: Looking for product with id:', params.id)
   const product = await getProductById(params.id)
 
   if (!product) {
+    console.log('ProductPage: Product not found, calling notFound()')
     notFound()
   }
+
+  console.log('ProductPage: Found product:', product.name, 'is_active:', product.is_active)
 
   // Get related products from the same category
   const relatedProducts = await getProducts({ 

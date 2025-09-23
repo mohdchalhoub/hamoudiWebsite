@@ -204,7 +204,10 @@ export async function getProduct(slug: string): Promise<ProductWithDetails | nul
 }
 
 export async function getProductById(id: string): Promise<ProductWithDetails | null> {
-  const { data, error } = await supabase
+  console.log('getProductById called with id:', id)
+  
+  // First try to get the product with is_active = true
+  let { data, error } = await supabase
     .from('products')
     .select(`
       *,
@@ -216,9 +219,40 @@ export async function getProductById(id: string): Promise<ProductWithDetails | n
     .eq('is_active', true)
     .single()
 
+  // If not found with is_active = true, try without the is_active filter
+  if (error && error.code === 'PGRST116') {
+    console.log('Product not found with is_active=true, trying without filter...')
+    const { data: inactiveData, error: inactiveError } = await supabase
+      .from('products')
+      .select(`
+        *,
+        category:categories(*),
+        variants:product_variants(*),
+        reviews:reviews(*)
+      `)
+      .eq('id', id)
+      .single()
+    
+    if (inactiveError) {
+      console.log('Product not found at all:', inactiveError)
+      if (inactiveError.code === 'PGRST116') return null
+      throw inactiveError
+    }
+    
+    data = inactiveData
+    error = null
+    console.log('Found inactive product:', data?.name)
+  }
+
   if (error) {
+    console.log('Database error:', error)
     if (error.code === 'PGRST116') return null
     throw error
+  }
+
+  if (!data) {
+    console.log('No product data returned')
+    return null
   }
 
   // Calculate average rating and review count
@@ -227,6 +261,8 @@ export async function getProductById(id: string): Promise<ProductWithDetails | n
     ? reviews.reduce((sum: number, review: any) => sum + review.rating, 0) / reviews.length 
     : 0
   const review_count = reviews.length
+
+  console.log('Returning product:', data.name, 'is_active:', data.is_active)
 
   return {
     ...data,
