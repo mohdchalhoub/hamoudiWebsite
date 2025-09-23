@@ -241,7 +241,7 @@ export default async function HomePage() {
                 {
                   icon: Truck,
                   title: "Fast Delivery",
-                  description: "Quick and reliable delivery to your doorstep. Free shipping on orders over $50.",
+                  description: "Quick and reliable delivery to your doorstep.",
                   color: "gray",
                   gradient: "from-gray-100 to-gray-200"
                 },

@@ -15,8 +15,7 @@ export default function CartPage() {
 
   const totalItems = getTotalItems()
   const totalPrice = getTotalPrice()
-  const shipping = totalPrice > 50 ? 0 : 9.99
-  const finalTotal = totalPrice + shipping
+  const finalTotal = totalPrice
 
   if (items.length === 0) {
     return (
@@ -142,18 +141,8 @@ export default function CartPage() {
               <CardContent className="p-6">
                 <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
                 <div className="space-y-3">
-                  <div className="flex justify-between">
-                    <span>Subtotal ({totalItems} items)</span>
-                    <span>${totalPrice.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Shipping</span>
-                    <span>{shipping === 0 ? "FREE" : `$${shipping.toFixed(2)}`}</span>
-                  </div>
-                  {shipping === 0 && <p className="text-sm text-green-600">🎉 Free shipping on orders over $50!</p>}
-                  <Separator />
                   <div className="flex justify-between text-lg font-bold">
-                    <span>Total</span>
+                    <span>Total ({totalItems} items)</span>
                     <span>${finalTotal.toFixed(2)}</span>
                   </div>
                 </div>

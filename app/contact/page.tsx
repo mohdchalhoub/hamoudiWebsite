@@ -46,8 +46,7 @@ export default function ContactPage() {
 
   const handleWhatsAppContact = () => {
     const message = `Hi KidsCorner! I have a question about your products.`
-    const whatsappLink = WhatsAppService.generateWhatsAppLink("+15551234567", message)
-    window.open(whatsappLink, "_blank")
+    WhatsAppService.redirectToWhatsApp("+15551234567", message)
   }
 
   return (
@@ -218,9 +217,9 @@ export default function ContactPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div>
-                  <h4 className="font-semibold mb-1">How long does shipping take?</h4>
+                  <h4 className="font-semibold mb-1">How long does delivery take?</h4>
                   <p className="text-sm text-muted-foreground">
-                    Standard shipping takes 3-5 business days. Free shipping on orders over $50!
+                    Standard delivery takes 3-5 business days.
                   </p>
                 </div>
                 <div>

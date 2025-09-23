@@ -91,10 +91,10 @@ export async function POST(request: NextRequest) {
     // Generate order number
     const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 5).toUpperCase()}`
     
-    // Calculate shipping
+    // Calculate total (no shipping)
     const subtotal = total
-    const shippingAmount = subtotal > 50 ? 0 : 9.99
-    const totalAmount = subtotal + shippingAmount
+    const shippingAmount = 0
+    const totalAmount = subtotal
     
     // Create or find customer record
     let customerId = null
@@ -181,36 +181,52 @@ export async function POST(request: NextRequest) {
       // Check if product_id is a valid UUID format, otherwise set to null
       const isValidUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(item.product.id)
       
+      // Generate a SKU if none exists
+      const sku = item.productCode || 
+                  item.product.product_code || 
+                  item.sku || 
+                  `${item.product.id}-${item.selectedSize}-${item.selectedColor}`.replace(/[^a-zA-Z0-9-]/g, '')
+      
       return {
         order_id: order.id,
         product_id: isValidUUID ? item.product.id : null,
         variant_id: item.variantId || null,
-        product_name: item.product.name,
-        product_sku: item.productCode || item.product.product_code || `${item.product.id}-${item.selectedSize}-${item.selectedColor}`,
-        variant_description: `${item.selectedSize}, ${item.selectedColor}`,
-        quantity: item.quantity,
-        unit_price: item.product.price,
-        total_price: item.product.price * item.quantity
+        product_name: item.product.name || 'Unknown Product',
+        product_sku: sku.substring(0, 100), // Limit to 100 chars as per schema
+        variant_description: `${item.selectedSize || 'N/A'}, ${item.selectedColor || 'N/A'}`,
+        quantity: item.quantity || 1,
+        unit_price: item.product.price || 0,
+        total_price: (item.product.price || 0) * (item.quantity || 1)
       }
     })
     
-    const { error: itemsError } = await supabase
-      .from('order_items')
-      .insert(orderItems)
+    console.log('Creating order items:', JSON.stringify(orderItems, null, 2))
     
-    if (itemsError) {
-      console.error('Order items creation error:', itemsError)
-      console.error('Order items data:', JSON.stringify(orderItems, null, 2))
-      // Try to delete the order if items failed
-      await supabase.from('orders').delete().eq('id', order.id)
-      return NextResponse.json(
-        { 
-          error: 'Failed to create order items',
-          details: itemsError.message,
-          data: orderItems
-        },
-        { status: 500 }
-      )
+    // Try to create order items, but don't fail the entire order if this fails
+    let itemsError = null
+    try {
+      const { error } = await supabase
+        .from('order_items')
+        .insert(orderItems)
+      
+      itemsError = error
+      
+      if (itemsError) {
+        console.error('Order items creation error:', itemsError)
+        console.error('Order items data:', JSON.stringify(orderItems, null, 2))
+        console.error('Error details:', {
+          code: itemsError.code,
+          message: itemsError.message,
+          details: itemsError.details,
+          hint: itemsError.hint
+        })
+        
+        // Log the error but continue with the order
+        console.warn('Order items creation failed, but continuing with order creation')
+      }
+    } catch (error) {
+      console.error('Unexpected error creating order items:', error)
+      console.warn('Order items creation failed, but continuing with order creation')
     }
     
     // Return the order with items
@@ -221,10 +237,14 @@ export async function POST(request: NextRequest) {
       total: totalAmount,
       customerInfo: sanitizedCustomerInfo,
       status: order.status,
-      createdAt: order.created_at
+      createdAt: order.created_at,
+      itemsCreated: !itemsError // Indicate if order items were created successfully
     }
     
-    return NextResponse.json({ order: orderWithItems }, { status: 201 })
+    return NextResponse.json({ 
+      order: orderWithItems,
+      warning: itemsError ? 'Order created but items not saved to database' : null
+    }, { status: 201 })
     
   } catch (error) {
     console.error('Order creation error:', error)

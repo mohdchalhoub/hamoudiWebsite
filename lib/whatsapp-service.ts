@@ -14,15 +14,46 @@ export class WhatsAppService {
       // Generate WhatsApp URL using owner's number
       const whatsappUrl = this.generateWhatsAppUrl(ownerPhoneNumber, message)
       
-      console.log("Opening WhatsApp for order confirmation:", {
+      console.log("Redirecting to WhatsApp for order confirmation:", {
         ownerPhone: ownerPhoneNumber,
         customerPhone: order.customerInfo.phone,
         url: whatsappUrl
       })
 
-      // Open WhatsApp in new window/tab
+      // Open WhatsApp in new tab - never navigate away from current page
       if (typeof window !== 'undefined') {
-        window.open(whatsappUrl, '_blank')
+        try {
+          const newWindow = window.open(whatsappUrl, '_blank', 'noopener,noreferrer')
+          
+          // Check if popup was blocked
+          if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+            console.warn('Popup blocked, trying alternative method')
+            // Try creating a temporary link and clicking it
+            const link = document.createElement('a')
+            link.href = whatsappUrl
+            link.target = '_blank'
+            link.rel = 'noopener noreferrer'
+            link.style.display = 'none'
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+          }
+        } catch (error) {
+          console.error('Error opening WhatsApp:', error)
+          // Last resort: try the link method
+          try {
+            const link = document.createElement('a')
+            link.href = whatsappUrl
+            link.target = '_blank'
+            link.rel = 'noopener noreferrer'
+            link.style.display = 'none'
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+          } catch (linkError) {
+            console.error('All WhatsApp opening methods failed:', linkError)
+          }
+        }
       }
 
       return true
@@ -140,6 +171,48 @@ Questions? Reply to this message or call us at +1 (555) 123-4567
     const encodedMessage = encodeURIComponent(message)
     const cleanPhone = this.sanitizePhoneNumber(phone)
     return `https://wa.me/${cleanPhone}?text=${encodedMessage}`
+  }
+
+  static redirectToWhatsApp(phone: string, message: string): void {
+    // Open WhatsApp in new tab - never navigate away from current page
+    const encodedMessage = encodeURIComponent(message)
+    const cleanPhone = this.sanitizePhoneNumber(phone)
+    const whatsappUrl = `https://wa.me/${cleanPhone}?text=${encodedMessage}`
+    
+    if (typeof window !== 'undefined') {
+      try {
+        const newWindow = window.open(whatsappUrl, '_blank', 'noopener,noreferrer')
+        
+        // Check if popup was blocked
+        if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+          console.warn('Popup blocked, trying alternative method')
+          // Try creating a temporary link and clicking it
+          const link = document.createElement('a')
+          link.href = whatsappUrl
+          link.target = '_blank'
+          link.rel = 'noopener noreferrer'
+          link.style.display = 'none'
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+        }
+      } catch (error) {
+        console.error('Error opening WhatsApp:', error)
+        // Last resort: try the link method
+        try {
+          const link = document.createElement('a')
+          link.href = whatsappUrl
+          link.target = '_blank'
+          link.rel = 'noopener noreferrer'
+          link.style.display = 'none'
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+        } catch (linkError) {
+          console.error('All WhatsApp opening methods failed:', linkError)
+        }
+      }
+    }
   }
 
   private static getOwnerPhoneNumber(): string {

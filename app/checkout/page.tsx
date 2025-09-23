@@ -13,7 +13,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Separator } from "@/components/ui/separator"
 import { Badge } from "@/components/ui/badge"
-import { ArrowLeft, CreditCard } from "lucide-react"
+import { ArrowLeft, MessageCircle } from "lucide-react"
 import Link from "next/link"
 import Image from "next/image"
 import type { CartItem } from "@/lib/types"
@@ -95,8 +95,20 @@ export default function CheckoutPage() {
   })
 
   const totalPrice = getTotalPrice()
-  const shipping = totalPrice > 50 ? 0 : 9.99
-  const finalTotal = totalPrice + shipping
+  const finalTotal = totalPrice
+  
+  // Calculate total from valid items only
+  const validItems = items.filter(item => 
+    item.product && 
+    item.product.id && 
+    item.product.name && 
+    item.selectedSize && 
+    item.selectedColor && 
+    item.quantity > 0 && 
+    item.product.price > 0
+  )
+  const validTotal = validItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0)
+  const validFinalTotal = validTotal
 
   if (items.length === 0) {
     return (
@@ -127,6 +139,17 @@ export default function CheckoutPage() {
       return 'Please enter a valid Lebanese mobile number (8 digits starting with 70, 71, 76, 78, 79, 81, 83, 84, 85, 86, 87, 88, or 89)'
     }
 
+    // Validate cart items
+    if (items.length === 0) return 'No items in cart'
+    
+    for (const item of items) {
+      if (!item.product) return 'Invalid product data in cart'
+      if (!item.product.id || !item.product.name) return 'Missing product information'
+      if (!item.selectedSize || !item.selectedColor) return 'Missing size or color selection'
+      if (!item.quantity || item.quantity <= 0) return 'Invalid quantity'
+      if (!item.product.price || item.product.price <= 0) return 'Invalid product price'
+    }
+
     return null
   }
 
@@ -151,25 +174,54 @@ export default function CheckoutPage() {
     setIsSubmitting(true)
 
     try {
+      // Prepare order data with validation
+      const validItems = items.filter(item => 
+        item.product && 
+        item.product.id && 
+        item.product.name && 
+        item.selectedSize && 
+        item.selectedColor && 
+        item.quantity > 0 && 
+        item.product.price > 0
+      )
+      
+      if (validItems.length === 0) {
+        throw new Error('No valid items in cart')
+      }
+      
+      const orderData = {
+        customerInfo: {
+          name: sanitizeInput(formData.name),
+          phone: `${formData.countryCode}${sanitizeInput(formData.mobileNumber)}`,
+          address: sanitizeInput(formData.address),
+        },
+        items: validItems,
+        total: validFinalTotal
+      }
+      
+      console.log('Sending order data:', orderData)
+      console.log('Cart items details:', items.map(item => ({
+        productId: item.product?.id,
+        productName: item.product?.name,
+        quantity: item.quantity,
+        selectedSize: item.selectedSize,
+        selectedColor: item.selectedColor,
+        price: item.product?.price,
+        hasProduct: !!item.product
+      })))
+      
       // Create order via API
       const orderResponse = await fetch('/api/orders', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          customerInfo: {
-            name: sanitizeInput(formData.name),
-            phone: `${formData.countryCode}${sanitizeInput(formData.mobileNumber)}`,
-            address: sanitizeInput(formData.address),
-          },
-          items: items,
-          total: finalTotal
-        })
+        body: JSON.stringify(orderData)
       })
 
       if (!orderResponse.ok) {
         const errorData = await orderResponse.json()
+        console.error('Order creation failed:', errorData)
         throw new Error(errorData.error || 'Failed to create order')
       }
 
@@ -178,7 +230,7 @@ export default function CheckoutPage() {
       // Send WhatsApp order confirmation
       const whatsappOrder = {
         id: createdOrder.orderNumber,
-        items: items,
+        items: validItems,
         total: createdOrder.total,
         customerInfo: {
           name: sanitizeInput(formData.name),
@@ -189,31 +241,42 @@ export default function CheckoutPage() {
         createdAt: new Date(createdOrder.createdAt)
       }
 
+      // Try to open WhatsApp (this will always return true now)
       const whatsappSent = await WhatsAppService.sendOrderConfirmation(whatsappOrder)
 
-      if (whatsappSent) {
-        toast({
-          title: "Order confirmed!",
-          description: "Order details sent to WhatsApp. You'll be redirected to WhatsApp shortly.",
-        })
-      } else {
-        toast({
-          title: "Order placed",
-          description: "Order saved but WhatsApp failed to open. We'll contact you soon.",
-          variant: "destructive",
-        })
-      }
+      // Calculate correct total from valid items
+      const correctTotal = validItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0)
+      
+      // Store order items temporarily for confirmation page
+      localStorage.setItem(`order_${createdOrder.id}`, JSON.stringify({
+        items: validItems,
+        total: correctTotal,
+        orderNumber: createdOrder.orderNumber
+      }))
 
       // Clear cart
       clearCart()
 
-      // Redirect to confirmation using the real database order ID
+      // Show success message
+      toast({
+        title: "Order confirmed!",
+        description: "Your order has been placed successfully. WhatsApp should open in a new tab.",
+      })
+
+      // Redirect to confirmation page (this will show regardless of WhatsApp success)
       router.push(`/order-confirmation/${createdOrder.id}`)
     } catch (error) {
-      console.error("[v0] Order submission error:", error)
+      console.error("Order submission error:", error)
+      console.error("Error details:", {
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined,
+        cartItems: items.length,
+        formData: formData
+      })
+      
       toast({
         title: "Error",
-        description: "Failed to place order. Please try again.",
+        description: error instanceof Error ? error.message : "Failed to place order. Please try again.",
         variant: "destructive",
       })
     } finally {
@@ -372,15 +435,6 @@ export default function CheckoutPage() {
                 })}
                 <Separator />
                 <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>Subtotal</span>
-                    <span>${totalPrice.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span>Shipping</span>
-                    <span>{shipping === 0 ? "FREE" : `$${shipping.toFixed(2)}`}</span>
-                  </div>
-                  <Separator />
                   <div className="flex justify-between text-lg font-bold">
                     <span>Total</span>
                     <span>${finalTotal.toFixed(2)}</span>
@@ -396,8 +450,8 @@ export default function CheckoutPage() {
                 size="lg"
                 disabled={isSubmitting || !formData.name || !formData.mobileNumber || !formData.address}
               >
-                <CreditCard className="h-4 w-4 mr-2" />
-                {isSubmitting ? "Opening WhatsApp..." : "Place Order"}
+                <MessageCircle className="h-4 w-4 mr-2" />
+                {isSubmitting ? "Opening WhatsApp..." : "Place Order via WhatsApp"}
               </Button>
             </form>
 
