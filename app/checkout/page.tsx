@@ -95,8 +95,7 @@ export default function CheckoutPage() {
   })
 
   const totalPrice = getTotalPrice()
-  const shipping = totalPrice > 50 ? 0 : 9.99
-  const finalTotal = totalPrice + shipping
+  const finalTotal = totalPrice
 
   if (items.length === 0) {
     return (
@@ -149,6 +148,34 @@ export default function CheckoutPage() {
     }
 
     setIsSubmitting(true)
+
+    // For iPhone: Open WhatsApp immediately (user-triggered action)
+    const isIPhone = /iPhone/.test(navigator.userAgent)
+    let whatsappWindow = null
+    
+    if (isIPhone) {
+      // Generate a basic order message for immediate WhatsApp opening
+      const basicMessage = encodeURIComponent(`🛍️ New Order from KidsCorner
+
+👤 Customer: ${formData.name}
+📞 Phone: ${formData.countryCode}${formData.mobileNumber}
+📍 Address: ${formData.address}
+
+🛒 Items: ${items.length} item(s)
+💰 Total: $${finalTotal.toFixed(2)}
+
+Processing order details...`)
+      
+      const ownerPhone = '96171567228'
+      const whatsappUrl = `https://wa.me/${ownerPhone}?text=${basicMessage}`
+      
+      // Open WhatsApp immediately while we have user action context
+      window.location.href = whatsappUrl
+      
+      // Return early to avoid API call since user is being redirected
+      setIsSubmitting(false)
+      return
+    }
 
     try {
       // Create order via API
@@ -372,15 +399,6 @@ export default function CheckoutPage() {
                 })}
                 <Separator />
                 <div className="space-y-2">
-                  <div className="flex justify-between text-sm">
-                    <span>Subtotal</span>
-                    <span>${totalPrice.toFixed(2)}</span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span>Shipping</span>
-                    <span>{shipping === 0 ? "FREE" : `$${shipping.toFixed(2)}`}</span>
-                  </div>
-                  <Separator />
                   <div className="flex justify-between text-lg font-bold">
                     <span>Total</span>
                     <span>${finalTotal.toFixed(2)}</span>

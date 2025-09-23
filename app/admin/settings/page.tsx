@@ -19,8 +19,6 @@ interface SiteSettings {
   address: string
   currency: string
   taxRate: number
-  shippingFee: number
-  freeShippingThreshold: number
   emailNotifications: boolean
   orderNotifications: boolean
   lowStockAlerts: boolean
@@ -37,8 +35,6 @@ export default function SettingsPage() {
     address: "123 Fashion Street, Style City, SC 12345",
     currency: "USD",
     taxRate: 8.5,
-    shippingFee: 5.99,
-    freeShippingThreshold: 50,
     emailNotifications: true,
     orderNotifications: true,
     lowStockAlerts: true,
@@ -249,14 +245,14 @@ export default function SettingsPage() {
           </CardContent>
         </Card>
 
-        {/* Pricing & Shipping */}
+        {/* Pricing */}
         <Card>
           <CardHeader>
-            <CardTitle>Pricing & Shipping</CardTitle>
-            <CardDescription>Configure pricing and shipping options</CardDescription>
+            <CardTitle>Pricing</CardTitle>
+            <CardDescription>Configure pricing options</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid gap-4 md:grid-cols-3">
+            <div className="grid gap-4 md:grid-cols-1">
               <div className="space-y-2">
                 <Label htmlFor="tax-rate">Tax Rate (%)</Label>
                 <Input
@@ -265,28 +261,6 @@ export default function SettingsPage() {
                   step="0.1"
                   value={settings.taxRate}
                   onChange={(e) => handleSettingsChange("taxRate", Number.parseFloat(e.target.value) || 0)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="shipping-fee">Shipping Fee ($)</Label>
-                <Input
-                  id="shipping-fee"
-                  type="number"
-                  step="0.01"
-                  value={settings.shippingFee}
-                  onChange={(e) => handleSettingsChange("shippingFee", Number.parseFloat(e.target.value) || 0)}
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="free-shipping">Free Shipping Threshold ($)</Label>
-                <Input
-                  id="free-shipping"
-                  type="number"
-                  step="0.01"
-                  value={settings.freeShippingThreshold}
-                  onChange={(e) =>
-                    handleSettingsChange("freeShippingThreshold", Number.parseFloat(e.target.value) || 0)
-                  }
                 />
               </div>
             </div>

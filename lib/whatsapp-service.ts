@@ -20,9 +20,18 @@ export class WhatsAppService {
         url: whatsappUrl
       })
 
-      // Open WhatsApp in new window/tab
+      // Open WhatsApp with iPhone-compatible method
       if (typeof window !== 'undefined') {
-        window.open(whatsappUrl, '_blank')
+        // Detect if we're on iPhone
+        const isIPhone = /iPhone/.test(navigator.userAgent)
+        
+        if (isIPhone) {
+          // For iPhone: Use direct navigation to avoid Safari blocking
+          window.location.href = whatsappUrl
+        } else {
+          // For Android and Desktop: Use window.open to open in new tab
+          window.open(whatsappUrl, '_blank', 'noopener,noreferrer')
+        }
       }
 
       return true

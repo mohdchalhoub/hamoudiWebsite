@@ -91,10 +91,10 @@ export async function POST(request: NextRequest) {
     // Generate order number
     const orderNumber = `ORD-${Date.now()}-${Math.random().toString(36).substr(2, 5).toUpperCase()}`
     
-    // Calculate shipping
+    // Calculate total (no shipping)
     const subtotal = total
-    const shippingAmount = subtotal > 50 ? 0 : 9.99
-    const totalAmount = subtotal + shippingAmount
+    const shippingAmount = 0
+    const totalAmount = subtotal
     
     // Create or find customer record
     let customerId = null

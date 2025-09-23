@@ -153,21 +153,9 @@ export function CartDrawer() {
         {items.length > 0 && (
           <div className="border-t pt-4 space-y-4">
             <div className="space-y-2">
-              <div className="flex justify-between items-center text-sm">
-                <span>Subtotal ({totalItems} items)</span>
-                <span>${totalPrice.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between items-center text-sm">
-                <span>Shipping</span>
-                <span>{totalPrice > 50 ? "FREE" : "$9.99"}</span>
-              </div>
-              {totalPrice > 50 && (
-                <p className="text-xs text-green-600">🎉 Free shipping on orders over $50!</p>
-              )}
-              <Separator />
               <div className="flex justify-between items-center">
                 <span className="text-lg font-semibold">Total</span>
-                <span className="text-lg font-bold">${(totalPrice + (totalPrice > 50 ? 0 : 9.99)).toFixed(2)}</span>
+                <span className="text-lg font-bold">${totalPrice.toFixed(2)}</span>
               </div>
             </div>
             <div className="space-y-2">
