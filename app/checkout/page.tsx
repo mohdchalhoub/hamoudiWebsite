@@ -173,60 +173,8 @@ export default function CheckoutPage() {
 
     setIsSubmitting(true)
 
-    // For iPhone: Open WhatsApp immediately (user-triggered action)
+    // Store iPhone detection for later use
     const isIPhone = /iPhone/.test(navigator.userAgent)
-    let whatsappWindow = null
-    
-    if (isIPhone) {
-      // Generate the same detailed message as Android/Desktop
-      const itemsList = validItems.map((item) => {
-        const productName = item.product.name
-        const selectedSize = item.selectedSize
-        const selectedColor = item.selectedColor
-        const quantity = item.quantity
-        const unitPrice = item.product.price
-        const lineTotal = unitPrice * quantity
-        
-        // Get product codes
-        const productCode = item.productCode || item.product.product_code || 'N/A'
-        const variantCode = item.variantCode || 'N/A'
-        const fullCode = `${productCode}-${variantCode}`
-        
-        return `• ${quantity}x [${fullCode}] ${productName} (${selectedSize}, ${selectedColor}) - Unit: $${unitPrice.toFixed(2)} - Total: $${lineTotal.toFixed(2)}`
-      }).join("\n")
-
-      const orderMessage = `🛍️ *NEW ORDER - KidsCorner*
-
-📋 *Order Reference:* ${Date.now()}
-📅 *Date:* ${new Date().toLocaleDateString()}
-
-👤 *Customer Details:*
-Name: ${formData.name}
-Phone: ${formData.countryCode}${formData.mobileNumber}
-Address: ${formData.address}
-
-🛒 *Order Items:*
-${itemsList}
-
-💰 *Order Summary:*
-Subtotal: $${validFinalTotal.toFixed(2)}
-Total: $${validFinalTotal.toFixed(2)}
-
-Please process this order and contact the customer for delivery arrangements.
-
-*KidsCorner Order Management* 👶👧👦`
-
-      const encodedMessage = encodeURIComponent(orderMessage)
-      const ownerPhone = '96171567228'
-      const whatsappUrl = `https://wa.me/${ownerPhone}?text=${encodedMessage}`
-      
-      // Open WhatsApp immediately while we have user action context
-      window.location.href = whatsappUrl
-      
-      // Return early to avoid API call since user is being redirected
-      setIsSubmitting(false)
-      return
-    }
 
     try {
       // Prepare order data with validation
@@ -283,21 +231,69 @@ Please process this order and contact the customer for delivery arrangements.
       const { order: createdOrder } = await orderResponse.json()
 
       // Send WhatsApp order confirmation
-      const whatsappOrder = {
-        id: createdOrder.orderNumber,
-        items: validItems,
-        total: createdOrder.total,
-        customerInfo: {
-          name: sanitizeInput(formData.name),
-          phone: `${formData.countryCode}${sanitizeInput(formData.mobileNumber)}`,
-          address: sanitizeInput(formData.address),
-        },
-        status: createdOrder.status,
-        createdAt: new Date(createdOrder.createdAt)
-      }
+      if (isIPhone) {
+        // For iPhone: Open WhatsApp immediately using direct link (user-triggered action)
+        const itemsList = validItems.map((item) => {
+          const productName = item.product.name
+          const selectedSize = item.selectedSize
+          const selectedColor = item.selectedColor
+          const quantity = item.quantity
+          const unitPrice = item.product.price
+          const lineTotal = unitPrice * quantity
+          
+          // Get product codes
+          const productCode = item.productCode || item.product.product_code || 'N/A'
+          const variantCode = item.variantCode || 'N/A'
+          const fullCode = `${productCode}-${variantCode}`
+          
+          return `• ${quantity}x [${fullCode}] ${productName} (${selectedSize}, ${selectedColor}) - Unit: $${unitPrice.toFixed(2)} - Total: $${lineTotal.toFixed(2)}`
+        }).join("\n")
 
-      // Try to open WhatsApp (this will always return true now)
-      const whatsappSent = await WhatsAppService.sendOrderConfirmation(whatsappOrder)
+        const orderMessage = `🛍️ *NEW ORDER - KidsCorner*
+
+📋 *Order Reference:* ${createdOrder.orderNumber}
+📅 *Date:* ${new Date().toLocaleDateString()}
+
+👤 *Customer Details:*
+Name: ${formData.name}
+Phone: ${formData.countryCode}${formData.mobileNumber}
+Address: ${formData.address}
+
+🛒 *Order Items:*
+${itemsList}
+
+💰 *Order Summary:*
+Subtotal: $${validFinalTotal.toFixed(2)}
+Total: $${validFinalTotal.toFixed(2)}
+
+Please process this order and contact the customer for delivery arrangements.
+
+*KidsCorner Order Management* 👶👧👦`
+
+        const encodedMessage = encodeURIComponent(orderMessage)
+        const ownerPhone = '96171567228'
+        const whatsappUrl = `https://wa.me/${ownerPhone}?text=${encodedMessage}`
+        
+        // Open WhatsApp immediately while we have user action context
+        window.location.href = whatsappUrl
+      } else {
+        // For Android/Desktop: Use the service
+        const whatsappOrder = {
+          id: createdOrder.orderNumber,
+          items: validItems,
+          total: createdOrder.total,
+          customerInfo: {
+            name: sanitizeInput(formData.name),
+            phone: `${formData.countryCode}${sanitizeInput(formData.mobileNumber)}`,
+            address: sanitizeInput(formData.address),
+          },
+          status: createdOrder.status,
+          createdAt: new Date(createdOrder.createdAt)
+        }
+
+        // Try to open WhatsApp (this will always return true now)
+        const whatsappSent = await WhatsAppService.sendOrderConfirmation(whatsappOrder)
+      }
 
       // Calculate correct total from valid items
       const correctTotal = validItems.reduce((sum, item) => sum + (item.product.price * item.quantity), 0)
